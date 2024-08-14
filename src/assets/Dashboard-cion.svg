@@ -1,0 +1,11 @@
+<svg id="Dashboard-cion" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewBox="0 0 25 25">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="mdi:apple-keyboard-command_Background_Mask_" data-name="mdi:apple-keyboard-command (Background/Mask)" width="25" height="25" fill="none"/>
+    </clipPath>
+  </defs>
+  <rect id="mdi:apple-keyboard-command_Background_Mask_2" data-name="mdi:apple-keyboard-command (Background/Mask)" width="25" height="25" fill="none"/>
+  <g id="mdi:apple-keyboard-command" clip-path="url(#clip-path)">
+    <path id="Vector" d="M16.8,21a4.2,4.2,0,0,1-4.2-4.2V14.7H8.4v2.1A4.2,4.2,0,0,1,4.2,21,4.225,4.225,0,0,1,1.23,19.77a4.2,4.2,0,0,1,0-5.939A4.229,4.229,0,0,1,4.2,12.6H6.3V8.4H4.2A4.225,4.225,0,0,1,1.23,7.17,4.17,4.17,0,0,1,0,4.2,4.2,4.2,0,0,1,4.2,0,4.17,4.17,0,0,1,7.17,1.23,4.225,4.225,0,0,1,8.4,4.2V6.3h4.2V4.2A4.229,4.229,0,0,1,13.83,1.23a4.2,4.2,0,0,1,5.939,0A4.225,4.225,0,0,1,21,4.2a4.2,4.2,0,0,1-4.2,4.2H14.7v4.2h2.1a4.2,4.2,0,0,1,0,8.4Zm-2.1-6.3v2.1a2.1,2.1,0,1,0,2.1-2.1Zm-10.5,0a2.1,2.1,0,1,0,2.1,2.1V14.7ZM8.4,8.4v4.2h4.2V8.4Zm8.4-6.3a2.1,2.1,0,0,0-2.1,2.1V6.3h2.1a2.1,2.1,0,0,0,0-4.2ZM4.2,2.1a2.1,2.1,0,0,0,0,4.2H6.3V4.2A2.1,2.1,0,0,0,4.2,2.1Z" transform="translate(2 2)" fill="#6a7581"/>
+  </g>
+</svg>

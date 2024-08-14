@@ -1,0 +1,10 @@
+{
+    "documentStoreOptions": ["Document Store", "Share Point", "One Drive"],
+    "documentLocationOptions": ["Document Location", "Another Option", "Another Option"],
+    "documentOptions": ["Document1", "Document2", "Document3", "Document4"],
+    "containsOptions": ["Document Classification", "Location", "Devision"],
+    "withOptions": ["Confidential", "Private", "Public"],
+    "thenOptions": ["Anonymize", "Tokenize", "Encrypt", "De-identification"],
+    "roleOptions": ["Role1", "Role2", "Role3", "Role4"],
+    "atOptions": ["All times", "one Day", "Aone Week", "All Month"]
+  }
