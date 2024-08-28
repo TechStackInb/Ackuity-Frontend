@@ -46,20 +46,20 @@ const Analytics = () => {
   const [activeTab, setActiveTab] = useState(0);
   return (
     <div className="page-center p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  font-poppins font-semibold ">
         {pieChartData.map((chart, index) => (
           <PieCharts key={index} title={chart.title} data={chart.data} />
         ))}
       </div>
 
       <div className="mt-8 bg-customGreen shadow p-4 rounded-lg">
-        <p className="text-center text-customWhite">Inventory Information</p>
+        <p className="text-center text-2xl text-customWhite font-poppins font-semibold ">Inventory Information</p>
       </div>
       <div className="flex flex-wrap justify-around border-b-2 mb-4">
         {tabs.map((tab, index) => (
           <button
             key={index}
-            className={`py-2 px-4 text-center ${
+            className={`py-2 px-4 text-center font-poppins font-semibold ${
               index === activeTab ? "border-b-2 border-green-500" : ""
             }`}
             onClick={() => setActiveTab(index)}

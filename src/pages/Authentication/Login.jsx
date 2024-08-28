@@ -2,13 +2,14 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../services/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [backendError, setBackendError] = useState("");
-  const { login, setData } = useContext(AuthContext);
+  const { login, setData } = useContext(AuthContext); // Access setData
   const navigate = useNavigate();
 
   const validate = () => {
@@ -28,14 +29,14 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/auth/login",
+        `${BASE_URL}/api/auth/login`,
         { email, password },
         { withCredentials: true }
       );
 
       if (res.data.message === "Logged in successfully") {
         const tokenExpiry = res.data.tokenExpiry;
-        login(tokenExpiry, email);
+        login(tokenExpiry, email); // Call login method from context
 
         // Fetch data after successful login
         // const dataRes = await axios.get("http://localhost:3000/api/data", {
@@ -101,6 +102,27 @@ const Login = () => {
           </div>
         </div>
       </div>
+      {/* 
+      <div>
+        <label>Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {errors.email && <p>{errors.email}</p>}
+      </div>
+      <div>
+        <label>Password:</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {errors.password && <p>{errors.password}</p>}
+      </div>
+      <button type="submit">Login</button>
+      {backendError && <p>{backendError}</p>} */}
     </form>
   );
 };

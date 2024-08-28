@@ -1,6 +1,7 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import React, { createContext, useEffect, useState } from "react";
+import { BASE_URL } from "../services/api";
 
 // Create the context
 export const AuthContext = createContext();
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await axios.post(
-        "http://localhost:3000/api/auth/logout",
+        `${BASE_URL}/api/auth/logout`,
         {},
         { withCredentials: true }
       );
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }) => {
           // Token is expired, request a new one
           try {
             const response = await axios.post(
-              "http://localhost:3000/api/auth/refresh",
+              `${BASE_URL}/api/auth/refresh`,
               {},
               { withCredentials: true }
             );

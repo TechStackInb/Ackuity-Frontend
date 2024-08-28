@@ -84,6 +84,7 @@ const FunctionCalling = () => {
                 height={250}
                 data={data1}
                 margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                barSize={40}
               >
                 <XAxis dataKey="day" />
                 <YAxis />
@@ -97,6 +98,7 @@ const FunctionCalling = () => {
               <BarChart
                 data={data}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                barSize={50}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -114,7 +116,9 @@ const FunctionCalling = () => {
         </div>
       </div>
       <div className="mt-8">
-        <h3 className="text-center mb-4 font-bold text-2xl">Top Items</h3>
+        <h3 className="text-center mb-4 font-bold text-2xl text-white">
+          Top Items
+        </h3>
         <div className="flex flex-col md:flex-row gap-5">
           <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-white shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
@@ -122,6 +126,7 @@ const FunctionCalling = () => {
                 data={topItemsServed}
                 layout="vertical"
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                barSize={30}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
@@ -138,6 +143,7 @@ const FunctionCalling = () => {
                 data={topItemsDenied}
                 layout="vertical"
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                barSize={30}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
@@ -158,6 +164,7 @@ const FunctionCalling = () => {
                 data={topItemTransformed}
                 layout="vertical"
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                barSize={30}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
@@ -178,6 +185,7 @@ const FunctionCalling = () => {
                 data={topItemsThreats}
                 layout="vertical"
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                barSize={30}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
