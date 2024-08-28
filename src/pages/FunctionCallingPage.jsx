@@ -21,6 +21,12 @@ const FunctionCalling = () => {
   const [isClickedAdd, setIsClickedAdd] = useState(false);
   const [sections, setSections] = useState([{ id: Date.now(), values: {} }]);
 
+  const [selected, setSelected] = useState(null);
+
+  const handleClick = (item) => {
+    setSelected(selected === item ? null : item);
+  };
+
   const [isSectionVisible, setSectionVisible] = useState(sections.length > 0);
 
   const [isContentVisible, setContentVisible] = useState(true);
@@ -117,19 +123,19 @@ const FunctionCalling = () => {
 
       <div className="bg-customBlack py-8 rounded-lg shadow-md mt-4">
         <div className="page-center">
-          <div className="flex flex-wrap justify-around px-4">
+          <div className="flex flex-wrap justify-around px-4 py-4">
             {/* First Column */}
             <div className="flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[26.333333%] xl:basis-[26.333333%] 2xl:basis-[26.333333%] ipad-query">
-              <div className="flex items-baseline mb-2">
+              <div className="flex items-baseline mb-4">
                 <span
-                  className="text-customGreen font-poppins font-semibold text-sm"
+                  className="text-customGreen font-poppins font-semibold text-sm ipdadleft"
                   style={{ marginLeft: "35px" }}
                 >
                   Query
                 </span>
               </div>
               <div className="flex items-baseline">
-                <span className="text-white mr-2 ">Run</span>
+                <span className="text-white mr-2 ipadhide">Run</span>
                 <PrivacyCustomDropdown
                   options={data.netSalesOptions || []}
                   placeholder="Net Sales orders"
@@ -147,16 +153,16 @@ const FunctionCalling = () => {
 
             {/* Second Column */}
             <div className="flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[26.333333%] xl:basis-[26.333333%] 2xl:basis-[26.333333%] mt-4 sm:mt-0 ipad-query">
-              <div className="flex items-baseline mb-2">
+              <div className="flex items-baseline mb-4">
                 <span
-                  className="text-customGreen font-poppins font-semibold text-sm"
+                  className="text-customGreen font-poppins font-semibold text-sm ipdadleft"
                   style={{ marginLeft: "31px" }}
                 >
                   Target Application
                 </span>
               </div>
               <div className="flex items-baseline">
-                <span className="text-white mr-2 ">On</span>
+                <span className="text-white mr-2 ipadhide ">On</span>
                 <PrivacyCustomDropdown
                   options={data.targetLocationOptions || []}
                   placeholder="Salesforce"
@@ -174,16 +180,16 @@ const FunctionCalling = () => {
 
             {/* Third Column */}
             <div className="flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[26.333333%] xl:basis-[26.333333%] 2xl:basis-[26.333333%] mt-4 sm:mt-0 ipad-query">
-              <div className="flex items-baseline mb-2">
+              <div className="flex items-baseline mb-4">
                 <span
-                  className="text-customGreen font-poppins font-semibold text-sm"
+                  className="text-customGreen font-poppins font-semibold text-sm ipdadleft"
                   style={{ marginLeft: "46px" }}
                 >
                   GenAPI App
                 </span>
               </div>
               <div className="flex items-baseline">
-                <span className="text-white mr-2 ">From</span>
+                <span className="text-white mr-2 ipadhide">From</span>
                 <PrivacyCustomDropdown
                   options={data.genAiAppOptions || []}
                   placeholder="App one"
@@ -196,7 +202,7 @@ const FunctionCalling = () => {
                   // paddingLeft={"1rem"}
                   // paddingRight={"1rem"}
                 />
-                <span className="text-white ml-2 ">For</span>
+                <span className="text-white ml-2 ipadhide">For</span>
               </div>
             </div>
           </div>
@@ -223,99 +229,12 @@ const FunctionCalling = () => {
       </div>
 
       {isContentVisible && (
-        // <div className="p-4 bg-customBlack opacity-100 ">
-        //   <div className="page-center ">
-        //     <div className="p-4 mt-6">
-        //       <div className="flex flex-col space-y-4">
-        //         {/* Content Section */}
-        //         <div className="flex flex-wrap  p-2 rounded-lg justify-between">
-        //           <div className="flex flex-col basis-[20%]">
-        //             <label className=" py-3.5 text-[#31E48F] text-lg font-semibold">
-        //               Select API Data
-        //             </label>
-        //             <div>
-        //               <Dropdown
-        //                 items={Sales}
-        //                 iconColor="text-customIconColor"
-        //                 backgroundColor="bg-black"
-        //                 textColor="text-white"
-        //                 onItemClick={(subItemName) => {
-        //                   console.log("Selected:", subItemName);
-        //                 }}
-        //               />
-        //             </div>
-        //           </div>
-        //           <div className="flex flex-col basis-[20%] ">
-        //             <label className=" py-3.5 text-[#31E48F] text-lg font-semibold">
-        //               Description
-        //             </label>
-        //             <div className="bg-black pb-[96px] pt-[10px] pl-[15px] pr-[9px] text-customWhite text-base">
-        //               Retrieve sales opportunities
-        //             </div>
-        //             {/* <div className="bg-black px-4 py-2 text-customWhite"></div>
-        //           <div className="bg-black px-4 py-2 text-customWhite"></div>
-        //           <div className="bg-black px-4 py-2 text-customWhite"></div>
-        //           <div className="bg-black px-4 py-2 text-customWhite"></div> */}
-        //           </div>
-
-        //           <div className="flex flex-col basis-[59%]">
-        //             <label className=" py-3.5 text-[#31E48F] text-lg font-semibold">
-        //               Data Fields
-        //             </label>
-        //             <div className="bg-black pt-[22px] pb-[20px] pl-[30px]">
-        //               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">
-        //                     Opportunity Name
-        //                   </span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Lead Source</span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Close_Date</span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Account Name</span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Amount</span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Age</span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Type</span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Probability</span>
-        //                 </label>
-        //                 <label className="flex items-center space-x-2">
-        //                   <input type="checkbox" className="custom-checkbox" />
-        //                   <span className="text-customWhite">Created_Date</span>
-        //                 </label>
-        //               </div>
-        //             </div>
-        //           </div>
-        //         </div>
-        //       </div>
-        //     </div>
-        //   </div>
-        // </div>
         <div className="p-4 bg-customBlack opacity-100">
           <div className="page-center">
             <div className="p-4 mt-6">
               <div className="flex flex-col space-y-4">
                 <div className="flex flex-wrap p-2 rounded-lg justify-between">
-                  <div className="flex flex-col w-full sm:w-full md:w-full lg:w-[20%] xl:w-[20%] 2xl:w-[20%] mb-4 md:mb-0 ipad-width">
+                  <div className="flex flex-col w-full sm:w-full md:w-full lg:w-[19%] xl:w-[19%] 2xl:w-[19%] mb-4 md:mb-0 ipad-width">
                     <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
                       Select API Data
                     </label>
@@ -331,7 +250,7 @@ const FunctionCalling = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col w-full sm:w-full  md:w-full lg:w-[29%] xl:w-[29%] 2xl:w-[29%]  mb-4 md:mb-0 pl-[2px] pr-[2px] ipad-width">
+                  <div className="flex flex-col w-full sm:w-full  md:w-full lg:w-[25%] xl:w-[25%] 2xl:w-[25%]  mb-4 md:mb-0 pl-[2px] pr-[2px] ipad-width">
                     <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
                       Description
                     </label>
@@ -339,12 +258,12 @@ const FunctionCalling = () => {
                       Retrieve sales opportunities
                     </div>
                   </div>
-                  <div className="flex flex-col w-full sm:w-full  md:w-full lg:w-[51%] xl:w-[51%] 2xl:w-[51%] ipad-width">
+                  <div className="flex flex-col w-full sm:w-full  md:w-full lg:w-[56%] xl:w-[56%] 2xl:w-[56%] ipad-width">
                     <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
                       Data Fields
                     </label>
                     <div className="bg-black pt-[22px] pb-[20px] pl-[30px]">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 ">
                         <label className="flex items-center space-x-2">
                           <input type="checkbox" className="custom-checkbox" />
                           <span className="text-customWhite font-poppins text-sizess">
@@ -477,12 +396,36 @@ const FunctionCalling = () => {
                               <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                 Read
                               </td>
-                              <td className="border border-customBorderColor text-customWhite bg-black">
+                              {/* <td className="border border-customBorderColor text-customWhite bg-black">
                                 <div className="flex flex-col">
                                   <span className="p-2 bg-[#0a854b] border border-customBorderColor font-poppins">
                                     Sales NA
                                   </span>
                                   <span className="p-2 mt-2 bg-[#0a854b] border border-customBorderColor font-poppins">
+                                    Management
+                                  </span>
+                                </div>
+                              </td> */}
+                              <td className="border border-customBorderColor text-customWhite bg-black">
+                                <div className="flex flex-col">
+                                  <span
+                                    onClick={() => handleClick("sales")}
+                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
+                                      selected === "sales"
+                                        ? "text-white"
+                                        : "bg-[#0a854b]"
+                                    }`}
+                                  >
+                                    Sales NA
+                                  </span>
+                                  <span
+                                    onClick={() => handleClick("management")}
+                                    className={`p-2 mt-2 cursor-pointer border border-customBorderColor font-poppins ${
+                                      selected === "management"
+                                        ? "text-white"
+                                        : "bg-[#0a854b]"
+                                    }`}
+                                  >
                                     Management
                                   </span>
                                 </div>
@@ -543,7 +486,7 @@ const FunctionCalling = () => {
                           </thead>
                           <tbody>
                             <tr>
-                              <td className=" py-2 border border-customBorderColor text-customWhite bg-black">
+                              <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black">
                                 <PrivacyCustomDropdown
                                   options={data.privacyValueOption || []}
                                   width={"169px "}
@@ -560,7 +503,7 @@ const FunctionCalling = () => {
                                   }
                                 />
                               </td>
-                              <td className=" py-2 border border-customBorderColor text-customWhite bg-black">
+                              <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black">
                                 <PrivacyCustomDropdown
                                   options={data.privacyActionOption || []}
                                   placeholder="None"
@@ -577,7 +520,7 @@ const FunctionCalling = () => {
                                   }
                                 />
                               </td>
-                              <td className=" py-2 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
                             <tr>
                               <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
@@ -686,26 +629,6 @@ const FunctionCalling = () => {
                   </div>
                 </div>
 
-                {/* <div className="flex justify-end text-end gap-2 px-4 py-4">
-                <button
-                  className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded  hover:bg-black  "
-                  onClick={addSection}
-                >
-                  <FontAwesomeIcon
-                    className=" transition ease-out duration-300 hover:transform hover:scale-110 w-7 h-7"
-                    icon={faPlus}
-                  />
-                </button>
-                <button
-                  className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black transition ease-out duration-300"
-                  onClick={() => removeSection(section.id)}
-                >
-                  <FontAwesomeIcon
-                    className=" transition ease-out duration-300 hover:transform hover:scale-110 w-7 h-7"
-                    icon={faTrash}
-                  />
-                </button>
-              </div> */}
 
                 {sections.length === 1 ? (
                   <div className="flex justify-end text-end gap-2 px-4 py-4">
@@ -781,7 +704,7 @@ const FunctionCalling = () => {
         </span>
       </div>
 
-      <div className="bg-dropdownBackground p-4 shadow-md mt-4 rounded-t-lg ">
+      <div className="bg-dropdownBackground p-4 shadow-md mt-2 rounded-t-lg ">
         <div className="page-center">
           <div className="flex flex-col space-y-4">
             <h2 className="text-[#31E48F] text-xl font-poppins font-semibold px-4">
@@ -835,7 +758,7 @@ const FunctionCalling = () => {
                     Sales Opportunities
                   </td>
                   <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between spaceGaps">
                       <button className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
                         <FontAwesomeIcon
                           icon={faEdit}

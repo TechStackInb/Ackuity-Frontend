@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -9,19 +9,40 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import user from "./../../assets/user.png";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+// import { useAuth } from "../../contexts/AuthContext";
 
 const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   const navigate = useNavigate();
+
+  const { logout } = useContext(AuthContext);
+
+  const { authState } = useContext(AuthContext);
+  const { userEmail, data } = authState; // Access userEmail
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleLogout = () => {
-    console.log("first");
-    navigate("/");
+  // if (!userEmail)
+  //   return (
+  //     <div className="hidden lg:flex flex-col ml-4 text-customWhite">
+  //       <span className="text-xl font-poppins font-semibold">
+  //         Hello, {userEmail}
+  //       </span>
+  //       <span
+  //         className="font-normal text-sm font-poppins"
+  //         style={{ color: "#ffffffba" }}
+  //       >
+  //         Have a nice day
+  //       </span>
+  //     </div>
+  //   );
+
+  const handleLogout = async () => {
+    await logout(); // Call logout method from context
+    navigate("/login"); // Redirect to login page
   };
 
   return (
@@ -34,9 +55,22 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
-          <div className="hidden lg:flex flex-col ml-4 text-customWhite">
+          {userEmail && (  
+            <div className="hidden lg:flex flex-col ml-4 text-customWhite">
+              <span className="text-xl font-poppins font-semibold">
+                Hello, {userEmail}
+              </span>
+              <span
+                className="font-normal text-sm font-poppins"
+                style={{ color: "#ffffffba" }}
+              >
+                Have a nice day
+              </span>
+            </div>
+          )}
+          {/* <div className="hidden lg:flex flex-col ml-4 text-customWhite">
             <span className="text-xl font-poppins font-semibold">
-              Hello, Admin Name
+              Hello, {userEmail}
             </span>
             <span
               className="font-normal text-sm font-poppins"
@@ -44,7 +78,7 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
             >
               Have a nice day
             </span>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center lg:ml-auto space-x-4">
@@ -64,7 +98,7 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
               </div>
               <div className="flex flex-col text-left">
                 <span className="text-customWhite font-poppins font-semibold">
-                  Admin Name
+                  Hello,{userEmail}
                 </span>
                 <span
                   className="font-normal text-sm text-customWhite font-poppins"

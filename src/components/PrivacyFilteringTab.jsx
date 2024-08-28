@@ -10,18 +10,48 @@ import {
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/style.css";
 import CustomDropdown from "../components/CustomDropdown";
 import Modal from "../components/Model";
 import PrivacyCustomDropdown from "../components/PrivacyCustomDropdown";
+// import { useAuth } from "../contexts/AuthContext";
+// import axiosInstance from "../services/axiosInstance";
 
 const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const [isClickedAdd, setIsClickedAdd] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [sections, setSections] = useState([{ id: Date.now(), values: {} }]);
+  const [selectedOptions, setSelectedOptions] = useState({});
 
-  const handleDropdownClick = (sectionId, index) => {
+  // const { auth, loading } = useAuth();
+  // const [userData, setUserData] = useState(null);
+  // const [error, setError] = useState(null);
+
+  // useEffect(() => {
+  //   console.log("Auth state changed:", auth);
+  //   if (auth.token) {
+  //     fetchData();
+  //   } else {
+  //     console.log("No token found, skipping fetchData call.");
+  //   }
+  // }, [auth]);
+
+  // const fetchData = async () => {
+  //   try {
+  //     console.log("Attempting to fetch data...");
+  //     const response = await axiosInstance.get("/api/data");
+  //     console.log("Data fetched successfully:", response.data);
+  //     setUserData(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setError("Failed to fetch data. Please try again.");
+  //   }
+  // };
+
+  // console.log("UserData state:", userData);
+
+  const handleDropdownClick1 = (sectionId, index) => {
     setOpenDropdown(
       openDropdown === `${sectionId}-${index}` ? null : `${sectionId}-${index}`
     );
@@ -54,6 +84,15 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     setOpenDropdown(null); // Close the dropdown after selection
   };
 
+  const handleDropdownClick = (dropdownId) => {
+    setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
+  };
+
+  const handleOptionClick = (dropdownId, option) => {
+    setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
+    setOpenDropdown(null);
+  };
+
   const data = {
     documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
     documentLocationOptions: [
@@ -79,46 +118,42 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
       </div>
       <div className="bg-customBlack p-4 shadow-md">
         <div className="page-center">
-          {sections.map((section, sectionIndex) => (
-            <div key={section.id} className="flex flex-col space-y-4">
-              <div className="flex flex-wrap px-4 justify-between">
-                <div className="flex flex-col basis-full sm:basis-[49.333333%]">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
-                    Dcoument Store
-                  </label>
-                  <CustomDropdown
-                    options={data.documentStoreOptions || []}
-                    placeholder="Select Document Store"
-                    isOpen={openDropdown === `${section.id}-6`}
-                    onDropdownClick={() => handleDropdownClick(section.id, 6)}
-                    selectedOption={section.values["documentStore"] || ""}
-                    setSelectedOption={(value) =>
-                      handleDropdownChange(section.id, "documentStore", value)
-                    }
-                  />
-                </div>
-                <div className="flex flex-col basis-full sm:basis-[49.333333%]">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
-                    Dcoument Location
-                  </label>
-                  <CustomDropdown
-                    options={data.documentLocationOptions || []}
-                    placeholder="Select Document Location"
-                    isOpen={openDropdown === `${section.id}-7`}
-                    onDropdownClick={() => handleDropdownClick(section.id, 7)}
-                    selectedOption={section.values["documentLocation"] || ""}
-                    setSelectedOption={(value) =>
-                      handleDropdownChange(
-                        section.id,
-                        "documentLocation",
-                        value
-                      )
-                    }
-                  />
-                </div>
+          <div className="flex flex-col space-y-4">
+            <div className="flex flex-wrap px-4 justify-between">
+              <div className="flex flex-col basis-full sm:basis-[49.333333%]">
+                <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
+                  Document Store
+                </label>
+                <PrivacyCustomDropdown
+                  options={data.documentStoreOptions || []}
+                  placeholder="Select Document Store"
+                  isOpen={openDropdown === "documentStore"}
+                  onDropdownClick={() => handleDropdownClick("documentStore")}
+                  selectedOption={selectedOptions["documentStore"]}
+                  onOptionClick={(option) =>
+                    handleOptionClick("documentStore", option)
+                  }
+                />
+              </div>
+              <div className="flex flex-col basis-full sm:basis-[49.333333%]">
+                <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
+                  Document Location
+                </label>
+                <PrivacyCustomDropdown
+                  options={data.documentLocationOptions || []}
+                  placeholder="Select Document Location"
+                  isOpen={openDropdown === "documentLocationOptions"}
+                  onDropdownClick={() =>
+                    handleDropdownClick("documentLocationOptions")
+                  }
+                  selectedOption={selectedOptions["documentLocationOptions"]}
+                  onOptionClick={(option) =>
+                    handleOptionClick("documentLocationOptions", option)
+                  }
+                />
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -136,7 +171,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
                     style={{ marginLeft: "85px" }}
                   >
-                    Dcoument Name
+                    Document Name
                   </span>
                   <div className="flex items-baseline">
                     <span className="text-white mr-2 w-[100px] sm:text-right sm:mb-0 text-left mb-4  text-sm custmTextRight">
@@ -146,7 +181,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       options={data.documentOptions || []}
                       placeholder="Select Document"
                       isOpen={openDropdown === `${section.id}-0`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 0)}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 0)
+                      }
                       selectedOption={section.values["document"] || ""}
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "document", value)
@@ -172,7 +209,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       options={data.containsOptions || []}
                       placeholder="Select Contains"
                       isOpen={openDropdown === `${section.id}-1`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 1)}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 1)
+                      }
                       selectedOption={section.values["contains"] || ""}
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "contains", value)
@@ -197,7 +236,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       options={data.withOptions || []}
                       placeholder="Select With"
                       isOpen={openDropdown === `${section.id}-2`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 2)}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 2)
+                      }
                       selectedOption={section.values["with"] || ""}
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "with", value)
@@ -225,7 +266,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       options={data.thenOptions || []}
                       placeholder="Select Then"
                       isOpen={openDropdown === `${section.id}-3`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 3)}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 3)
+                      }
                       selectedOption={section.values["then"] || ""}
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "then", value)
@@ -250,7 +293,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       options={data.roleOptions || []}
                       placeholder="Select Role"
                       isOpen={openDropdown === `${section.id}-4`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 4)}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 4)
+                      }
                       selectedOption={section.values["role"] || ""}
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "role", value)
@@ -275,7 +320,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       options={data.atOptions || []}
                       placeholder="Select At"
                       isOpen={openDropdown === `${section.id}-5`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 5)}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 5)
+                      }
                       selectedOption={section.values["at"] || ""}
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "at", value)
@@ -382,39 +429,34 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     Policy Name
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    Target Application
+                    Document Store
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    GenAI Application
+                    Document Location
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    Business Function
+                    Document Name
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    API Name
-                  </th>
-                  <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    JSON Format
+                    Action
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-customTablebG">
                 <tr>
                   <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Secure Sales Opportunities API
+                    Secure RFP response templates
                   </td>
                   <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Salesforce
+                    Sharepoint
                   </td>
                   <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    App one
+                    Shared RFP Documents Website
                   </td>
                   <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Net Sales Order
+                    Banking_RFP_Response_Template1
                   </td>
-                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Sales Opportunities
-                  </td>
+
                   <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
                     <div className="flex items-center justify-between gap-[2px]">
                       <button className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
@@ -446,10 +488,8 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                   <td className="px-4 py-6 border border-customBorderColor"></td>
                   <td className="px-4 py-6 border border-customBorderColor"></td>
                   <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
                   <td className="px-4 py-6 border border-customBorderColor"></td>
                   <td className="px-4 py-6 border border-customBorderColor"></td>
                   <td className="px-4 py-6 border border-customBorderColor"></td>

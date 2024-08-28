@@ -1,29 +1,188 @@
 import {
-  faDeleteLeft,
   faDownload,
   faEdit,
   faEraser,
-  faMinusSquare,
   faPlus,
-  faPlusSquare,
   faTrash,
-  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../css/style.css";
 import CustomDropdown from "../components/CustomDropdown";
 import Modal from "../components/Model";
 import PrivacyCustomDropdown from "../components/PrivacyCustomDropdown";
+import { AuthContext } from "../contexts/AuthContext";
+import { BASE_URL } from "../services/api";
 
 const AttributeFilteringTab = ({ handleSavePolicy }) => {
-  const [activeTab, setActiveTab] = useState("Permissions");
   const [isClickedAdd, setIsClickedAdd] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [sections, setSections] = useState([{ id: Date.now(), values: {} }]);
+  const [selectedOptions, setSelectedOptions] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [policies, setPolicies] = useState([]);
+  const [isSaveSuccessful, setIsSaveSuccessful] = useState(false);
+  const [policyName, setPolicyName] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingPolicyId, setEditingPolicyId] = useState(null);
 
-  const handleDropdownClick = (sectionId, index) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Function to fetch policies
+  const fetchPolicies = async (page = 1) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/data/policyManagerAttribute?page=${page}&limit=10`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch policies");
+      }
+
+      const data = await response.json();
+      setPolicies(data.data);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error("Error fetching policies:", error);
+    }
+  };
+
+  // Call fetchPolicies after saving policy and also on component mount
+  useEffect(() => {
+    fetchPolicies(currentPage);
+  }, [currentPage]);
+
+  const handlePolicyNameChange = (event) => {
+    setPolicyName(event.target.value);
+  };
+
+  const openEditModal = (policyId) => {
+    // Find the policy with the given ID
+    const policyToEdit = policies.find((policy) => policy._id === policyId);
+
+    if (policyToEdit) {
+      // Set the policy data to state for editing
+      setPolicyName(policyToEdit.policyName);
+      setSelectedOptions({
+        documentStore: policyToEdit.documentStoreOptions,
+        documentLocationOptions: policyToEdit.documentLocationOptions,
+      });
+
+      setSections([
+        {
+          id: Date.now(),
+          values: {
+            documentOptions: policyToEdit.documentOptions,
+            containsOptions: policyToEdit.containsOptions,
+            withOptions: policyToEdit.withOptions,
+            thenOptions: policyToEdit.thenOptions,
+            roleOptions: policyToEdit.roleOptions,
+            atOptions: policyToEdit.atOptions,
+          },
+        },
+      ]);
+
+      setIsEditMode(true);
+      setEditingPolicyId(policyId);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleUpdatePolicy = async () => {
+    // Prepare the data to post
+    const policyData = {
+      policyName, // Include policyName
+      documentStoreOptions: selectedOptions["documentStore"] || "",
+      documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
+      documentOptions:
+        sections
+          .map((section) => section.values["documentOptions"])
+          .join(", ") || "",
+      containsOptions:
+        sections
+          .map((section) => section.values["containsOptions"])
+          .join(", ") || "",
+      withOptions:
+        sections.map((section) => section.values["withOptions"]).join(", ") ||
+        "",
+      thenOptions:
+        sections.map((section) => section.values["thenOptions"]).join(", ") ||
+        "",
+      roleOptions:
+        sections.map((section) => section.values["roleOptions"]).join(", ") ||
+        "",
+      atOptions:
+        sections.map((section) => section.values["atOptions"]).join(", ") || "",
+    };
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/data/policyManagerAttribute/${editingPolicyId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(policyData),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const result = await response.json();
+      console.log("Policy updated successfully:", result);
+
+      setIsSaveSuccessful(true);
+
+      // Fetch updated policies after successful update
+      await fetchPolicies(currentPage);
+
+      setTimeout(() => {
+        setIsSaveSuccessful(false);
+        closeModal();
+      }, 2000);
+    } catch (error) {
+      console.error("Error updating policy:", error);
+    }
+  };
+
+  const handleDeletePolicy = async (policyId) => {
+    if (window.confirm("Are you sure you want to delete this policy?")) {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/api/data/policyManagerAttribute/${policyId}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const result = await response.json();
+        console.log("Policy deleted successfully:", result);
+
+        // Fetch updated policies after successful delete
+        await fetchPolicies(currentPage);
+      } catch (error) {
+        console.error("Error deleting policy:", error);
+      }
+    }
+  };
+
+  const handleDropdownClick1 = (sectionId, index) => {
     setOpenDropdown(
       openDropdown === `${sectionId}-${index}` ? null : `${sectionId}-${index}`
     );
@@ -53,10 +212,19 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
           : section
       )
     );
-    setOpenDropdown(null); // Close the dropdown after selection
+    setOpenDropdown(null);
   };
 
-  const data = {
+  const handleDropdownClick = (dropdownId) => {
+    setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
+  };
+
+  const handleOptionClick = (dropdownId, option) => {
+    setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
+    setOpenDropdown(null);
+  };
+
+  const datas = {
     documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
     documentLocationOptions: [
       "Document Location",
@@ -64,63 +232,228 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       "Another Option",
     ],
     documentOptions: ["Document1", "Document2", "Document3", "Document4"],
-    containsOptions: ["Document Classification", "Location", "Devision"],
+    containsOptions: ["Document Classification", "Location", "Division"],
     withOptions: ["Confidential", "Private", "Public"],
     thenOptions: ["Anonymize", "Tokenize", "Encrypt", "De-identification"],
     roleOptions: ["Role1", "Role2", "Role3", "Role4"],
-    atOptions: ["All times", "one Day", "Aone Week", "All Month"],
+    atOptions: ["All times", "One Day", "One Week", "All Month"],
   };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setIsEditModalOpen(false);
+    setEditingPolicyId(null);
+    setPolicyName("");
+    setSelectedOptions({});
+    setSections([{ id: Date.now(), values: {} }]);
+  };
+
+  // const confirmSavePolicy = async () => {
+
+  //   const policyData = {
+  //     policyName,
+  //     documentStoreOptions: selectedOptions["documentStore"] || "",
+  //     documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
+  //     documentOptions:
+  //       sections
+  //         .map((section) => section.values["documentOptions"])
+  //         .join(", ") || "",
+  //     containsOptions:
+  //       sections
+  //         .map((section) => section.values["containsOptions"])
+  //         .join(", ") || "",
+  //     withOptions:
+  //       sections.map((section) => section.values["withOptions"]).join(", ") ||
+  //       "",
+  //     thenOptions:
+  //       sections.map((section) => section.values["thenOptions"]).join(", ") ||
+  //       "",
+  //     roleOptions:
+  //       sections.map((section) => section.values["roleOptions"]).join(", ") ||
+  //       "",
+  //     atOptions:
+  //       sections.map((section) => section.values["atOptions"]).join(", ") || "",
+  //   };
+
+  //   try {
+  //     const response = await fetch(
+  //       "http://localhost:3000/api/data/policyManagerAttribute",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(policyData),
+  //         credentials: "include",
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Success:", result);
+
+  //     // Set success state
+  //     setIsSaveSuccessful(true);
+
+  //     // Clear all dropdown selections and sections
+  //     setSections([{ id: Date.now(), values: {} }]);
+  //     setSelectedOptions({});
+  //     setPolicyName(""); // Clear the policy name
+
+  //     // Fetch updated policies after successful save
+  //     await fetchPolicies();
+
+  //     // Automatically close modal after 2 seconds
+  //     setTimeout(() => {
+  //       setIsSaveSuccessful(false); // Reset save success state
+  //       closeModal(); // Close modal after showing success message
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
+  const confirmSavePolicy = async () => {
+    try {
+      // Iterate over each section to save as a separate policy
+      for (const section of sections) {
+        const policyData = {
+          policyName,
+          documentStoreOptions: selectedOptions["documentStore"] || "",
+          documentLocationOptions:
+            selectedOptions["documentLocationOptions"] || "",
+          documentOptions: section.values["documentOptions"] || "",
+          containsOptions: section.values["containsOptions"] || "",
+          withOptions: section.values["withOptions"] || "",
+          thenOptions: section.values["thenOptions"] || "",
+          roleOptions: section.values["roleOptions"] || "",
+          atOptions: section.values["atOptions"] || "",
+        };
+
+        const response = await fetch(
+          `${BASE_URL}/api/data/policyManagerAttribute`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(policyData),
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const result = await response.json();
+        console.log("Policy saved successfully:", result);
+      }
+
+      setIsSaveSuccessful(true);
+
+      // Clear all dropdown selections and sections
+      setSections([{ id: Date.now(), values: {} }]);
+      setSelectedOptions({});
+      setPolicyName("");
+
+      // Fetch updated policies after successful save
+      await fetchPolicies();
+
+      // Automatically close modal after 2 seconds
+      setTimeout(() => {
+        setIsSaveSuccessful(false);
+        closeModal();
+      }, 2000);
+    } catch (error) {
+      console.error("Error saving policies:", error);
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handleDownloadPolicy = (policyId) => {
+    const policy = policies.find((p) => p._id === policyId);
+
+    if (!policy) {
+      console.error("Policy not found");
+      return;
+    }
+
+    const blob = new Blob([JSON.stringify(policy, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${policy.policyName || "policy"}.json`;
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
-      <div className="bg-dropdownBackground p-4 shadow-md rounded-t-lg">
+      {/* <div className="bg-dropdownBackground p-4 shadow-md rounded-t-lg">
         <div className="flex flex-col space-y-4">
           <h2 className="text-[#31E48F] text-lg font-poppins font-semibold px-4">
             New Selector
           </h2>
         </div>
-      </div>
+      </div> */}
       <div className="bg-customBlack p-4 shadow-md">
         <div className="page-center">
-          {sections.map((section, sectionIndex) => (
-            <div key={section.id} className="flex flex-col space-y-4">
-              <div className="flex flex-wrap px-4 justify-between">
-                <div className="flex flex-col basis-full sm:basis-[49.333333%]">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
-                    Dcoument Store
-                  </label>
-                  <CustomDropdown
-                    options={data.documentStoreOptions || []}
-                    placeholder="Select Document Store"
-                    isOpen={openDropdown === `${section.id}-6`}
-                    onDropdownClick={() => handleDropdownClick(section.id, 6)}
-                    selectedOption={section.values["documentStore"] || ""}
-                    setSelectedOption={(value) =>
-                      handleDropdownChange(section.id, "documentStore", value)
-                    }
-                  />
-                </div>
-                <div className="flex flex-col basis-full sm:basis-[49.333333%]">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
-                    Dcoument Location
-                  </label>
-                  <CustomDropdown
-                    options={data.documentLocationOptions || []}
-                    placeholder="Select Document Location"
-                    isOpen={openDropdown === `${section.id}-7`}
-                    onDropdownClick={() => handleDropdownClick(section.id, 7)}
-                    selectedOption={section.values["documentLocation"] || ""}
-                    setSelectedOption={(value) =>
-                      handleDropdownChange(
-                        section.id,
-                        "documentLocation",
-                        value
-                      )
-                    }
-                  />
-                </div>
+          <div className="flex flex-col space-y-4">
+            <div className="flex flex-wrap px-4 justify-between">
+              <div className="flex flex-col basis-full sm:basis-[49.333333%]">
+                <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
+                  Document Store
+                </label>
+                <PrivacyCustomDropdown
+                  options={datas.documentStoreOptions || []}
+                  placeholder="Select Document Store"
+                  isOpen={openDropdown === "documentStore"}
+                  onDropdownClick={() => handleDropdownClick("documentStore")}
+                  selectedOption={selectedOptions["documentStore"]}
+                  onOptionClick={(option) =>
+                    handleOptionClick("documentStore", option)
+                  }
+                />
+              </div>
+              <div className="flex flex-col basis-full sm:basis-[49.333333%]">
+                <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
+                  Document Location
+                </label>
+                <PrivacyCustomDropdown
+                  options={datas.documentLocationOptions || []}
+                  placeholder="Select Document Location"
+                  isOpen={openDropdown === "documentLocationOptions"}
+                  onDropdownClick={() =>
+                    handleDropdownClick("documentLocationOptions")
+                  }
+                  selectedOption={selectedOptions["documentLocationOptions"]}
+                  onOptionClick={(option) =>
+                    handleOptionClick("documentLocationOptions", option)
+                  }
+                />
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -138,20 +471,26 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
                     style={{ marginLeft: "85px" }}
                   >
-                    Dcoument Name
+                    Document Name
                   </span>
                   <div className="flex items-baseline">
                     <span className="text-white mr-2 w-[100px] sm:text-right sm:mb-0 text-left mb-4  text-sm custmTextRight">
                       If Document
                     </span>
                     <CustomDropdown
-                      options={data.documentOptions || []}
+                      options={datas.documentOptions || []}
                       placeholder="Select Document"
                       isOpen={openDropdown === `${section.id}-0`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 0)}
-                      selectedOption={section.values["document"] || ""}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 0)
+                      }
+                      selectedOption={section.values["documentOptions"] || ""}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "document", value)
+                        handleDropdownChange(
+                          section.id,
+                          "documentOptions",
+                          value
+                        )
                       }
                     />
                   </div>
@@ -171,13 +510,19 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       Contains
                     </span>
                     <CustomDropdown
-                      options={data.containsOptions || []}
+                      options={datas.containsOptions || []}
                       placeholder="Select Contains"
                       isOpen={openDropdown === `${section.id}-1`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 1)}
-                      selectedOption={section.values["contains"] || ""}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 1)
+                      }
+                      selectedOption={section.values["containsOptions"] || ""}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "contains", value)
+                        handleDropdownChange(
+                          section.id,
+                          "containsOptions",
+                          value
+                        )
                       }
                     />
                   </div>
@@ -196,13 +541,15 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       With
                     </span>
                     <CustomDropdown
-                      options={data.withOptions || []}
+                      options={datas.withOptions || []}
                       placeholder="Select With"
                       isOpen={openDropdown === `${section.id}-2`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 2)}
-                      selectedOption={section.values["with"] || ""}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 2)
+                      }
+                      selectedOption={section.values["withOptions"] || ""}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "with", value)
+                        handleDropdownChange(section.id, "withOptions", value)
                       }
                     />
                   </div>
@@ -224,13 +571,15 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       Then
                     </span>
                     <CustomDropdown
-                      options={data.thenOptions || []}
+                      options={datas.thenOptions || []}
                       placeholder="Select Then"
                       isOpen={openDropdown === `${section.id}-3`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 3)}
-                      selectedOption={section.values["then"] || ""}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 3)
+                      }
+                      selectedOption={section.values["thenOptions"] || ""}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "then", value)
+                        handleDropdownChange(section.id, "thenOptions", value)
                       }
                     />
                   </div>
@@ -249,13 +598,15 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       Role
                     </span>
                     <CustomDropdown
-                      options={data.roleOptions || []}
+                      options={datas.roleOptions || []}
                       placeholder="Select Role"
                       isOpen={openDropdown === `${section.id}-4`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 4)}
-                      selectedOption={section.values["role"] || ""}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 4)
+                      }
+                      selectedOption={section.values["roleOptions"] || ""}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "role", value)
+                        handleDropdownChange(section.id, "roleOptions", value)
                       }
                     />
                   </div>
@@ -274,13 +625,15 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       At
                     </span>
                     <CustomDropdown
-                      options={data.atOptions || []}
+                      options={datas.atOptions || []}
                       placeholder="Select At"
                       isOpen={openDropdown === `${section.id}-5`}
-                      onDropdownClick={() => handleDropdownClick(section.id, 5)}
-                      selectedOption={section.values["at"] || ""}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 5)
+                      }
+                      selectedOption={section.values["atOptions"] || ""}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "at", value)
+                        handleDropdownChange(section.id, "atOptions", value)
                       }
                     />
                   </div>
@@ -343,7 +696,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
         className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins  ${
           isClickedAdd ? "hover:bg-customGreen hover:text-white" : ""
         }`}
-        onClick={handleSavePolicy}
+        onClick={openModal}
       >
         <span
           className="transition-transform duration-300 ease-out"
@@ -363,7 +716,89 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
           SAVE POLICY
         </span>
       </div>
-
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 className="text-lg font-semibold mb-4">Confirm Policy Save</h2>
+            {isSaveSuccessful ? (
+              <p className="text-green-500">Policy saved successfully!</p>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <label
+                    htmlFor="policyName"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Policy Name
+                  </label>
+                  <input
+                    type="text"
+                    id="policyName"
+                    value={policyName}
+                    onChange={handlePolicyNameChange}
+                    className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-black focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    placeholder="Enter policy name"
+                  />
+                </div>
+                <div className="mb-4">
+                  <p className="text-sm mb-2">
+                    <strong>Selected Options:</strong>
+                  </p>
+                  <ul>
+                    <li>
+                      <strong>Document Store:</strong>{" "}
+                      {selectedOptions["documentStore"]}
+                    </li>
+                    <li>
+                      <strong>Document Location:</strong>{" "}
+                      {selectedOptions["documentLocationOptions"]}
+                    </li>
+                    {sections.map((section) => (
+                      <li key={section.id}>
+                        <div>
+                          <strong>Document:</strong>{" "}
+                          {section.values["documentOptions"]}
+                        </div>
+                        <div>
+                          <strong>Contains:</strong>{" "}
+                          {section.values["containsOptions"]}
+                        </div>
+                        <div>
+                          <strong>With:</strong> {section.values["withOptions"]}
+                        </div>
+                        <div>
+                          <strong>Action:</strong>{" "}
+                          {section.values["thenOptions"]}
+                        </div>
+                        <div>
+                          <strong>Role:</strong> {section.values["roleOptions"]}
+                        </div>
+                        <div>
+                          <strong>At:</strong> {section.values["atOptions"]}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    className="bg-red-500 text-white py-2 px-4 rounded mr-2"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-green-500 text-white py-2 px-4 rounded"
+                    onClick={confirmSavePolicy}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
       <div className="bg-dropdownBackground p-4 shadow-md mt-4 rounded-t-lg ">
         <div className="page-center">
           <div className="flex flex-col space-y-4">
@@ -384,84 +819,191 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                     Policy Name
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    Target Application
+                    Document Store
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    GenAI Application
+                    Document Location
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    Business Function
+                    Document Name
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    API Name
-                  </th>
-                  <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    JSON Format
+                    Action
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-customTablebG">
-                <tr>
-                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Secure Sales Opportunities API
-                  </td>
-                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Salesforce
-                  </td>
-                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    App one
-                  </td>
-                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Net Sales Order
-                  </td>
-                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                    Sales Opportunities
-                  </td>
-                  <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
-                    <div className="flex items-center justify-between gap-[2px]">
-                      <button className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
-                        <FontAwesomeIcon
-                          icon={faEdit}
-                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
-                        />
-                      </button>
+                {policies.map((policy) => (
+                  <tr key={policy._id}>
+                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                      {policy.policyName}
+                    </td>
+                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                      {policy.documentStoreOptions}
+                    </td>
+                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                      {policy.documentLocationOptions}
+                    </td>
+                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                      {policy.documentOptions}
+                    </td>
 
-                      <button className="bg-customBlack  text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
-                        />
-                      </button>
-
-                      <button className="bg-customBlack  text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
-                        />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                  <td className="px-4 py-6 border border-customBorderColor"></td>
-                </tr>
+                    <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
+                      <div className="flex items-center justify-between gap-[2px]">
+                        <button className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
+                          <FontAwesomeIcon
+                            icon={faEdit}
+                            className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                            onClick={() => openEditModal(policy._id)}
+                          />
+                        </button>
+                        <button className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
+                          <FontAwesomeIcon
+                            icon={faDownload}
+                            className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                            onClick={() => handleDownloadPolicy(policy._id)}
+                          />
+                        </button>
+                        <button className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen">
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                            onClick={() => handleDeletePolicy(policy._id)}
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
+      </div>
+
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 className="text-lg font-semibold mb-4">
+              {isEditMode ? "Edit Policy" : "Confirm Policy Save"}
+            </h2>
+            {isSaveSuccessful ? (
+              <p className="text-green-500">Policy updated successfully!</p>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <label
+                    htmlFor="policyName"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Policy Name
+                  </label>
+                  <input
+                    type="text"
+                    id="policyName"
+                    value={policyName}
+                    onChange={handlePolicyNameChange}
+                    className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-black focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    placeholder="Enter policy name"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
+                    Document Store
+                  </label>
+                  <PrivacyCustomDropdown
+                    options={datas.documentStoreOptions || []}
+                    placeholder="Select Document Store"
+                    isOpen={openDropdown === "documentStore"}
+                    onDropdownClick={() => handleDropdownClick("documentStore")}
+                    selectedOption={selectedOptions["documentStore"]}
+                    onOptionClick={(option) =>
+                      handleOptionClick("documentStore", option)
+                    }
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
+                    Document Location
+                  </label>
+                  <PrivacyCustomDropdown
+                    options={datas.documentLocationOptions || []}
+                    placeholder="Select Document Location"
+                    isOpen={openDropdown === "documentLocationOptions"}
+                    onDropdownClick={() =>
+                      handleDropdownClick("documentLocationOptions")
+                    }
+                    selectedOption={selectedOptions["documentLocationOptions"]}
+                    onOptionClick={(option) =>
+                      handleOptionClick("documentLocationOptions", option)
+                    }
+                  />
+                </div>
+                {sections.map((section, sectionIndex) => (
+                  <div key={section.id} className="mb-4">
+                    <label className="text-customGreen font-poppins font-semibold text-sm mb-4">
+                      Document Name
+                    </label>
+                    <CustomDropdown
+                      options={datas.documentOptions || []}
+                      placeholder="Select Document"
+                      isOpen={openDropdown === `${section.id}-0`}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 0)
+                      }
+                      selectedOption={section.values["documentOptions"] || ""}
+                      setSelectedOption={(value) =>
+                        handleDropdownChange(
+                          section.id,
+                          "documentOptions",
+                          value
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <button
+                    className="bg-red-500 text-white py-2 px-4 rounded mr-2"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-green-500 text-white py-2 px-4 rounded"
+                    onClick={
+                      isEditMode ? handleUpdatePolicy : confirmSavePolicy
+                    }
+                  >
+                    {isEditMode ? "Update Policy" : "Confirm"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="flex justify-end mt-4">
+        <button
+          className="px-4 py-2 mx-2 bg-gray-300 rounded"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span className="px-4 py-2 mx-2 bg-gray-100 rounded">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          className="px-4 py-2 mx-2 bg-gray-300 rounded"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
