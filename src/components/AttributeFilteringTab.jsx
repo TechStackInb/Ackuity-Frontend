@@ -98,7 +98,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   const handleUpdatePolicy = async () => {
     // Prepare the data to post
     const policyData = {
-      policyName, // Include policyName
+      policyName,
       documentStoreOptions: selectedOptions["documentStore"] || "",
       documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
       documentOptions:
@@ -253,73 +253,6 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     setSections([{ id: Date.now(), values: {} }]);
   };
 
-  // const confirmSavePolicy = async () => {
-
-  //   const policyData = {
-  //     policyName,
-  //     documentStoreOptions: selectedOptions["documentStore"] || "",
-  //     documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
-  //     documentOptions:
-  //       sections
-  //         .map((section) => section.values["documentOptions"])
-  //         .join(", ") || "",
-  //     containsOptions:
-  //       sections
-  //         .map((section) => section.values["containsOptions"])
-  //         .join(", ") || "",
-  //     withOptions:
-  //       sections.map((section) => section.values["withOptions"]).join(", ") ||
-  //       "",
-  //     thenOptions:
-  //       sections.map((section) => section.values["thenOptions"]).join(", ") ||
-  //       "",
-  //     roleOptions:
-  //       sections.map((section) => section.values["roleOptions"]).join(", ") ||
-  //       "",
-  //     atOptions:
-  //       sections.map((section) => section.values["atOptions"]).join(", ") || "",
-  //   };
-
-  //   try {
-  //     const response = await fetch(
-  //       "http://localhost:3000/api/data/policyManagerAttribute",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(policyData),
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     const result = await response.json();
-  //     console.log("Success:", result);
-
-  //     // Set success state
-  //     setIsSaveSuccessful(true);
-
-  //     // Clear all dropdown selections and sections
-  //     setSections([{ id: Date.now(), values: {} }]);
-  //     setSelectedOptions({});
-  //     setPolicyName(""); // Clear the policy name
-
-  //     // Fetch updated policies after successful save
-  //     await fetchPolicies();
-
-  //     // Automatically close modal after 2 seconds
-  //     setTimeout(() => {
-  //       setIsSaveSuccessful(false); // Reset save success state
-  //       closeModal(); // Close modal after showing success message
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // };
   const confirmSavePolicy = async () => {
     try {
       // Iterate over each section to save as a separate policy
@@ -359,7 +292,6 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
 
       setIsSaveSuccessful(true);
 
-      // Clear all dropdown selections and sections
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
       setPolicyName("");
@@ -367,7 +299,6 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       // Fetch updated policies after successful save
       await fetchPolicies();
 
-      // Automatically close modal after 2 seconds
       setTimeout(() => {
         setIsSaveSuccessful(false);
         closeModal();

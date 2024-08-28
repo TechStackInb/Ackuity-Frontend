@@ -68,22 +68,6 @@ const ThreatManagement = () => {
         </div>
       </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full mb-4">
-        {threatData.map((threat, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center p-6 bg-gradient-to-r from-green-400 to-blue-500 text-white border border-gray-300 rounded-xl shadow-lg transform transition duration-300 hover:scale-105 "
-          >
-            <div className="text-lg font-poppins font-semibold ">
-              {threat.type}
-            </div>
-            <div className="mt-2 text-3xl font-poppins font-semibold">
-              {threat.count}
-            </div>
-          </div>
-        ))}
-      </div> */}
-
       <div className="bg-customBlack shadow-md">
         <div className="page-center">
           <div className="overflow-x-auto">

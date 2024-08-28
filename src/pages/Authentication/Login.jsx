@@ -8,7 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [backendError, setBackendError] = useState("");
-  const { login, setData } = useContext(AuthContext); // Access setData
+  const { login, setData } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const validate = () => {
@@ -35,7 +35,7 @@ const Login = () => {
 
       if (res.data.message === "Logged in successfully") {
         const tokenExpiry = res.data.tokenExpiry;
-        login(tokenExpiry, email); // Call login method from context
+        login(tokenExpiry, email);
 
         // Fetch data after successful login
         // const dataRes = await axios.get("http://localhost:3000/api/data", {
@@ -101,27 +101,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-      {/* 
-      <div>
-        <label>Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {errors.email && <p>{errors.email}</p>}
-      </div>
-      <div>
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {errors.password && <p>{errors.password}</p>}
-      </div>
-      <button type="submit">Login</button>
-      {backendError && <p>{backendError}</p>} */}
     </form>
   );
 };
