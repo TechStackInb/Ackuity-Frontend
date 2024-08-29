@@ -2,27 +2,49 @@ import axios from "axios";
 import dayjs from "dayjs";
 import React, { createContext, useEffect, useState } from "react";
 import { BASE_URL } from "../services/api";
+import { Navigate, useNavigate } from "react-router-dom";
 
-// Create the context
 export const AuthContext = createContext();
 
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [authState, setAuthState] = useState({
     isLoggedIn: false,
-    tokenExpiry: null,
-    userEmail: null,
+    tokenExpiry: localStorage.getItem("tokenExpiry"),
+    userEmail: localStorage.getItem("userEmail"),
   });
 
-  // Handle login operation
-  const login = (tokenExpiry, email) => {
+  // Function to update state
+  const updateAuthState = (tokenExpiry, email) => {
     setAuthState({
       isLoggedIn: true,
-      tokenExpiry: tokenExpiry,
+      tokenExpiry,
       userEmail: email,
     });
     localStorage.setItem("tokenExpiry", tokenExpiry);
     localStorage.setItem("userEmail", email);
+  };
+
+  // Handle login operation
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/api/auth/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+
+      if (res.data.message === "Logged in successfully") {
+        updateAuthState(res.data.tokenExpiry, email);
+        return { success: true };
+      } else {
+        return { success: false, error: res.data.message || "Login failed" };
+      }
+    } catch (error) {
+      console.error("Something went wrong during login:", error);
+      return { success: false, error: "Something went wrong during login" };
+    }
   };
 
   // Handle logout operation
@@ -44,51 +66,103 @@ export const AuthProvider = ({ children }) => {
       console.error("Logout failed:", error);
     }
   };
+
+  // Axios interceptor for request
+  // useEffect(() => {
+  //   const interceptor = axios.interceptors.request.use(
+  //     async (config) => {
+  //       const tokenExpiry = authState.tokenExpiry;
+
+  //       if (tokenExpiry && dayjs(tokenExpiry).isBefore(dayjs())) {
+  //         try {
+  //           console.log("Token expired, requesting new token");
+  //           const response = await axios.post(
+  //             `${BASE_URL}/api/auth/refresh`,
+  //             {},
+  //             { withCredentials: true }
+  //           );
+  //           const { tokenExpiry: newTokenExpiry } = response.data;
+
+  //           console.log("Received new token expiry:", newTokenExpiry);
+  //           updateAuthState(newTokenExpiry, authState.userEmail);
+  //         } catch (error) {
+  //           console.error("Failed to refresh token:", error);
+  //           logout(); // If refresh fails, logout the user
+  //         }
+  //       }
+  //       return config;
+  //     },
+  //     (error) => Promise.reject(error)
+  //   );
+
+  //   return () => {
+  //     axios.interceptors.request.eject(interceptor);
+  //   };
+  // }, [authState.tokenExpiry]);
+
   // Axios interceptor for request
   useEffect(() => {
-    const interceptor = axios.interceptors.request.use(
-      async (config) => {
-        const tokenExpiry = authState.tokenExpiry;
+    const interceptor = axios.interceptors.response.use(
+      (response) => {
+        // If the response is successful, return it
+        return response;
+      },
+      async (error) => {
+        const originalRequest = error.config;
 
-        if (tokenExpiry && dayjs(tokenExpiry).isBefore(dayjs())) {
-          // Token is expired, request a new one
-          try {
-            const response = await axios.post(
-              `${BASE_URL}/api/auth/refresh`,
-              {},
-              { withCredentials: true }
-            );
+        if (error.response && error.response.status === 403) {
+          const errorMessage = error.response.data.message;
 
-            const { tokenExpiry: newTokenExpiry } = response.data;
-
-            setAuthState((prevState) => ({
-              ...prevState,
-              tokenExpiry: newTokenExpiry,
-            }));
-
-            localStorage.setItem("tokenExpiry", newTokenExpiry);
-          } catch (error) {
-            console.error("Failed to refresh token:", error);
-            logout(); // If refresh fails, logout the user
+          if (errorMessage === "Not authorized, no token") {
+            console.warn("Access denied, redirecting to login.");
+            setIsRefreshing(false);
+            logout();
+            return Promise.reject(error);
           }
         }
-        return config;
-      },
-      (error) => Promise.reject(error)
+        return Promise.reject(error);
+      }
     );
 
     return () => {
-      axios.interceptors.request.eject(interceptor);
+      axios.interceptors.response.eject(interceptor);
     };
-  }, [authState.tokenExpiry]);
+  }, [navigate]);
 
-  // Set data
-  // const setData = (data) => {
-  //   setAuthState((prevState) => ({
-  //     ...prevState,
-  //     data,
-  //   }));
-  // };
+  // Handle refresh token operation
+  const refreshToken = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/auth/refresh`,
+        {},
+        { withCredentials: true }
+      );
+
+      const { tokenExpiry: newTokenExpiry, userEmail } = response.data;
+      console.log("Received new token expiry:", newTokenExpiry);
+
+      // Update the auth state with the new token expiry
+      updateAuthState(newTokenExpiry, userEmail);
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      logout();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // Check token expiry on component mount and refresh if needed
+  useEffect(() => {
+    if (authState.isLoggedIn) {
+      const tokenExpiry = authState.tokenExpiry;
+      if (tokenExpiry && dayjs(tokenExpiry).isBefore(dayjs())) {
+        refreshToken();
+      }
+    }
+  }, [authState.isLoggedIn, authState.tokenExpiry]);
 
   return (
     <AuthContext.Provider value={{ authState, login, logout }}>

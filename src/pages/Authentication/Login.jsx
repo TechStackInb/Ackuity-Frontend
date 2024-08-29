@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [backendError, setBackendError] = useState("");
-  const { login, setData } = useContext(AuthContext); // Access setData
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const validate = () => {
@@ -28,25 +28,11 @@ const Login = () => {
     }
 
     try {
-      const res = await axios.post(
-        `${BASE_URL}/api/auth/login`,
-        { email, password },
-        { withCredentials: true }
-      );
-
-      if (res.data.message === "Logged in successfully") {
-        const tokenExpiry = res.data.tokenExpiry;
-        login(tokenExpiry, email); // Call login method from context
-
-        // Fetch data after successful login
-        // const dataRes = await axios.get("http://localhost:3000/api/data", {
-        //   withCredentials: true,
-        // });
-        // setData(dataRes.data); // Store data in context
-        // console.log(dataRes.data);
+      const response = await login(email, password);
+      if (response.success) {
         navigate("/dashboard");
       } else {
-        setBackendError(res.data.message || "Login failed");
+        setBackendError(response.error);
       }
     } catch (err) {
       setBackendError("Something went wrong");
@@ -86,9 +72,9 @@ const Login = () => {
                 <p className="text-red-500 text-sm">{errors.password}</p>
               )}
             </div>
-            {errors.global && (
-              <p className="text-red-500 text-sm">{errors.global}</p>
-            )}
+            {/* {backendError && (
+              <p className="text-red-500 text-sm">{backendError}</p>
+            )} */}
 
             <button
               className="w-full bg-blue-500 p-2 rounded hover:bg-blue-600 font-bold text-white"
@@ -96,33 +82,12 @@ const Login = () => {
             >
               Login
             </button>
-            {backendError && <p>{backendError}</p>}
-
-            <div className="text-right mt-4"></div>
+            {backendError && (
+              <p className="text-red-500 text-sm">{backendError}</p>
+            )}
           </div>
         </div>
       </div>
-      {/* 
-      <div>
-        <label>Email:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {errors.email && <p>{errors.email}</p>}
-      </div>
-      <div>
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {errors.password && <p>{errors.password}</p>}
-      </div>
-      <button type="submit">Login</button>
-      {backendError && <p>{backendError}</p>} */}
     </form>
   );
 };
