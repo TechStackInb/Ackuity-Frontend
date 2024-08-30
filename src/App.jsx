@@ -19,26 +19,7 @@ const App = () => {
   return (
     <ChartProvider>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <div className="flex h-screen overflow-hidden bg-customGray">
-              <Sidebar
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-              />
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <Header
-                  isSidebarOpen={isSidebarOpen}
-                  setIsSidebarOpen={setIsSidebarOpen}
-                />
-                <div className="flex-1 overflow-y-auto p-4">
-                  <ChartSection />
-                </div>
-              </div>
-            </div>
-          }
-        />
+        <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/dashboard"

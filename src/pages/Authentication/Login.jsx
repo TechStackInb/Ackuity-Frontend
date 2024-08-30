@@ -93,20 +93,16 @@
 // };
 
 // export default Login;
-import React, { useState, useContext } from "react";
-import axios from "axios";
-import { AuthContext } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../../services/api";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [backendError, setBackendError] = useState("");
-  const [loading, setLoading] = useState(false); // New state for loading
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   const validate = () => {
     const validationErrors = {};
@@ -115,30 +111,23 @@ const Login = () => {
     return validationErrors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setErrors({});
     setBackendError("");
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
+    // Simulate a loading state and navigation
     setLoading(true);
-
-    try {
-      const response = await login(email, password);
-      if (response.success) {
-        navigate("/dashboard");
-      } else {
-        setBackendError(response.error);
-      }
-    } catch (err) {
-      setBackendError("Something went wrong");
-    } finally {
+    setTimeout(() => {
       setLoading(false);
-    }
+      navigate("/dashboard"); // Navigate to the dashboard after successful "login"
+    }, 1000);
   };
 
   return (
