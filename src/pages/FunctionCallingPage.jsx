@@ -47,20 +47,12 @@ const FunctionCalling = () => {
   };
 
   const addSection = () => {
-    console.log(sections, "first");
+    // console.log(sections, "first");
     setSections([...sections, { id: Date.now(), values: {} }]);
   };
 
   const removeSection = (id) => {
     setSections(sections.filter((section) => section.id !== id));
-  };
-
-  const clearSection = (id) => {
-    setSections(
-      sections.map((section) =>
-        section.id === id ? { ...section, values: {} } : section
-      )
-    );
   };
 
   const handleDropdownClick = (dropdownId) => {
@@ -145,8 +137,6 @@ const FunctionCalling = () => {
                   onOptionClick={(option) =>
                     handleOptionClick("netSales", option)
                   }
-                  // paddingLeft={"1rem"}
-                  // paddingRight={"1rem"}
                 />
               </div>
             </div>
@@ -172,8 +162,6 @@ const FunctionCalling = () => {
                   onOptionClick={(option) =>
                     handleOptionClick("targetLocation", option)
                   }
-                  // paddingLeft={"1rem"}
-                  // paddingRight={"1rem"}
                 />
               </div>
             </div>
@@ -199,8 +187,6 @@ const FunctionCalling = () => {
                   onOptionClick={(option) =>
                     handleOptionClick("genAiApp", option)
                   }
-                  // paddingLeft={"1rem"}
-                  // paddingRight={"1rem"}
                 />
                 <span className="text-white ml-2 ipadhide">For</span>
               </div>
@@ -250,14 +236,18 @@ const FunctionCalling = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col w-full sm:w-full  md:w-full lg:w-[25%] xl:w-[25%] 2xl:w-[25%]  mb-4 md:mb-0 pl-[2px] pr-[2px] ipad-width">
+                  <div className="flex flex-col w-full sm:w-full md:w-full lg:w-[25%] xl:w-[25%] 2xl:w-[25%] mb-4 md:mb-0 pl-[2px] pr-[2px] ipad-width">
                     <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
                       Description
                     </label>
-                    <div className="bg-black pb-[96px] pt-[10px] pl-[15px] pr-[9px] text-customWhite text-base font-poppins text-sizess">
-                      Retrieve sales opportunities
-                    </div>
+
+                    <input
+                      type="text"
+                      placeholder="Retrieve sales opportunities"
+                      className="bg-black pb-[96px] pt-[10px] pl-[15px] pr-[9px] text-customWhite text-base font-poppins text-sizess"
+                    />
                   </div>
+
                   <div className="flex flex-col w-full sm:w-full  md:w-full lg:w-[56%] xl:w-[56%] 2xl:w-[56%] ipad-width">
                     <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
                       Data Fields
@@ -628,7 +618,6 @@ const FunctionCalling = () => {
                     </div>
                   </div>
                 </div>
-
 
                 {sections.length === 1 ? (
                   <div className="flex justify-end text-end gap-2 px-4 py-4">

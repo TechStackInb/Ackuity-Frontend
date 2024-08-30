@@ -41,8 +41,8 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
   //   );
 
   const handleLogout = async () => {
-    await logout(); // Call logout method from context
-    navigate("/login"); // Redirect to login page
+    await logout(); 
+    navigate("/login"); 
   };
 
   return (

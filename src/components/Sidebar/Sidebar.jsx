@@ -30,12 +30,14 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const handleSubItemClick = (chartName) => {
     setSelectedChart(chartName);
     setActiveItem(chartName);
+    window.scrollTo(0, 0);
   };
 
   const handleItemClick = (chartName) => {
     setSelectedChart(chartName);
     setActiveItem(chartName);
     setIsSidebarOpen(false);
+    window.scrollTo(0, 0);
   };
 
   const menuItems = [
@@ -87,7 +89,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       }`}
     >
       <div className="flex items-center justify-center p-4 lg:justify-left mb-4">
-        <img className="w-48" src={Logo} alt="logo" />
+        <a href="https://ackuity.ai/" className="flex items-center">
+          {/* Add your desired link path to the href attribute */}
+          <img className="w-48" src={Logo} alt="logo" />
+        </a>
         <button
           className="lg:hidden"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
