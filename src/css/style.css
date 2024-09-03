@@ -159,6 +159,24 @@ ul li:hover .dot-circle {
   text-align: right;
   /* width: 100px; */
 }
+
+/* Add this to your CSS file */
+.group:hover .btn-icon {
+  filter: brightness(0) invert(1);
+}
+
+.group:hover .text-white {
+  color: white;
+}
+
+
+.btn-icon {
+  transition: filter 0.3s ease;
+}
+
+.btn-icon:hover {
+  filter: brightness(0) invert(1);
+}
 @media (max-width: 1270px) {
   .sales {
     font-size: 13px;
@@ -203,5 +221,8 @@ ul li:hover .dot-circle {
   }
   .ipdadleft {
     margin-left: 0rem !important;
+  }
+  .ipad-threat {
+    flex-basis: 100% !important;
   }
 }

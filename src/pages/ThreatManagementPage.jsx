@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import {
+  faClock,
   faDownload,
   faEdit,
   faSave,
+  faSyncAlt,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -48,12 +50,38 @@ const ThreatManagement = () => {
           </h2>
         </div>
       </div>
-      <div className="bg-[#1e2432] p-6 rounded-lg">
-        <div className="flex flex-wrap gap-4">
+
+      {/* Divider line with buttons */}
+
+      <div className=" p-6 rounded-lg">
+        <div className="flex items-center ">
+          <div className="flex basis-[80%] justify-end gap-[10px]">
+            <button className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]">
+              <FontAwesomeIcon
+                icon={faSyncAlt}
+                className="mr-2 text-[#31B476] group-hover:text-white"
+              />
+              <span className="text-white">Refresh</span>
+            </button>
+
+            <button className="group flex items-center ">
+              <FontAwesomeIcon
+                icon={faClock}
+                className="mr-2 text-[#31B476] "
+              />
+              <span className="text-[#31B476]">Last 24 hours</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <div className="flex basis-[80%] border-t-2 border-[#091024dc]"></div>
+        </div>
+        <div className="flex flex-wrap gap-4 mt-4">
           {threatData.map((threat, index) => (
             <div
               key={index}
-              className="flex-1 min-w-[210px] flex flex-col items-center justify-between rounded-md overflow-hidden"
+              className="  flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[15%] xl:basis-[15%] 2xl:basis-[15%] items-center justify-between rounded-md overflow-hidden ipad-threat"
             >
               <div className="w-full bg-[#2a2f3a] p-2 text-center text-[#d1d5db] text-sm font-medium">
                 {threat.type}
@@ -115,7 +143,7 @@ const ThreatManagement = () => {
                     Affected User
                   </th>
                   <th className="px-2 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold text-sm">
-                    User
+                    Status
                   </th>
                   <th className="px-2 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold text-sm">
                     Assigned To
