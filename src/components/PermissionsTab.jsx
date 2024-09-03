@@ -462,6 +462,13 @@ function PermissionsTab() {
                   <td className="px-4 py-10 border border-customBorderColor bg-[#000000]"></td>
                   {/* <td className="px-4 py-6 border border-customBorderColor"></td> */}
                 </tr>
+                <tr>
+                  <td className="px-4 py-10 border border-customBorderColor bg-[#000000]"></td>
+                  <td className="px-4 py-10 border border-customBorderColor bg-[#000000]"></td>
+                  <td className="px-4 py-10 border border-customBorderColor bg-[#000000]"></td>
+                  <td className="px-4 py-10 border border-customBorderColor bg-[#000000]"></td>
+                  {/* <td className="px-4 py-6 border border-customBorderColor"></td> */}
+                </tr>
               </tbody>
             </table>
           </div>

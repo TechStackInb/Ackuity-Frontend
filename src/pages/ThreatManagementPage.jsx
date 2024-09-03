@@ -37,6 +37,7 @@ const ThreatManagement = () => {
   return (
     <>
       <div className="p-4 bg-[#30b375] bg-bubble-pattern  rounded-md  mb-4 ">
+      <div className="page-center">
         <div className="page-center">
           <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
             Threat Management
@@ -49,11 +50,13 @@ const ThreatManagement = () => {
             </span> */}
           </h2>
         </div>
+        </div>
       </div>
 
       {/* Divider line with buttons */}
 
-      <div className=" p-6 rounded-lg">
+      <div className="rounded-lg">
+      <div className="page-center">
         <div className="flex items-center ">
           <div className="flex basis-[80%] justify-end gap-[10px]">
             <button className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]">
@@ -94,6 +97,7 @@ const ThreatManagement = () => {
             </div>
           ))}
         </div>
+        </div>
       </div>
 
       {/* <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full mb-4">
@@ -112,7 +116,7 @@ const ThreatManagement = () => {
         ))}
       </div> */}
 
-      <div className="bg-customBlack shadow-md">
+      <div className="bg-customBlack shadow-md mt-6">
         <div className="page-center">
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200">
