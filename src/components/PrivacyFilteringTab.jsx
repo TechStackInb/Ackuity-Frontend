@@ -6,7 +6,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../css/style.css";
 import CustomDropdown from "../components/CustomDropdown";
 import Modal from "../components/Model";
@@ -28,6 +28,13 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const [editingPolicyId, setEditingPolicyId] = useState(null);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const topRef = useRef(null);
 
   // Function to fetch policies
   const fetchPolicies = async (page = 1) => {
@@ -63,6 +70,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   };
 
   const openEditModal = (policyId) => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
     // Find the policy with the given ID
     const policyToEdit = policies.find((policy) => policy._id === policyId);
 
@@ -90,7 +98,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
       setIsEditMode(true);
       setEditingPolicyId(policyId);
-      setIsEditModalOpen(true);
     }
   };
 
@@ -142,10 +149,14 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
       const result = await response.json();
       console.log("Policy updated successfully:", result);
 
-      setIsSaveSuccessful(true);
+      setSuccessMessage("Policy updated successfully!");
+      setIsSuccessModalOpen(true);
 
       // Fetch updated policies after successful update
       await fetchPolicies(currentPage);
+
+      setSections([{ id: Date.now(), values: {} }]);
+      setSelectedOptions({});
 
       setTimeout(() => {
         setIsSaveSuccessful(false);
@@ -233,12 +244,36 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     setIsEditMode(false);
     setIsEditModalOpen(false);
     setEditingPolicyId(null);
-    setPolicyName("");
+    // setPolicyName("");
     // setSelectedOptions({});
     // setSections([{ id: Date.now(), values: {} }]);
   };
 
   const confirmSavePolicy = async () => {
+    setErrorMessage("");
+
+    // Validate the policy name and sections
+    if (!policyName.trim()) {
+      setErrorMessage("Policy Name is required.");
+      return;
+    }
+
+    for (const section of sections) {
+      if (
+        !selectedOptions["documentStore"] ||
+        !selectedOptions["documentLocationOptions"] ||
+        !section.values["documentOptions"] ||
+        !section.values["containsOptions"] ||
+        !section.values["withOptions"] ||
+        !section.values["thenOptions"] ||
+        !section.values["roleOptions"] ||
+        !section.values["atOptions"]
+      ) {
+        setErrorMessage("Please fill out all the fields in each section.");
+        return;
+      }
+    }
+
     try {
       const trimmedPolicyName = policyName.trim();
       // Iterate over each section to save as a separate policy
@@ -303,28 +338,42 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   };
 
   const handleDownloadPolicy = (policyId) => {
-    const policy = policies.find((p) => p._id === policyId);
+    const policyToDownload = policies.find((policy) => policy._id === policyId);
 
-    if (!policy) {
+    if (policyToDownload) {
+      const dataToDownload = JSON.stringify(policyToDownload, null, 2);
+      const blob = new Blob([dataToDownload], { type: "application/json" });
+      saveAs(blob, `policy_${policyId}.json`);
+
+      console.log("Data downloaded successfully");
+    } else {
       console.error("Policy not found");
-      return;
     }
-
-    const blob = new Blob([JSON.stringify(policy, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${policy.policyName || "policy"}.json`;
-    document.body.appendChild(link);
-    link.click();
-
-    // Clean up
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
+
+  // const handleDownloadPolicy = (policyId) => {
+  //   const policy = policies.find((p) => p._id === policyId);
+
+  //   if (!policy) {
+  //     console.error("Policy not found");
+  //     return;
+  //   }
+
+  //   const blob = new Blob([JSON.stringify(policy, null, 2)], {
+  //     type: "application/json",
+  //   });
+  //   const url = URL.createObjectURL(blob);
+
+  //   const link = document.createElement("a");
+  //   link.href = url;
+  //   link.download = `${policy.policyName || "policy"}.json`;
+  //   document.body.appendChild(link);
+  //   link.click();
+
+  //   // Clean up
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  // };
 
   const datas = {
     documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
@@ -341,14 +390,39 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     atOptions: ["All times", "one Day", "Aone Week", "All Month"],
   };
   return (
-    <div>
+    <div ref={topRef}>
       {/* <div className="bg-dropdownBackground p-4 shadow-md rounded-t-lg">
       <div className="flex flex-col space-y-4">
         <h2 className="text-[#31E48F] text-lg font-poppins font-semibold px-4">
           New Selector
         </h2>
       </div>
+      
     </div> */}
+
+      {isEditMode && (
+        <h2 className="text-xl font-poppins font-semibold flex justify-center text-customGreen mb-4">
+          Please Update your policy
+        </h2>
+      )}
+
+      <div className="bg-customBlack p-4 shadow-md mb-4">
+        <label
+          htmlFor="policyName"
+          className="block text-sm font-poppins font-semibold  mb-2 text-customGreen"
+        >
+          Policy Name
+        </label>
+        <input
+          type="text"
+          id="policyName"
+          value={policyName}
+          onChange={handlePolicyNameChange}
+          className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-black focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-black text-white font-semibold placeholder-gray-500"
+          placeholder="Enter policy name"
+          readOnly={isEditMode}
+        />
+      </div>
       <div className="bg-customBlack p-4 shadow-md">
         <div className="page-center">
           <div className="flex flex-col space-y-4">
@@ -629,7 +703,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins  ${
           isClickedAdd ? "hover:bg-customGreen hover:text-white" : ""
         }`}
-        onClick={openModal}
+        onClick={isEditMode ? handleUpdatePolicy : openModal}
       >
         <span
           className="transition-transform duration-300 ease-out"
@@ -646,121 +720,43 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
             e.currentTarget.style.transform = "scale(1)";
           }}
         >
-          SAVE POLICY
+          {isEditMode ? "UPDATE POLICY" : "SAVE POLICY"}
         </span>
       </div>
-      {/* {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
-            <h2 className="text-lg font-poppins font-semibold mb-4 text-center ">
-              Confirm Policy Save
-            </h2>
-            {isSaveSuccessful ? (
-              <p className="text-green-500 text-center">
-                Policy saved successfully!
-              </p>
-            ) : (
-              <>
-                <div className="mb-4">
-                  <label
-                    htmlFor="policyName"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Policy Name
-                  </label>
-                  <input
-                    type="text"
-                    id="policyName"
-                    value={policyName}
-                    onChange={handlePolicyNameChange}
-                    className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-black focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                    placeholder="Enter policy name"
-                  />
-                </div>
-                <div className="mb-4">
-                  <p className="text-sm mb-2">
-                    <strong>Selected Options:</strong>
-                  </p>
-                  <ul>
-                    <li>
-                      <strong>Document Store:</strong>{" "}
-                      {selectedOptions["documentStore"]}
-                    </li>
-                    <li>
-                      <strong>Document Location:</strong>{" "}
-                      {selectedOptions["documentLocationOptions"]}
-                    </li>
-                    {sections.map((section) => (
-                      <li key={section.id}>
-                        <div>
-                          <strong>Document:</strong>{" "}
-                          {section.values["documentOptions"]}
-                        </div>
-                        <div>
-                          <strong>Contains:</strong>{" "}
-                          {section.values["containsOptions"]}
-                        </div>
-                        <div>
-                          <strong>With:</strong> {section.values["withOptions"]}
-                        </div>
-                        <div>
-                          <strong>Action:</strong>{" "}
-                          {section.values["thenOptions"]}
-                        </div>
-                        <div>
-                          <strong>Role:</strong> {section.values["roleOptions"]}
-                        </div>
-                        <div>
-                          <strong>At:</strong> {section.values["atOptions"]}
-                        </div>
-                        <div className="mt-2">
-                          <hr
-                            style={{
-                              border: "none",
-                              borderTop: "1px solid black",
-                              margin: "0",
-                            }}
-                          />
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="flex justify-end">
-                  <button
-                    className="bg-red-500 text-white py-2 px-4 rounded mr-2"
-                    onClick={closeModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-green-500 text-white py-2 px-4 rounded"
-                    onClick={confirmSavePolicy}
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+
+      {isEditMode && (
+        <div
+          className="bg-red-500 text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins"
+          onClick={() => {
+            setIsEditMode(false);
+            setEditingPolicyId(null);
+            setPolicyName("");
+            setSelectedOptions({});
+            setSections([{ id: Date.now(), values: {} }]);
+          }}
+        >
+          <span className="transition-transform duration-300 ease-out">
+            CANCEL EDIT
+          </span>
         </div>
-      )} */}
+      )}
+
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+          <div className="bg-[#2E313B] p-6 rounded-lg shadow-xl w-1/2 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-poppins font-semibold mb-4 text-center text-white">
               Confirm Policy Save
             </h2>
             {isSaveSuccessful ? (
-              <p className="text-green-500 text-center">
+              <p className="text-green-400 text-center text-lg">
                 Policy saved successfully!
               </p>
             ) : (
               <>
-                <div className="mb-4">
+                <div className="mb-6">
                   <label
                     htmlFor="policyName"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-white mb-2"
                   >
                     Policy Name
                   </label>
@@ -769,63 +765,58 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     id="policyName"
                     value={policyName}
                     onChange={handlePolicyNameChange}
-                    className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm transition-all duration-200 ease-in-out"
+                    className="w-full rounded-md shadow-sm px-4 py-2 border-2 border-gray-400 focus:border-green-500 focus:ring-green-500 bg-[#393C46] text-white transition-all duration-200 ease-in-out"
                     placeholder="Enter policy name"
                   />
                 </div>
-                <div className="mb-4">
-                  <p className="text-sm mb-2 text-gray-700">
+                <div className="mb-6">
+                  <p className="text-sm mb-2 text-white">
                     <strong>Selected Options:</strong>
                   </p>
                   <ul>
-                    <li className="mb-4">
-                      <div className="bg-gray-100 p-4 rounded-md shadow-md">
-                        <p>
+                    <li className="mb-6">
+                      <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
+                        <p className="text-white">
                           <strong>Document Store:</strong>{" "}
                           {selectedOptions["documentStore"]}
                         </p>
-                        <p>
+                        <p className="text-white">
                           <strong>Document Location:</strong>{" "}
                           {selectedOptions["documentLocationOptions"]}
                         </p>
                       </div>
                     </li>
                     {sections.map((section) => (
-                      <li key={section.id} className="mb-4">
-                        <div className="bg-gray-100 p-4 rounded-md shadow-md">
-                          <div className="flex justify-between items-center mb-2">
-                            <h3 className="font-semibold text-gray-700">
+                      <li key={section.id} className="mb-6">
+                        <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
+                          <div className="mb-2">
+                            <h3 className="font-semibold text-lg text-white">
                               {/* Section {section.id} */}
                             </h3>
-                            {/* Optional: Add an icon or collapse button */}
                           </div>
-                          <div>
+                          <div className="text-white">
                             <strong>Document:</strong>{" "}
                             {section.values["documentOptions"]}
                           </div>
-                          <div>
+                          <div className="text-white">
                             <strong>Contains:</strong>{" "}
                             {section.values["containsOptions"]}
                           </div>
-                          <div>
+                          <div className="text-white">
                             <strong>With:</strong>{" "}
                             {section.values["withOptions"]}
                           </div>
-                          <div>
+                          <div className="text-white">
                             <strong>Action:</strong>{" "}
                             {section.values["thenOptions"]}
                           </div>
-                          <div>
+                          <div className="text-white">
                             <strong>Role:</strong>{" "}
                             {section.values["roleOptions"]}
                           </div>
-                          <div>
+                          <div className="text-white">
                             <strong>At:</strong> {section.values["atOptions"]}
                           </div>
-                          {/* Line separator */}
-                          {/* <div className="mt-2">
-                            <hr className="border-t border-gray-300" />
-                          </div> */}
                         </div>
                       </li>
                     ))}
@@ -833,18 +824,23 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 </div>
                 <div className="flex justify-end">
                   <button
-                    className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mr-2 transition-all duration-200 ease-in-out"
+                    className="bg-red-600 hover:bg-red-700 text-white py-2 px-5 rounded-lg mr-3 shadow-md transition-all duration-200 ease-in-out"
                     onClick={closeModal}
                   >
                     Cancel
                   </button>
                   <button
-                    className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
+                    className="bg-green-600 hover:bg-green-700 text-white py-2 px-5 rounded-lg shadow-md transition-all duration-200 ease-in-out"
                     onClick={confirmSavePolicy}
                   >
                     Confirm
                   </button>
                 </div>
+                {errorMessage && (
+                  <p className="text-red-500 text-center mt-4">
+                    {errorMessage}
+                  </p>
+                )}
               </>
             )}
           </div>
@@ -932,8 +928,26 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
           </div>
         </div>
       </div>
+      {isSuccessModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-[#FFFFFF]">
+              Success
+            </h2>
+            <p className="text-green-500 text-center">{successMessage}</p>
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
+                onClick={() => setIsSuccessModalOpen(false)} // Close success modal
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {isEditModalOpen && (
+      {/* {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-[#373945] p-6 rounded-lg shadow-lg w-1/2">
             <h2 className="text-lg font-poppins font-semibold mb-4 text-center text-white">
@@ -1039,20 +1053,30 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
             )}
           </div>
         </div>
-      )}
-      <div className="flex justify-end mt-4">
+      )} */}
+      <div className="flex justify-end items-center mt-4 space-x-2">
         <button
-          className="px-4 py-2 mx-2 bg-gray-300 rounded"
+          className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+          }`}
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
           Previous
         </button>
-        <span className="px-4 py-2 mx-2 bg-gray-100 rounded">
+
+        <span className="px-4 py-2 rounded-lg bg-[#2f3a45] text-white font-semibold">
           Page {currentPage} of {totalPages}
         </span>
+
         <button
-          className="px-4 py-2 mx-2 bg-gray-300 rounded"
+          className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+          }`}
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >

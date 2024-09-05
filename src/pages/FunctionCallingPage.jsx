@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./../App.css";
 import CustomDropdown from "../components/CustomDropdown";
 import {
@@ -58,10 +58,18 @@ const FunctionCalling = () => {
   const [actionOnPermissionExisting, setActionOnPermissionExisting] =
     useState("Management");
 
-  const fetchData = async () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const topRef = useRef(null);
+
+  const fetchData = async (page = 1) => {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerFunctionCalling`,
+        `${BASE_URL}/api/data/policyManagerFunctionCalling?page=${page}&limit=10`,
         {
           method: "GET",
           credentials: "include",
@@ -74,6 +82,8 @@ const FunctionCalling = () => {
 
       const result = await response.json();
       setTableData(result.data);
+      setCurrentPage(result.currentPage);
+      setTotalPages(result.totalPages);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -81,8 +91,14 @@ const FunctionCalling = () => {
 
   // Fetch data from API on component mount
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(currentPage);
+  }, [currentPage]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   const handleConfirm = async () => {
     const postData = {
@@ -160,6 +176,7 @@ const FunctionCalling = () => {
       await fetchData();
 
       setTimeout(() => {
+        setIsSaveSuccessful(false);
         closeModal();
       }, 2000);
     } catch (error) {
@@ -169,6 +186,8 @@ const FunctionCalling = () => {
   };
 
   const fetchDataForEdit = (id) => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+
     setIsSaveSuccessful(false);
     const policyToEdit = tableData.find((policy) => policy._id === id);
     if (policyToEdit) {
@@ -198,8 +217,9 @@ const FunctionCalling = () => {
   const handleEditButtonClick = (id) => {
     setIsEditMode(true);
     fetchDataForEdit(id);
-    setIsEditModalOpen(true);
+    // setIsEditModalOpen(true);
   };
+
   const handleUpdatePolicy = async () => {
     const postData = {
       query: selectedOptions["netSales"],
@@ -246,9 +266,37 @@ const FunctionCalling = () => {
 
       const result = await response.json();
       console.log("Policy updated successfully:", result);
-      setIsSaveSuccessful(true);
+
+      setSuccessMessage("Policy updated successfully!");
+      setIsSuccessModalOpen(true);
+
+      setSelectedOptions({});
+      setDataFields({
+        "Opportunity Name": false,
+        "Lead Source": false,
+        Close_Date: false,
+        "Account Name": false,
+        Amount: false,
+        Age: false,
+        Type: false,
+        Probability: false,
+        Created_Date: false,
+      });
+      setCheckboxSelections([
+        { label: "Sales NA", isChecked: false },
+        { label: "Management", isChecked: false },
+      ]);
+      setDescription("");
+      setActionOnDataField("Account");
+      setActionOnPermission("ReadOrWrite");
+      setActionOnPermissionExisting("Management");
+
+      // Call fetchData to update table data
+      await fetchData();
+
       setTimeout(() => {
-        setIsEditModalOpen(false);
+        setIsSaveSuccessful(false);
+        closeModal();
       }, 2000);
     } catch (error) {
       console.error("Error updating policy:", error);
@@ -304,6 +352,9 @@ const FunctionCalling = () => {
     setIsModalOpen(false);
     setIsEditModalOpen(false);
     setIsSaveSuccessful(false);
+    setIsEditMode(false);
+    setSelectedPolicyId(null);
+    setIsSuccessModalOpen(false);
   };
 
   const handleCloseModal = () => {
@@ -402,7 +453,10 @@ const FunctionCalling = () => {
 
   return (
     <>
-      <div className="p-4 bg-[#30b375] bg-bubble-pattern  rounded-md  mb-4 ">
+      <div
+        ref={topRef}
+        className="p-4 bg-[#30b375] bg-bubble-pattern  rounded-md  mb-4 "
+      >
         <div className="page-center">
           <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
             Policy Manager
@@ -416,7 +470,11 @@ const FunctionCalling = () => {
           </h2>
         </div>
       </div>
-
+      {isEditMode && (
+        <h2 className="text-xl font-poppins font-semibold flex justify-center text-customGreen mb-4">
+          Please Update your policy
+        </h2>
+      )}
       <div className="bg-customBlack py-8 rounded-lg shadow-md mt-4">
         <div className="page-center">
           <div className="flex flex-wrap justify-around px-4 py-4">
@@ -434,7 +492,7 @@ const FunctionCalling = () => {
                 <span className="text-white mr-2 ipadhide">Run</span>
                 <PrivacyCustomDropdown
                   options={data.netSalesOptions || []}
-                  placeholder="Net Sales orders"
+                  placeholder="Select Query"
                   isOpen={openDropdown === "netSales"}
                   onDropdownClick={() => handleDropdownClick("netSales")}
                   selectedOption={selectedOptions["netSales"]}
@@ -459,7 +517,7 @@ const FunctionCalling = () => {
                 <span className="text-white mr-2 ipadhide ">On</span>
                 <PrivacyCustomDropdown
                   options={data.targetLocationOptions || []}
-                  placeholder="Salesforce"
+                  placeholder="Select Target Application "
                   isOpen={openDropdown === "targetLocation"}
                   onDropdownClick={() => handleDropdownClick("targetLocation")}
                   selectedOption={selectedOptions["targetLocation"]}
@@ -484,7 +542,7 @@ const FunctionCalling = () => {
                 <span className="text-white mr-2 ipadhide">From</span>
                 <PrivacyCustomDropdown
                   options={data.genAiAppOptions || []}
-                  placeholder="App one"
+                  placeholder="Select  GenAPI App"
                   isOpen={openDropdown === "genAiApp"}
                   onDropdownClick={() => handleDropdownClick("genAiApp")}
                   selectedOption={selectedOptions["genAiApp"]}
@@ -998,6 +1056,60 @@ const FunctionCalling = () => {
         className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins  ${
           isClickedAdd ? "hover:bg-customGreen hover:text-white" : ""
         }`}
+        onClick={isEditMode ? handleUpdatePolicy : handleSavePolicy}
+      >
+        <span
+          className="transition-transform duration-300 ease-out"
+          style={{
+            display: "inline-block",
+            letterSpacing: "0.2em",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.letterSpacing = "normal";
+            e.currentTarget.style.transform = "scale(0.95)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.letterSpacing = "0.2em";
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          {isEditMode ? "UPDATE POLICY" : "SAVE POLICY"}
+        </span>
+      </div>
+
+      {isEditMode && (
+        <div
+          className="bg-red-500 text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins"
+          onClick={() => {
+            setIsEditMode(false);
+            setPolicyId(null);
+            setPolicyName("");
+            setDescription("");
+            setSelectedOptions({});
+            setSections([{ id: Date.now(), values: {} }]);
+            setDataFields({
+              "Opportunity Name": false,
+              "Lead Source": false,
+              Close_Date: false,
+              "Account Name": false,
+              Amount: false,
+              Age: false,
+              Type: false,
+              Probability: false,
+              Created_Date: false,
+            });
+          }}
+        >
+          <span className="transition-transform duration-300 ease-out">
+            CANCEL EDIT
+          </span>
+        </div>
+      )}
+
+      {/* <div
+        className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins  ${
+          isClickedAdd ? "hover:bg-customGreen hover:text-white" : ""
+        }`}
         onClick={handleSavePolicy}
       >
         <span
@@ -1017,7 +1129,7 @@ const FunctionCalling = () => {
         >
           SAVE POLICY
         </span>
-      </div>
+      </div> */}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -1161,6 +1273,25 @@ const FunctionCalling = () => {
         </div>
       )}
 
+      {isSuccessModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+              Success
+            </h2>
+            <p className="text-green-500 text-center">{successMessage}</p>
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
+                onClick={() => setIsSuccessModalOpen(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-dropdownBackground p-4 shadow-md mt-2 rounded-t-lg ">
         <div className="page-center">
           <div className="flex flex-col space-y-4">
@@ -1178,7 +1309,7 @@ const FunctionCalling = () => {
               <thead>
                 <tr>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
-                    Query
+                    Policy Name
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
                     Target Application
@@ -1262,7 +1393,7 @@ const FunctionCalling = () => {
         onClose={closeModal} // Close modal handler
         onConfirm={handleDeleteButtonClick} // Confirm deletion handler
       />
-      {isEditModalOpen && (
+      {/* {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-[#373945] p-6 rounded-lg shadow-lg w-1/2">
             <h2 className="text-lg font-poppins font-semibold mb-4 text-center text-white">
@@ -1356,7 +1487,37 @@ const FunctionCalling = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
+
+      <div className="flex justify-end items-center mt-4 space-x-2">
+        <button
+          className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+          }`}
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+
+        <span className="px-4 py-2 rounded-lg bg-[#2f3a45] text-white font-semibold">
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <button
+          className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+          }`}
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </>
   );
 };
