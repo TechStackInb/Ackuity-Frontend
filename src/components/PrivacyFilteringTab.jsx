@@ -824,6 +824,11 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     ))}
                   </ul>
                 </div>
+                {errorMessage && (
+                  <p className="text-red-500 text-center mt-4">
+                    {errorMessage}
+                  </p>
+                )}
                 <div className="flex justify-end">
                   <button
                     className="bg-red-600 hover:bg-red-700 text-white py-2 px-5 rounded-lg mr-3 shadow-md transition-all duration-200 ease-in-out"
@@ -838,11 +843,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     Confirm
                   </button>
                 </div>
-                {errorMessage && (
-                  <p className="text-red-500 text-center mt-4">
-                    {errorMessage}
-                  </p>
-                )}
               </>
             )}
           </div>
