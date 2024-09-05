@@ -190,7 +190,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
 
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
-
+      setPolicyName("");
       // Close the success modal after 2 seconds
       setTimeout(() => {
         setIsSuccessModalOpen(false);

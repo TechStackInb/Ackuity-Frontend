@@ -155,6 +155,8 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
       // Fetch updated policies after successful update
       await fetchPolicies(currentPage);
 
+      setPolicyName("");
+
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
 
