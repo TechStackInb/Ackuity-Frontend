@@ -192,6 +192,7 @@ const FunctionCalling = () => {
     const policyToEdit = tableData.find((policy) => policy._id === id);
     if (policyToEdit) {
       setSelectedOptions({
+        netSales: policyToEdit.query,
         targetLocation: policyToEdit.targetApplication,
         genAiApp: policyToEdit.genAiApp,
         privacyValue: policyToEdit.actionOnPrivacyFilteringCategory,
@@ -490,6 +491,7 @@ const FunctionCalling = () => {
               </div>
               <div className="flex items-baseline">
                 <span className="text-white mr-2 ipadhide">Run</span>
+
                 <PrivacyCustomDropdown
                   options={data.netSalesOptions || []}
                   placeholder="Select Query"

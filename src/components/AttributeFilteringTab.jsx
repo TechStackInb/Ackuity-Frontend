@@ -88,12 +88,12 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
         {
           id: Date.now(),
           values: {
-            documentOptions: policyToEdit.documentOptions,
-            containsOptions: policyToEdit.containsOptions,
-            withOptions: policyToEdit.withOptions,
-            thenOptions: policyToEdit.thenOptions,
-            roleOptions: policyToEdit.roleOptions,
-            atOptions: policyToEdit.atOptions,
+            documentOptions: policyToEdit.documentNameIf,
+            containsOptions: policyToEdit.classifierContains,
+            withOptions: policyToEdit.valueWith,
+            thenOptions: policyToEdit.documentNameThen,
+            roleOptions: policyToEdit.classifierRole,
+            atOptions: policyToEdit.valueAt,
           },
         },
       ]);
@@ -337,12 +337,12 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
           documentStoreOptions: selectedOptions["documentStore"] || "",
           documentLocationOptions:
             selectedOptions["documentLocationOptions"] || "",
-          documentOptions: section.values["documentOptions"] || "",
-          containsOptions: section.values["containsOptions"] || "",
-          withOptions: section.values["withOptions"] || "",
-          thenOptions: section.values["thenOptions"] || "",
-          roleOptions: section.values["roleOptions"] || "",
-          atOptions: section.values["atOptions"] || "",
+          documentNameIf: section.values["documentOptions"] || "",
+          classifierContains: section.values["containsOptions"] || "",
+          valueWith: section.values["withOptions"] || "",
+          documentNameThen: section.values["thenOptions"] || "",
+          classifierRole: section.values["roleOptions"] || "",
+          valueAt: section.values["atOptions"] || "",
         };
 
         const response = await fetch(
@@ -979,7 +979,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       {policy.documentLocationOptions}
                     </td>
                     <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {policy.documentOptions}
+                      {policy.documentNameIf}
                     </td>
 
                     <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
