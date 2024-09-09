@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [backendError, setBackendError] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ const Login = () => {
         setBackendError(response.error);
       }
     } catch (err) {
-      setBackendError("Something went wrong");
+      setBackendError("Username or Password is incorrect");
     } finally {
       setLoading(false);
     }

@@ -1017,15 +1017,23 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
 
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
-            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-[#FFFFFF]">
-              Success
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+              {successMessage.includes("Failed") ? "Failed" : "Success"}
             </h2>
-            <p className="text-green-500 text-center">{successMessage}</p>
+            <p
+              className={
+                successMessage.includes("Failed")
+                  ? "text-red-500 text-center"
+                  : "text-green-500 text-center"
+              }
+            >
+              {successMessage}
+            </p>
             <div className="flex justify-end mt-4">
               <button
                 className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
-                onClick={() => setIsSuccessModalOpen(false)} // Close success modal
+                onClick={() => setIsSuccessModalOpen(false)}
               >
                 OK
               </button>

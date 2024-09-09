@@ -101,7 +101,9 @@ const FunctionCalling = () => {
   };
 
   const handleConfirm = async () => {
+    const trimmedPolicyName = policyName.trim();
     const postData = {
+      policyName: trimmedPolicyName,
       query: selectedOptions["netSales"],
       targetApplication: selectedOptions["targetLocation"],
       genAiApp: selectedOptions["genAiApp"],
@@ -191,6 +193,7 @@ const FunctionCalling = () => {
     setIsSaveSuccessful(false);
     const policyToEdit = tableData.find((policy) => policy._id === id);
     if (policyToEdit) {
+      setPolicyName(policyToEdit.policyName);
       setSelectedOptions({
         netSales: policyToEdit.query,
         targetLocation: policyToEdit.targetApplication,
@@ -222,7 +225,9 @@ const FunctionCalling = () => {
   };
 
   const handleUpdatePolicy = async () => {
+    const trimmedPolicyName = policyName.trim();
     const postData = {
+      policyName: trimmedPolicyName,
       query: selectedOptions["netSales"],
       targetApplication: selectedOptions["targetLocation"],
       genAiApp: selectedOptions["genAiApp"],
@@ -271,6 +276,8 @@ const FunctionCalling = () => {
       setSuccessMessage("Policy updated successfully!");
       setIsSuccessModalOpen(true);
 
+      setSections([{ id: Date.now(), values: {} }]);
+      setPolicyName("");
       setSelectedOptions({});
       setDataFields({
         "Opportunity Name": false,
@@ -428,7 +435,7 @@ const FunctionCalling = () => {
   const data = {
     netSalesOptions: ["Net Sales Orders", "Total Sales Orders"],
     targetLocationOptions: ["Salesforce", "Servicenow", "Microsoft Dynamics"],
-    genAiAppOptions: ["App1", "App2", "App3", "App4"],
+    genAiAppOptions: ["App1", "App2", "App3"],
     locationOption: ["Department", "Location"],
     privacyValueOption: ["Asia", "North America"],
     privacyActionOption: ["Allow", "Reduct"],
@@ -476,6 +483,23 @@ const FunctionCalling = () => {
           Please Update your policy
         </h2>
       )}
+      <div className="bg-customBlack p-4 shadow-md mb-4">
+        <label
+          htmlFor="policyName"
+          className="block text-sm font-poppins font-semibold  mb-2 text-customGreen"
+        >
+          Policy Name
+        </label>
+        <input
+          type="text"
+          id="policyName"
+          value={policyName}
+          onChange={handlePolicyNameChange}
+          className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-black focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-black text-white font-semibold placeholder-gray-500"
+          placeholder="Enter policy name"
+          readOnly={isEditMode}
+        />
+      </div>
       <div className="bg-customBlack py-8 rounded-lg shadow-md mt-4">
         <div className="page-center">
           <div className="flex flex-wrap justify-around px-4 py-4">
@@ -1135,8 +1159,8 @@ const FunctionCalling = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+          <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
               Confirm Policy Save
             </h2>
             {isSaveSuccessful ? (
@@ -1145,10 +1169,10 @@ const FunctionCalling = () => {
               </p>
             ) : (
               <>
-                {/* <div className="mb-4">
+                <div className="mb-4">
                   <label
                     htmlFor="policyName"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-white  mb-2"
                   >
                     Policy Name
                   </label>
@@ -1157,27 +1181,27 @@ const FunctionCalling = () => {
                     id="policyName"
                     value={policyName}
                     onChange={handlePolicyNameChange}
-                    className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm transition-all duration-200 ease-in-out"
+                    className="w-full rounded-md shadow-sm px-4 py-2 border-2 border-gray-400 focus:border-green-500 focus:ring-green-500 bg-[#393C46] text-white transition-all duration-200 ease-in-out"
                     placeholder="Enter policy name"
                   />
-                </div> */}
+                </div>
                 <div className="mb-4">
-                  <p className="text-sm mb-2 text-gray-700">
+                  <p className="text-sm mb-2 text-white">
                     <strong>Selected Options:</strong>
                   </p>
                   <ul>
                     <div className="">
-                      <div className="bg-gray-100 p-4 rounded-md shadow-md">
+                      <div className="bg-[#2E313B] p-4 rounded-md shadow-md">
                         {Object.entries(selectedOptions).map(([key, value]) => (
-                          <li key={key} className="text-gray-700">
+                          <li key={key} className="text-white">
                             {key}: {value}
                           </li>
                         ))}
-                        <li className="text-gray-700">
+                        <li className="text-[#c4c9d0]">
                           Description: {description}
                         </li>
                         {Object.keys(dataFields).map((field) => (
-                          <li key={field} className="text-gray-700">
+                          <li key={field} className="text-[#c4c9d0]">
                             {field}:{" "}
                             {dataFields[field] ? "Checked" : "Unchecked"}
                           </li>
@@ -1186,25 +1210,25 @@ const FunctionCalling = () => {
                     </div>
 
                     <li className="">
-                      <div className="bg-gray-100 p-4 rounded-md shadow-md">
-                        <h1 className="font-poppins font-semibold">
+                      <div className="bg-[#2E313B] p-4 rounded-md shadow-md">
+                        <h1 className="font-poppins font-semibold text-white">
                           Permission
                         </h1>
-                        <li className="text-gray-700">
+                        <li className="text-[#c4c9d0]">
                           Action on Data Field: {actionOnDataField}
                         </li>
-                        <li className="text-gray-700">
+                        <li className="text-[#c4c9d0]">
                           Action on Permission: {actionOnPermission}
                         </li>
-                        <li className="text-gray-700">
+                        <li className="text-[#c4c9d0]">
                           Action on Permission Existing:{" "}
                           {actionOnPermissionExisting}
                         </li>
-                        <li className="text-gray-700">
+                        <li className="text-[#c4c9d0]">
                           Action on Permission Revised:
                         </li>
                         {checkboxSelections.map((item) => (
-                          <li key={item.label} className="text-gray-700">
+                          <li key={item.label} className="text-[#c4c9d0]">
                             {item.label}:{" "}
                             {item.isChecked ? "Checked" : "Unchecked"}
                           </li>
@@ -1213,41 +1237,41 @@ const FunctionCalling = () => {
                     </li>
 
                     <li className="">
-                      <div className="bg-gray-100 p-4 rounded-md shadow-md">
-                        <h1 className="font-poppins font-semibold">
+                      <div className="bg-[#2E313B] p-4 rounded-md shadow-md">
+                        <h1 className="font-poppins font-semibold text-[white]">
                           Privacy Filtering
                         </h1>
-                        <p>
+                        <p className="text-[#c4c9d0]">
                           <span>Privacy Category:</span>{" "}
                           {selectedOptions["privacyValue"]}
                         </p>
-                        <p>
+                        <p className="text-[#c4c9d0]">
                           <span>Privacy Action:</span>{" "}
                           {selectedOptions["privacyAction"]}
                         </p>
-                        <p>
+                        <p className="text-[#c4c9d0]">
                           <span>Transformation Value:</span> Transformation
                         </p>
                       </div>
                     </li>
                     <li className="">
-                      <div className="bg-gray-100 p-4 rounded-md shadow-md">
-                        <h1 className="font-poppins font-semibold">
+                      <div className="bg-[#2E313B] p-4 rounded-md shadow-md">
+                        <h1 className="font-poppins font-semibold text-white ">
                           Attribute Filtering
                         </h1>
-                        <p>
+                        <p className="text-[#c4c9d0]">
                           <span>Attribute:</span>{" "}
                           {selectedOptions["attributeOption"]}
                         </p>
-                        <p>
+                        <p className="text-[#c4c9d0]">
                           <span> Attribute Value:</span>{" "}
                           {selectedOptions["attributeValue"]}
                         </p>
-                        <p>
+                        <p className="text-[#c4c9d0]">
                           <span> Attribute Action:</span>{" "}
                           {selectedOptions["attributeActionOption"]}
                         </p>
-                        <p>
+                        <p className="text-[#c4c9d0]">
                           <span>Transformation Value:</span> Transformation
                           Attribute
                         </p>
@@ -1279,9 +1303,17 @@ const FunctionCalling = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
             <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
-              Success
+              {successMessage.includes("Failed") ? "Failed" : "Success"}
             </h2>
-            <p className="text-green-500 text-center">{successMessage}</p>
+            <p
+              className={
+                successMessage.includes("Failed")
+                  ? "text-red-500 text-center"
+                  : "text-green-500 text-center"
+              }
+            >
+              {successMessage}
+            </p>
             <div className="flex justify-end mt-4">
               <button
                 className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
@@ -1335,7 +1367,7 @@ const FunctionCalling = () => {
                   <tr key={item._id}>
                     <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
                       {/* {item.query} */}
-                      Secure RFP response template
+                      {item.policyName}
                     </td>
                     <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
                       {item.targetApplication}

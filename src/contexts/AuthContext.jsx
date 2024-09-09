@@ -134,7 +134,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Something went wrong during login:", error);
-      return { success: false, error: "Something went wrong during login" };
+      return { success: false, error: "Username or Password is incorrect" };
     }
   };
 
