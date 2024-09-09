@@ -389,7 +389,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     withOptions: ["Confidential", "Private", "Public"],
     thenOptions: ["Anonymize", "Tokenize", "Encrypt", "De-identification"],
     roleOptions: ["Finance", "HR", "Operation"],
-    atOptions: ["All times", "one Day", "Aone Week", "All Month"],
+    atOptions: ["All times", "One Day", "One Week", "All Month"],
   };
   return (
     <div ref={topRef}>
