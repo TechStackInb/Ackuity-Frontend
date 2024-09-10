@@ -979,7 +979,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       {policy.documentLocationOptions}
                     </td>
                     <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {policy.multipleSectionData[0].documentNameIf}
+                      {policy.documentNameIf}
                     </td>
 
                     <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
