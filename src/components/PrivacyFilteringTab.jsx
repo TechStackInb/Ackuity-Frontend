@@ -895,7 +895,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       {policy.documentLocationOptions}
                     </td>
                     <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {policy.documentNameIf}
+                      {policy.multipleSectionData[0].documentNameIf}
                     </td>
 
                     <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
