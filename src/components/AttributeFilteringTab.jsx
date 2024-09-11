@@ -60,6 +60,8 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     }
   };
 
+  console.log(policies, "policies");
+
   // Call fetchPolicies after saving policy and also on component mount
   useEffect(() => {
     fetchPolicies(currentPage);
@@ -73,35 +75,35 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     setPolicyName(e.target.value);
   };
 
-  const openEditModal = (policyId) => {
-    topRef.current?.scrollIntoView({ behavior: "smooth" });
-    const policyToEdit = policies.find((policy) => policy._id === policyId);
+  // const openEditModal = (policyId) => {
+  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   const policyToEdit = policies.find((policy) => policy._id === policyId);
 
-    if (policyToEdit) {
-      setPolicyName(policyToEdit.policyName);
-      setSelectedOptions({
-        documentStore: policyToEdit.documentStoreOptions,
-        documentLocationOptions: policyToEdit.documentLocationOptions,
-      });
+  //   if (policyToEdit) {
+  //     setPolicyName(policyToEdit.policyName);
+  //     setSelectedOptions({
+  //       documentStore: policyToEdit.documentStoreOptions,
+  //       documentLocationOptions: policyToEdit.documentLocationOptions,
+  //     });
 
-      setSections([
-        {
-          id: Date.now(),
-          values: {
-            documentOptions: policyToEdit.documentNameIf,
-            containsOptions: policyToEdit.classifierContains,
-            withOptions: policyToEdit.valueWith,
-            thenOptions: policyToEdit.documentNameThen,
-            roleOptions: policyToEdit.classifierRole,
-            atOptions: policyToEdit.valueAt,
-          },
-        },
-      ]);
+  //     setSections([
+  //       {
+  //         id: Date.now(),
+  //         values: {
+  //           documentOptions: policyToEdit.documentNameIf,
+  //           containsOptions: policyToEdit.classifierContains,
+  //           withOptions: policyToEdit.valueWith,
+  //           thenOptions: policyToEdit.documentNameThen,
+  //           roleOptions: policyToEdit.classifierRole,
+  //           atOptions: policyToEdit.valueAt,
+  //         },
+  //       },
+  //     ]);
 
-      setIsEditMode(true); // Set to edit mode
-      setEditingPolicyId(policyId); // Store the policy ID for updating
-    }
-  };
+  //     setIsEditMode(true); // Set to edit mode
+  //     setEditingPolicyId(policyId); // Store the policy ID for updating
+  //   }
+  // };
 
   // const openEditModal = (policyId) => {
   //   // Find the policy with the given ID
@@ -134,31 +136,57 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   //   }
   // };
 
+  const openEditModal = (policyId) => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+    const policyToEdit = policies.find((policy) => policy._id === policyId);
+
+    if (policyToEdit) {
+      setPolicyName(policyToEdit.policyName);
+      setSelectedOptions({
+        documentStore: policyToEdit.documentStoreOptions,
+        documentLocationOptions: policyToEdit.documentLocationOptions,
+      });
+
+      // Map the multipleSectionData array to sections
+      const sectionsToEdit = policyToEdit.multipleSectionData.map(
+        (section, index) => ({
+          id: Date.now() + index, // Use a unique ID for each section
+          values: {
+            documentOptions: section.documentNameIf,
+            containsOptions: section.classifierContains,
+            withOptions: section.valueWith,
+            thenOptions: section.documentNameThen,
+            roleOptions: section.classifierRole,
+            atOptions: section.valueAt,
+          },
+        })
+      );
+
+      setSections(sectionsToEdit); // Set multiple sections from the data
+
+      setIsEditMode(true); // Set to edit mode
+      setEditingPolicyId(policyId); // Store the policy ID for updating
+    }
+  };
+
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();
+
+    // Map each section into the multipleSectionData array
+    const multipleSectionData = sections.map((section) => ({
+      documentNameIf: section.values["documentOptions"] || "",
+      classifierContains: section.values["containsOptions"] || "",
+      valueWith: section.values["withOptions"] || "",
+      documentNameThen: section.values["thenOptions"] || "",
+      classifierRole: section.values["roleOptions"] || "",
+      valueAt: section.values["atOptions"] || "",
+    }));
+
     const policyData = {
       policyName: trimmedPolicyName,
       documentStoreOptions: selectedOptions["documentStore"] || "",
       documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
-      documentOptions:
-        sections
-          .map((section) => section.values["documentOptions"])
-          .join(", ") || "",
-      containsOptions:
-        sections
-          .map((section) => section.values["containsOptions"])
-          .join(", ") || "",
-      withOptions:
-        sections.map((section) => section.values["withOptions"]).join(", ") ||
-        "",
-      thenOptions:
-        sections.map((section) => section.values["thenOptions"]).join(", ") ||
-        "",
-      roleOptions:
-        sections.map((section) => section.values["roleOptions"]).join(", ") ||
-        "",
-      atOptions:
-        sections.map((section) => section.values["atOptions"]).join(", ") || "",
+      multipleSectionData, // Use the multipleSectionData array here
     };
 
     try {
@@ -188,9 +216,11 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       // Fetch updated policies after successful update
       await fetchPolicies(currentPage);
 
+      // Reset modal fields
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
       setPolicyName("");
+
       // Close the success modal after 2 seconds
       setTimeout(() => {
         setIsSuccessModalOpen(false);
@@ -202,6 +232,75 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       setIsSuccessModalOpen(true);
     }
   };
+
+  // const handleUpdatePolicy = async () => {
+  //   const trimmedPolicyName = policyName.trim();
+  //   const policyData = {
+  //     policyName: trimmedPolicyName,
+  //     documentStoreOptions: selectedOptions["documentStore"] || "",
+  //     documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
+  //     documentOptions:
+  //       sections
+  //         .map((section) => section.values["documentOptions"])
+  //         .join(", ") || "",
+  //     containsOptions:
+  //       sections
+  //         .map((section) => section.values["containsOptions"])
+  //         .join(", ") || "",
+  //     withOptions:
+  //       sections.map((section) => section.values["withOptions"]).join(", ") ||
+  //       "",
+  //     thenOptions:
+  //       sections.map((section) => section.values["thenOptions"]).join(", ") ||
+  //       "",
+  //     roleOptions:
+  //       sections.map((section) => section.values["roleOptions"]).join(", ") ||
+  //       "",
+  //     atOptions:
+  //       sections.map((section) => section.values["atOptions"]).join(", ") || "",
+  //   };
+
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerAttribute/${editingPolicyId}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(policyData),
+  //         credentials: "include",
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Policy updated successfully:", result);
+
+  //     // Open success modal
+  //     setSuccessMessage("Policy updated successfully!");
+  //     setIsSuccessModalOpen(true);
+
+  //     // Fetch updated policies after successful update
+  //     await fetchPolicies(currentPage);
+
+  //     setSections([{ id: Date.now(), values: {} }]);
+  //     setSelectedOptions({});
+  //     setPolicyName("");
+  //     // Close the success modal after 2 seconds
+  //     setTimeout(() => {
+  //       setIsSuccessModalOpen(false);
+  //       closeModal(); // Close the main modal if open
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error updating policy:", error);
+  //     setSuccessMessage("Failed to update policy.");
+  //     setIsSuccessModalOpen(true);
+  //   }
+  // };
 
   const handleDeletePolicy = async (policyId) => {
     if (window.confirm("Are you sure you want to delete this policy?")) {
@@ -301,89 +400,89 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     // setSections([{ id: Date.now(), values: {} }]);
   };
 
-  const confirmSavePolicy = async () => {
-    // Clear previous error message
-    setErrorMessage("");
+  // const confirmSavePolicy = async () => {
+  //   // Clear previous error message
+  //   setErrorMessage("");
 
-    // Validate the policy name and sections
-    if (!policyName.trim()) {
-      setErrorMessage("Policy Name is required.");
-      return;
-    }
+  //   // Validate the policy name and sections
+  //   if (!policyName.trim()) {
+  //     setErrorMessage("Policy Name is required.");
+  //     return;
+  //   }
 
-    for (const section of sections) {
-      if (
-        !selectedOptions["documentStore"] ||
-        !selectedOptions["documentLocationOptions"] ||
-        !section.values["documentOptions"] ||
-        !section.values["containsOptions"] ||
-        !section.values["withOptions"] ||
-        !section.values["thenOptions"] ||
-        !section.values["roleOptions"] ||
-        !section.values["atOptions"]
-      ) {
-        setErrorMessage("Please fill out all the fields in each section.");
-        return;
-      }
-    }
+  //   for (const section of sections) {
+  //     if (
+  //       !selectedOptions["documentStore"] ||
+  //       !selectedOptions["documentLocationOptions"] ||
+  //       !section.values["documentOptions"] ||
+  //       !section.values["containsOptions"] ||
+  //       !section.values["withOptions"] ||
+  //       !section.values["thenOptions"] ||
+  //       !section.values["roleOptions"] ||
+  //       !section.values["atOptions"]
+  //     ) {
+  //       setErrorMessage("Please fill out all the fields in each section.");
+  //       return;
+  //     }
+  //   }
 
-    try {
-      const trimmedPolicyName = policyName.trim();
+  //   try {
+  //     const trimmedPolicyName = policyName.trim();
 
-      // Iterate over each section to save as a separate policy
-      for (const section of sections) {
-        const policyData = {
-          policyName: trimmedPolicyName,
-          documentStoreOptions: selectedOptions["documentStore"] || "",
-          documentLocationOptions:
-            selectedOptions["documentLocationOptions"] || "",
-          documentNameIf: section.values["documentOptions"] || "",
-          classifierContains: section.values["containsOptions"] || "",
-          valueWith: section.values["withOptions"] || "",
-          documentNameThen: section.values["thenOptions"] || "",
-          classifierRole: section.values["roleOptions"] || "",
-          valueAt: section.values["atOptions"] || "",
-        };
+  //     // Iterate over each section to save as a separate policy
+  //     for (const section of sections) {
+  //       const policyData = {
+  //         policyName: trimmedPolicyName,
+  //         documentStoreOptions: selectedOptions["documentStore"] || "",
+  //         documentLocationOptions:
+  //           selectedOptions["documentLocationOptions"] || "",
+  //         documentNameIf: section.values["documentOptions"] || "",
+  //         classifierContains: section.values["containsOptions"] || "",
+  //         valueWith: section.values["withOptions"] || "",
+  //         documentNameThen: section.values["thenOptions"] || "",
+  //         classifierRole: section.values["roleOptions"] || "",
+  //         valueAt: section.values["atOptions"] || "",
+  //       };
 
-        const response = await fetch(
-          `${BASE_URL}/api/data/policyManagerAttribute`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(policyData),
-            credentials: "include",
-          }
-        );
+  //       const response = await fetch(
+  //         `${BASE_URL}/api/data/policyManagerAttribute`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(policyData),
+  //           credentials: "include",
+  //         }
+  //       );
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
 
-        const result = await response.json();
-        console.log("Policy saved successfully:", result);
-      }
+  //       const result = await response.json();
+  //       console.log("Policy saved successfully:", result);
+  //     }
 
-      setIsSaveSuccessful(true);
+  //     setIsSaveSuccessful(true);
 
-      // Clear all dropdown selections and sections
-      setSections([{ id: Date.now(), values: {} }]);
-      setSelectedOptions({});
-      setPolicyName("");
+  //     // Clear all dropdown selections and sections
+  //     setSections([{ id: Date.now(), values: {} }]);
+  //     setSelectedOptions({});
+  //     setPolicyName("");
 
-      // Fetch updated policies after successful save
-      await fetchPolicies();
+  //     // Fetch updated policies after successful save
+  //     await fetchPolicies();
 
-      // Automatically close modal after 2 seconds
-      setTimeout(() => {
-        setIsSaveSuccessful(false);
-        closeModal();
-      }, 2000);
-    } catch (error) {
-      console.error("Error saving policies:", error);
-    }
-  };
+  //     // Automatically close modal after 2 seconds
+  //     setTimeout(() => {
+  //       setIsSaveSuccessful(false);
+  //       closeModal();
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error saving policies:", error);
+  //   }
+  // };
 
   // const confirmSavePolicy = async () => {
   //   try {
@@ -443,6 +542,93 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   //   }
   // };
 
+  const confirmSavePolicy = async () => {
+    // Clear previous error message
+    setErrorMessage("");
+
+    // Validate the policy name and sections
+    if (!policyName.trim()) {
+      setErrorMessage("Policy Name is required.");
+      return;
+    }
+
+    for (const section of sections) {
+      if (
+        !selectedOptions["documentStore"] ||
+        !selectedOptions["documentLocationOptions"] ||
+        !section.values["documentOptions"] ||
+        !section.values["containsOptions"] ||
+        !section.values["withOptions"] ||
+        !section.values["thenOptions"] ||
+        !section.values["roleOptions"] ||
+        !section.values["atOptions"]
+      ) {
+        setErrorMessage("Please fill out all the fields in each section.");
+        return;
+      }
+    }
+
+    try {
+      const trimmedPolicyName = policyName.trim();
+
+      // Create a list to store all sections data
+      const multipleSectionData = sections.map((section) => ({
+        documentNameIf: section.values["documentOptions"] || "",
+        classifierContains: section.values["containsOptions"] || "",
+        valueWith: section.values["withOptions"] || "",
+        documentNameThen: section.values["thenOptions"] || "",
+        classifierRole: section.values["roleOptions"] || "",
+        valueAt: section.values["atOptions"] || "",
+      }));
+
+      // Build the complete policy data object
+      const policyData = {
+        policyName: trimmedPolicyName,
+        documentStoreOptions: selectedOptions["documentStore"] || "",
+        documentLocationOptions:
+          selectedOptions["documentLocationOptions"] || "",
+        multipleSectionData, // Add section data here
+      };
+
+      const response = await fetch(
+        `${BASE_URL}/api/data/policyManagerAttribute`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(policyData),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const result = await response.json();
+      console.log("Policy saved successfully:", result);
+
+      setIsSaveSuccessful(true);
+
+      // Clear all dropdown selections and sections
+      setSections([{ id: Date.now(), values: {} }]);
+      setSelectedOptions({});
+      setPolicyName("");
+
+      // Fetch updated policies after successful save
+      await fetchPolicies();
+
+      // Automatically close modal after 2 seconds
+      setTimeout(() => {
+        setIsSaveSuccessful(false);
+        closeModal();
+      }, 2000);
+    } catch (error) {
+      console.error("Error saving policies:", error);
+    }
+  };
+
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -474,7 +660,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       </div> */}
       {isEditMode && (
         <>
-          <h2 className="text-xl font-poppins font-semibold flex justify-center text-[#FFFFFF] mb-4">
+          <h2 className="text-xl font-poppins font-semibold flex justify-center text-customGreen mb-4">
             Please Update your policy
           </h2>
           {/* <h1 className=" flex justify-center text-xl font-poppins font-semibold text-[#31B476] ">
@@ -979,7 +1165,9 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                       {policy.documentLocationOptions}
                     </td>
                     <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {policy.documentNameIf}
+                      {policy.multipleSectionData.map((section, index) => (
+                        <div key={index}>{section.documentNameIf}</div>
+                      ))}
                     </td>
 
                     <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
