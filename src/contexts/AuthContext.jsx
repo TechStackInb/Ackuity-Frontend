@@ -122,14 +122,14 @@ export const AuthProvider = ({ children }) => {
       // Check if there's a refresh token (could be in an HttpOnly cookie)
       if (localStorage.getItem("tokenExpiry")) {
         try {
-          await refreshAccessToken(); 
-          navigate("/dashboard"); 
+          await refreshAccessToken();
+          navigate("/dashboard");
         } catch (error) {
           console.error("Failed to refresh token:", error);
-          navigate("/login"); 
+          navigate("/login");
         }
       } else {
-        navigate("/login"); 
+        navigate("/login");
       }
     };
 

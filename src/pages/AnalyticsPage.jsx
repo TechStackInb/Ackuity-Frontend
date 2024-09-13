@@ -79,7 +79,7 @@
 // };
 
 // export default Analytics;
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FunctionCalling from "../components/FunctionCallingTab";
 import Chat2Database from "../components/Chat2DatabaseTab";
 import Agents from "../components/AgentsTab";
@@ -94,6 +94,7 @@ import {
   faSyncAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axiosInstance from "../axiosInstance";
 
 const tabs = [
   { name: "Function Calling", component: <FunctionCalling /> },
@@ -102,65 +103,83 @@ const tabs = [
   { name: "Document RAG", component: <DocumentRAG /> },
 ];
 
-const pieChartData = [
-  {
-    title: "Total Served",
-    data: {
-      labels: ["RAG", "Function Calling", "Agents", "Chat2Database"],
-      values: [25, 10, 15, 20],
-      colors: ["#EC00DF", "#1BBBE2", "#2AE09A", "#FCB262"],
-    },
-  },
-  {
-    title: "Total Denied",
-    data: {
-      labels: ["RAG", "Function Calling", "Agents", "Chat2Database"],
-      values: [25, 10, 15, 20],
-      colors: ["#EC00DF", "#1BBBE2", "#2AE09A", "#FCB262"],
-    },
-  },
-  {
-    title: "Total Transformed",
-    data: {
-      labels: ["RAG", "Function Calling", "Agents", "Chat2Database"],
-      values: [25, 25, 10, 20],
-      colors: ["#EC00DF", "#1BBBE2", "#2AE09A", "#FCB262"],
-    },
-  },
-  {
-    title: "Total Threats",
-    data: {
-      labels: ["RAG", "User Anomaly", "Agent", "API Attacks"],
-      values: [25, 10, 15, 20],
-      colors: ["#EC00DF", "#1BBBE2", "#2AE09A", "#FCB262"],
-    },
-  },
-];
-
 const Analytics = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedOption, setSelectedOption] = useState("Last 24 hours");
   const [isOpen, setIsOpen] = useState(false);
+  const [chartData, setChartData] = useState([]);
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
   const handleOptionClicks = (option) => {
     setSelectedOption(option);
     setIsOpen(false);
   };
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+
+  // Function to fetch data based on selected time range
+  const fetchChartData = async () => {
+    try {
+      let response;
+      if (selectedOption === "Last 24 hours") {
+        // Call the recent data API
+        response = await axiosInstance.get("/api/data/chartData");
+        setChartData(response.data.recentEntries);
+      } else {
+        // Call the average data API
+        response = await axiosInstance.get("/api/data/chartData/getAverage");
+        const data =
+          selectedOption === "Last 7 days"
+            ? response.data.sevenDayAverages
+            : response.data.thirtyDayAverages;
+
+        // Map the data to match the format of the pie chart
+        const mappedData = data.map((entry) => ({
+          title: entry._id,
+          data: {
+            labels: ["RAG", "Function Calling", "Agents", "Chat2Database"],
+            values: [
+              entry.avgRAG,
+              entry.avgFunctionCalling,
+              entry.avgAgents,
+              entry.avgChat2Database,
+            ],
+          },
+        }));
+        setChartData(mappedData);
+      }
+      // Display success toast
+      // toast.success("Data refreshed successfully!");
+    } catch (error) {
+      console.error("Error fetching chart data:", error);
+      toast.error("Failed to refresh data.");
+    }
   };
+
+  // Fetch data whenever the selectedOption changes
+  useEffect(() => {
+    fetchChartData();
+  }, [selectedOption]);
 
   return (
     <div className="page-center p-4">
+      {/* <ToastContainer position="top-right" autoClose={3000} /> */}
       <div className="flex gap-2 mb-4">
-        <button className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]">
+        <button
+          onClick={fetchChartData}
+          className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]"
+        >
           <FontAwesomeIcon
             icon={faSyncAlt}
             className="mr-2 text-[#31B476] group-hover:text-white"
           />
-          <span className="text-white" onClick={() => window.location.reload()}>
-            Refresh
-          </span>
+          <span className="text-white">Refresh</span>
         </button>
 
         <div className="relative inline-block text-left">
@@ -175,21 +194,26 @@ const Analytics = () => {
               className="ml-2 text-[#31B476]"
             />
           </button>
-
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26]   rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26] rounded-lg shadow-lg z-10">
               <ul className="py-2">
                 <li
                   className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
-                  onClick={() => handleOptionClicks("Last 24 hours")}
+                  onClick={() => handleOptionClick("Last 24 hours")}
                 >
                   Last 24 hours
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
-                  onClick={() => handleOptionClicks("Last 7 days")}
+                  onClick={() => handleOptionClick("Last 7 days")}
                 >
                   Last 7 days
+                </li>
+                <li
+                  className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
+                  onClick={() => handleOptionClick("Last 30 days")}
+                >
+                  Last 30 days
                 </li>
               </ul>
             </div>
@@ -210,25 +234,8 @@ const Analytics = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-4 font-poppins font-semibold">
-        {/* {pieChartData.map((chart, index) => (  ))} */}
-        <div className="flex items-start space-x-4">
-          <div className="flex-1">
-            {/* <PieCharts title={chart.title} data={chart.data} /> */}
-            <DashboardChart />
-          </div>
-          {/* <div className="flex-1">
-              <ProgressBar
-                data={chart.data.labels.map((label, i) => ({
-                  label,
-                  value: chart.data.values[i],
-                  color: chart.data.colors[i],
-                }))}
-              />
-            </div> */}
-        </div>
-
-        {/* <DashboardChart /> */}
+      <div className="font-poppins font-semibold space-x-4">
+        <DashboardChart chartData={chartData} />
       </div>
 
       <div className="mt-8 bg-[#000000] shadow p-4 rounded-lg">
