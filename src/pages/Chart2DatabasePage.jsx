@@ -1046,7 +1046,7 @@ const Chart2DatabasePage = () => {
                                   >
                                     HR
                                   </span> */}
-                                    <div className="px-4 flex gap-4">
+                                    <div className="py-4 px-4 flex flex-col gap-2">
                                       <button
                                         type="button"
                                         onClick={() => handleClick("sales1")}
@@ -1338,7 +1338,6 @@ const Chart2DatabasePage = () => {
                                 <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                                 <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                               </tr>
-                   
                             </tbody>
                           </table>
                         </div>
