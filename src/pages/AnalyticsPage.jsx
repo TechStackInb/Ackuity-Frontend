@@ -198,19 +198,31 @@ const Analytics = () => {
             <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26] rounded-lg shadow-lg z-10">
               <ul className="py-2">
                 <li
-                  className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
+                  className={`px-4 py-2 cursor-pointer ${
+                    selectedOption === "Last 24 hours"
+                      ? "text-[#31B476]"
+                      : "text-white hover:bg-[#31B476]"
+                  }`}
                   onClick={() => handleOptionClick("Last 24 hours")}
                 >
                   Last 24 hours
                 </li>
                 <li
-                  className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
+                  className={`px-4 py-2 cursor-pointer ${
+                    selectedOption === "Last 7 days"
+                      ? "text-[#31B476]"
+                      : "text-white hover:bg-[#31B476]"
+                  }`}
                   onClick={() => handleOptionClick("Last 7 days")}
                 >
                   Last 7 days
                 </li>
                 <li
-                  className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
+                  className={`px-4 py-2 cursor-pointer ${
+                    selectedOption === "Last 30 days"
+                      ? "text-[#31B476]"
+                      : "text-white hover:bg-[#31B476]"
+                  }`}
                   onClick={() => handleOptionClick("Last 30 days")}
                 >
                   Last 30 days
