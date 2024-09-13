@@ -2,12 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import "./../App.css";
 import CustomDropdown from "../components/CustomDropdown";
 import {
+  faAngleDown,
+  faClose,
   faDownload,
   faEdit,
   faEraser,
   faMinus,
   faPlus,
   faPlusMinus,
+  faSearch,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +22,8 @@ import { BASE_URL } from "../services/api";
 import axios from "axios";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { saveAs } from "file-saver";
+import userIcon from "../assets/usericon.svg";
+import iconsmodel from "../assets/save.svg";
 
 const FunctionCalling = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -64,7 +69,62 @@ const FunctionCalling = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  const [selectedApiName, setSelectedApiName] = useState("");
+
+  const [actionOnDataFieldSelections, setActionOnDataFieldSelections] =
+    useState(
+      Array(sections.length).fill("") 
+    );
+
   const topRef = useRef(null);
+
+  const [showEditMembership, setShowEditMembership] = useState(false);
+  const [showEditMembershipPermission, setShowEditMembershipPermission] =
+    useState(false);
+  const [hoveredRemoveIndex, setHoveredRemoveIndex] = useState(null);
+  const [hoveredAddIndex, setHoveredAddIndex] = useState(null);
+  const [members, setMembers] = useState([]);
+
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const availableUsers = [
+    "Rajat Mohanty",
+    "Vinod Vasudevan",
+    "John Doe",
+    "Jane Smith",
+  ];
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+    if (query) {
+      const filteredUsers = availableUsers.filter(
+        (user) => user.toLowerCase().includes(query) && !members.includes(user)
+      );
+      setSearchResults(filteredUsers);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  // Function to add a user to the member list
+  const addMember = (username) => {
+    setMembers([...members, username]);
+    setSearchResults(searchResults.filter((user) => user !== username));
+    setSearchQuery("");
+  };
+
+  // Function to remove a user from the member list
+  const removeMember = (index) => {
+    const updatedMembers = [...members];
+    updatedMembers.splice(index, 1);
+    setMembers(updatedMembers);
+  };
+
+  const toggleeditMembershipPermission = () => {
+    setShowEditMembershipPermission(!showEditMembershipPermission);
+  };
 
   const fetchData = async (page = 1) => {
     try {
@@ -81,6 +141,7 @@ const FunctionCalling = () => {
       }
 
       const result = await response.json();
+      // console.log(result);
       setTableData(result.data);
       setCurrentPage(result.currentPage);
       setTotalPages(result.totalPages);
@@ -100,36 +161,135 @@ const FunctionCalling = () => {
     }
   };
 
+  // console.log(selectedOptions, "selectedOptions");
+  // console.log(actionOnDataFieldSelections, "actionOnDataFieldSelections");
+
+  // const handleConfirm = async () => {
+  //   const trimmedPolicyName = policyName.trim();
+  //   const postData = {
+  //     policyName: trimmedPolicyName,
+  //     query: selectedOptions["netSales"],
+  //     targetApplication: selectedOptions["targetLocation"],
+  //     genAiApp: selectedOptions["genAiApp"],
+  //     selectApiName: selectedOptions["genAiApp"],
+  //     selectApiDescription: description,
+  //     selectApiDataFields: Object.keys(dataFields).map((key) => ({
+  //       label: key,
+  //       isChecked: dataFields[key],
+  //     })),
+  //     actionOnDataField: actionOnDataField,
+  //     actionOnPermission: actionOnPermission,
+  //     actionOnPermissionExisting: actionOnPermissionExisting,
+  //     actionOnPermissionRevised: checkboxSelections,
+  //     actionOnPrivacyFilteringCategory: selectedOptions["privacyValue"] || "",
+  //     actionOnPrivacyFilteringAction: selectedOptions["privacyAction"] || "",
+  //     actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
+  //     actionOnAttributeFilteringAttribute:
+  //       selectedOptions["attributeOption"] || "",
+  //     actionOnAttributeFilteringValue: selectedOptions["attributeValue"] || "",
+  //     actionOnAttributeFilteringAction:
+  //       selectedOptions["attributeActionOption"] || "",
+  //     actionOnAttributeFilteringTransformValue:
+  //       "Transformation Attribute" || "",
+  //   };
+
+  //   console.log(postData, "functionCalling");
+
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerFunctionCalling`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(postData),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Policy saved successfully:", result);
+  //     setIsSaveSuccessful(true);
+
+  //     // Clear all dropdown selections and section data
+  //     setSelectedOptions({});
+  //     setDataFields({
+  //       "Opportunity Name": false,
+  //       "Lead Source": false,
+  //       Close_Date: false,
+  //       "Account Name": false,
+  //       Amount: false,
+  //       Age: false,
+  //       Type: false,
+  //       Probability: false,
+  //       Created_Date: false,
+  //     });
+  //     setCheckboxSelections([
+  //       { label: "Sales NA", isChecked: false },
+  //       { label: "Management", isChecked: false },
+  //     ]);
+  //     setDescription("");
+  //     setActionOnDataField("Account");
+  //     setActionOnPermission("ReadOrWrite");
+  //     setActionOnPermissionExisting("Management");
+
+  //     // Call fetchData to update table data
+  //     await fetchData();
+
+  //     setTimeout(() => {
+  //       setIsSaveSuccessful(false);
+  //       closeModal();
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error saving policy:", error);
+  //     setIsSaveSuccessful(false);
+  //   }
+  // };
+
   const handleConfirm = async () => {
     const trimmedPolicyName = policyName.trim();
+
+    const functionCallingPlusData = sections.map((section, index) => ({
+      actionOnDataField: actionOnDataFieldSelections[index] || "Account",
+      actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
+      actionOnPermissionExisting:
+        section.values.actionOnPermissionExisting || "Management",
+      actionOnPermissionRevised: checkboxSelections,
+      actionOnPrivacyFilteringCategory:
+        section.values["privacyValueOption"] || "",
+      actionOnPrivacyFilteringAction:
+        section.values["privacyActionOption"] || "",
+      actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
+      actionOnAttributeFilteringAttribute:
+        section.values["attributeOption"] || "",
+      actionOnAttributeFilteringValue:
+        section.values["attributeValueOption"] || "",
+      actionOnAttributeFilteringAction:
+        section.values["attributeActionOption"] || "",
+      actionOnAttributeFilteringTransformValue:
+        "Transformation Attribute" || "",
+    }));
+
     const postData = {
       policyName: trimmedPolicyName,
       query: selectedOptions["netSales"],
       targetApplication: selectedOptions["targetLocation"],
       genAiApp: selectedOptions["genAiApp"],
-      selectApiName: selectedOptions["genAiApp"],
+      selectApiName: selectedApiName,
       selectApiDescription: description,
       selectApiDataFields: Object.keys(dataFields).map((key) => ({
         label: key,
         isChecked: dataFields[key],
       })),
-      actionOnDataField: actionOnDataField,
-      actionOnPermission: actionOnPermission,
-      actionOnPermissionExisting: actionOnPermissionExisting,
-      actionOnPermissionRevised: checkboxSelections,
-      actionOnPrivacyFilteringCategory: selectedOptions["privacyValue"] || "",
-      actionOnPrivacyFilteringAction: selectedOptions["privacyAction"] || "",
-      actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
-      actionOnAttributeFilteringAttribute:
-        selectedOptions["attributeOption"] || "",
-      actionOnAttributeFilteringValue: selectedOptions["attributeValue"] || "",
-      actionOnAttributeFilteringAction:
-        selectedOptions["attributeActionOption"] || "",
-      actionOnAttributeFilteringTransformValue:
-        "Transformation Attribute" || "",
+      functionCallingPlusData,
     };
 
-    console.log(postData, "functionCalling");
+    // console.log(postData, "functionCalling");
 
     try {
       const response = await fetch(
@@ -187,23 +347,133 @@ const FunctionCalling = () => {
     }
   };
 
+  // const fetchDataForEdit = (id) => {
+  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  //   setIsSaveSuccessful(false);
+  //   const policyToEdit = tableData.find((policy) => policy._id === id);
+  //   if (policyToEdit) {
+  //     setPolicyName(policyToEdit.policyName);
+  //     setSelectedOptions({
+  //       netSales: policyToEdit.query,
+  //       targetLocation: policyToEdit.targetApplication,
+  //       genAiApp: policyToEdit.genAiApp,
+  //       privacyValue: policyToEdit.actionOnPrivacyFilteringCategory,
+  //       privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
+  //       attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
+  //       attributeValue: policyToEdit.actionOnAttributeFilteringValue,
+  //       attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
+  //     });
+  //     setDescription(policyToEdit.selectApiDescription);
+  //     setDataFields(
+  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
+  //         acc[field.label] = field.isChecked;
+  //         return acc;
+  //       }, {})
+  //     );
+  //     setCheckboxSelections(policyToEdit.actionOnPermissionRevised);
+  //     setPolicyId(id);
+  //   } else {
+  //     console.error("Policy not found with ID:", id);
+  //   }
+  // };
+
+  // const fetchDataForEdit = (id) => {
+  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  //   setIsSaveSuccessful(false);
+  //   const policyToEdit = tableData.find((policy) => policy._id === id);
+
+  //   if (policyToEdit) {
+  //     setPolicyName(policyToEdit.policyName);
+  //     setSelectedOptions({
+  //       netSales: policyToEdit.query,
+  //       targetLocation: policyToEdit.targetApplication,
+  //       genAiApp: policyToEdit.genAiApp,
+  //       privacyValueOption: policyToEdit.actionOnPrivacyFilteringCategory,
+  //       privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
+  //       attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
+  //       attributeValue: policyToEdit.actionOnAttributeFilteringValue,
+  //       attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
+  //     });
+  //     setDescription(policyToEdit.selectApiDescription);
+  //     setDataFields(
+  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
+  //         acc[field.label] = field.isChecked;
+  //         return acc;
+  //       }, {})
+  //     );
+
+  //     // Ensure actionOnPermissionRevised is an array
+  //     const actionOnPermissionRevised =
+  //       policyToEdit.actionOnPermissionRevised || [];
+
+  //     // Map the fetched data to the checkboxSelections state
+  //     setCheckboxSelections([
+  //       {
+  //         label: "Sales NA",
+  //         isChecked: actionOnPermissionRevised.some(
+  //           (p) => p.label === "Sales NA" && p.isChecked
+  //         ),
+  //       },
+  //       {
+  //         label: "Management",
+  //         isChecked: actionOnPermissionRevised.some(
+  //           (p) => p.label === "Management" && p.isChecked
+  //         ),
+  //       },
+  //     ]);
+
+  //     // Map through multiple sections (functionCallingPlusData) to populate them in the form
+  //     const sectionsData = policyToEdit.functionCallingPlusData.map(
+  //       (section, index) => ({
+  //         id: Date.now() + index, // Ensure unique id
+  //         values: {
+  //           actionOnDataField: section.actionOnDataField,
+  //           actionOnPermission: section.actionOnPermission,
+  //           actionOnPermissionExisting: section.actionOnPermissionExisting,
+  //           actionOnPermissionRevised: actionOnPermissionRevised,
+  //           privacyValueOption: section.actionOnPrivacyFilteringCategory,
+  //           privacyActionOption: section.actionOnPrivacyFilteringAction,
+  //           actionOnPrivacyFilteringTransformValue:
+  //             section.actionOnPrivacyFilteringTransformValue,
+  //           attributeOption: section.actionOnAttributeFilteringAttribute,
+  //           attributeValueOption: section.actionOnAttributeFilteringValue,
+  //           attributeActionOption: section.actionOnAttributeFilteringAction,
+  //           actionOnAttributeFilteringTransformValue:
+  //             section.actionOnAttributeFilteringTransformValue,
+  //         },
+  //       })
+  //     );
+
+  //     setSections(sectionsData); // Set the sections with the mapped data
+  //     setPolicyId(id);
+  //   } else {
+  //     console.error("Policy not found with ID:", id);
+  //   }
+  // };
+
   const fetchDataForEdit = (id) => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
 
     setIsSaveSuccessful(false);
     const policyToEdit = tableData.find((policy) => policy._id === id);
+    // console.log(policyToEdit.selectApiName, "selectApiName");
+
     if (policyToEdit) {
       setPolicyName(policyToEdit.policyName);
+
       setSelectedOptions({
         netSales: policyToEdit.query,
         targetLocation: policyToEdit.targetApplication,
         genAiApp: policyToEdit.genAiApp,
-        privacyValue: policyToEdit.actionOnPrivacyFilteringCategory,
+        privacyValueOption: policyToEdit.actionOnPrivacyFilteringCategory,
         privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
         attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
         attributeValue: policyToEdit.actionOnAttributeFilteringValue,
         attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
       });
+      setSelectedApiName(policyToEdit.selectedApiName);
       setDescription(policyToEdit.selectApiDescription);
       setDataFields(
         policyToEdit.selectApiDataFields.reduce((acc, field) => {
@@ -211,7 +481,43 @@ const FunctionCalling = () => {
           return acc;
         }, {})
       );
-      setCheckboxSelections(policyToEdit.actionOnPermissionRevised);
+
+      // Initialize checkboxSelections based on actionOnPermissionRevised
+      const checkboxSelectionsMap = (label) => {
+        return policyToEdit.functionCallingPlusData.some((section) =>
+          section.actionOnPermissionRevised.some(
+            (perm) => perm.label === label && perm.isChecked
+          )
+        );
+      };
+
+      setCheckboxSelections([
+        { label: "Sales NA", isChecked: checkboxSelectionsMap("Sales NA") },
+        { label: "Management", isChecked: checkboxSelectionsMap("Management") },
+      ]);
+
+      const sectionsData = policyToEdit.functionCallingPlusData.map(
+        (section, index) => ({
+          id: Date.now() + index,
+          values: {
+            actionOnDataField: section.actionOnDataField,
+            actionOnPermission: section.actionOnPermission,
+            actionOnPermissionExisting: section.actionOnPermissionExisting,
+            actionOnPermissionRevised: section.actionOnPermissionRevised,
+            privacyValueOption: section.actionOnPrivacyFilteringCategory,
+            privacyActionOption: section.actionOnPrivacyFilteringAction,
+            actionOnPrivacyFilteringTransformValue:
+              section.actionOnPrivacyFilteringTransformValue,
+            attributeOption: section.actionOnAttributeFilteringAttribute,
+            attributeValueOption: section.actionOnAttributeFilteringValue,
+            attributeActionOption: section.actionOnAttributeFilteringAction,
+            actionOnAttributeFilteringTransformValue:
+              section.actionOnAttributeFilteringTransformValue,
+          },
+        })
+      );
+
+      setSections(sectionsData);
       setPolicyId(id);
     } else {
       console.error("Policy not found with ID:", id);
@@ -224,33 +530,136 @@ const FunctionCalling = () => {
     // setIsEditModalOpen(true);
   };
 
+  // const handleUpdatePolicy = async () => {
+  //   const trimmedPolicyName = policyName.trim();
+  //   const postData = {
+  //     policyName: trimmedPolicyName,
+  //     query: selectedOptions["netSales"],
+  //     targetApplication: selectedOptions["targetLocation"],
+  //     genAiApp: selectedOptions["genAiApp"],
+  //     selectApiName: selectedOptions["genAiApp"],
+  //     selectApiDescription: description,
+  //     selectApiDataFields: Object.keys(dataFields).map((key) => ({
+  //       label: key,
+  //       isChecked: dataFields[key],
+  //     })),
+  //     actionOnDataField: actionOnDataField,
+  //     actionOnPermission: actionOnPermission,
+  //     actionOnPermissionExisting: actionOnPermissionExisting,
+  //     actionOnPermissionRevised: checkboxSelections,
+  //     actionOnPrivacyFilteringCategory: selectedOptions["privacyValue"] || "",
+  //     actionOnPrivacyFilteringAction: selectedOptions["privacyAction"] || "",
+  //     actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
+  //     actionOnAttributeFilteringAttribute:
+  //       selectedOptions["attributeOption"] || "",
+  //     actionOnAttributeFilteringValue: selectedOptions["attributeValue"] || "",
+  //     actionOnAttributeFilteringAction:
+  //       selectedOptions["attributeActionOption"] || "",
+  //     actionOnAttributeFilteringTransformValue:
+  //       "Transformation Attribute" || "",
+  //   };
+
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerFunctionCalling/${policyId}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(postData),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Policy updated successfully:", result);
+
+  //     setSuccessMessage("Policy updated successfully!");
+  //     setIsSuccessModalOpen(true);
+
+  //     setSections([{ id: Date.now(), values: {} }]);
+  //     setPolicyName("");
+  //     setSelectedOptions({});
+  //     setDataFields({
+  //       "Opportunity Name": false,
+  //       "Lead Source": false,
+  //       Close_Date: false,
+  //       "Account Name": false,
+  //       Amount: false,
+  //       Age: false,
+  //       Type: false,
+  //       Probability: false,
+  //       Created_Date: false,
+  //     });
+  //     setCheckboxSelections([
+  //       { label: "Sales NA", isChecked: false },
+  //       { label: "Management", isChecked: false },
+  //     ]);
+  //     setDescription("");
+  //     setActionOnDataField("Account");
+  //     setActionOnPermission("ReadOrWrite");
+  //     setActionOnPermissionExisting("Management");
+
+  //     // Call fetchData to update table data
+  //     await fetchData();
+
+  //     setTimeout(() => {
+  //       setIsSaveSuccessful(false);
+  //       closeModal();
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error updating policy:", error);
+  //     // setIsSaveSuccessful(false);
+  //   }
+  // };
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();
+
+    // Map through sections to build the functionCallingPlusData array
+    const functionCallingPlusData = sections.map((section) => ({
+      actionOnDataField: section.values.actionOnDataField || "Account",
+      actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
+      actionOnPermissionExisting:
+        section.values.actionOnPermissionExisting || "Management",
+      actionOnPermissionRevised: checkboxSelections.map((item) => ({
+        label: item.label,
+        isChecked: item.isChecked,
+      })),
+      actionOnPrivacyFilteringCategory:
+        section.values["privacyValueOption"] || "",
+      actionOnPrivacyFilteringAction:
+        section.values["privacyActionOption"] || "",
+      actionOnPrivacyFilteringTransformValue:
+        section.values.actionOnPrivacyFilteringTransformValue ||
+        "Transformation privacy",
+      actionOnAttributeFilteringAttribute:
+        section.values["attributeOption"] || "",
+      actionOnAttributeFilteringValue:
+        section.values["attributeValueOption"] || "",
+      actionOnAttributeFilteringAction:
+        section.values["attributeActionOption"] || "",
+      actionOnAttributeFilteringTransformValue:
+        section.values.actionOnAttributeFilteringTransformValue ||
+        "Transformation Attribute",
+    }));
+
     const postData = {
       policyName: trimmedPolicyName,
       query: selectedOptions["netSales"],
       targetApplication: selectedOptions["targetLocation"],
       genAiApp: selectedOptions["genAiApp"],
-      selectApiName: selectedOptions["genAiApp"],
+      selectApiName: selectedApiName,
       selectApiDescription: description,
       selectApiDataFields: Object.keys(dataFields).map((key) => ({
         label: key,
         isChecked: dataFields[key],
       })),
-      actionOnDataField: actionOnDataField,
-      actionOnPermission: actionOnPermission,
-      actionOnPermissionExisting: actionOnPermissionExisting,
-      actionOnPermissionRevised: checkboxSelections,
-      actionOnPrivacyFilteringCategory: selectedOptions["privacyValue"] || "",
-      actionOnPrivacyFilteringAction: selectedOptions["privacyAction"] || "",
-      actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
-      actionOnAttributeFilteringAttribute:
-        selectedOptions["attributeOption"] || "",
-      actionOnAttributeFilteringValue: selectedOptions["attributeValue"] || "",
-      actionOnAttributeFilteringAction:
-        selectedOptions["attributeActionOption"] || "",
-      actionOnAttributeFilteringTransformValue:
-        "Transformation Attribute" || "",
+      functionCallingPlusData, // Add the sections data here
     };
 
     try {
@@ -276,6 +685,7 @@ const FunctionCalling = () => {
       setSuccessMessage("Policy updated successfully!");
       setIsSuccessModalOpen(true);
 
+      // Reset form fields
       setSections([{ id: Date.now(), values: {} }]);
       setPolicyName("");
       setSelectedOptions({});
@@ -308,7 +718,7 @@ const FunctionCalling = () => {
       }, 2000);
     } catch (error) {
       console.error("Error updating policy:", error);
-      // setIsSaveSuccessful(false);
+      setIsSaveSuccessful(false);
     }
   };
 
@@ -407,6 +817,23 @@ const FunctionCalling = () => {
     setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
   };
 
+  const handleDropdownClick1 = (sectionId, index) => {
+    setOpenDropdown(
+      openDropdown === `${sectionId}-${index}` ? null : `${sectionId}-${index}`
+    );
+  };
+
+  const handleDropdownChange = (sectionId, dropdownType, value) => {
+    setSections(
+      sections.map((section) =>
+        section.id === sectionId
+          ? { ...section, values: { ...section.values, [dropdownType]: value } }
+          : section
+      )
+    );
+    setOpenDropdown(null);
+  };
+
   const handleOptionClick = (dropdownId, option) => {
     setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
     setOpenDropdown(null);
@@ -424,10 +851,28 @@ const FunctionCalling = () => {
     );
   };
 
-  const handleCheckboxSelectionsChange = (label) => {
-    setCheckboxSelections((prevState) =>
-      prevState.map((item) =>
+  const handleCheckboxSelectionsChange = (label, sectionIndex) => {
+    setCheckboxSelections((prevSelections) =>
+      prevSelections.map((item) =>
         item.label === label ? { ...item, isChecked: !item.isChecked } : item
+      )
+    );
+
+    // Update the sections with the new checkbox state
+    setSections((prevSections) =>
+      prevSections.map((section, index) =>
+        index === sectionIndex
+          ? {
+              ...section,
+              values: {
+                ...section.values,
+                actionOnPermissionRevised: checkboxSelections.map((item) => ({
+                  label: item.label,
+                  isChecked: item.isChecked,
+                })),
+              },
+            }
+          : section
       )
     );
   };
@@ -447,16 +892,16 @@ const FunctionCalling = () => {
   const items = {
     name: "Opportunity Name",
     subItems: [
-      { name: "Opportunity Name" },
+      { name: "Oppurtunity Name" },
       { name: "Account Name" },
-      { name: "Amount" },
+      { name: "Account" },
       { name: "Age" },
     ],
   };
 
   const Sales = {
     name: "Sales Opportunities",
-    subItems: [{ name: "API 1" }, { name: "API 2" }, { name: "API 3" }],
+    subItems: [{ name: "App1" }, { name: "App2" }, { name: "App3" }],
   };
 
   return (
@@ -618,8 +1063,10 @@ const FunctionCalling = () => {
                         iconColor="text-customIconColor"
                         backgroundColor="bg-black"
                         textColor="text-white"
+                        selectedItem={selectedApiName}
                         onItemClick={(subItemName) => {
                           console.log("Selected:", subItemName);
+                          setSelectedApiName(subItemName);
                         }}
                       />
                     </div>
@@ -767,8 +1214,13 @@ const FunctionCalling = () => {
                     iconColor="text-customIconColor"
                     backgroundColor="bg-black"
                     textColor="text-white"
+                    selectedItem={actionOnDataFieldSelections[sectionIndex]}
                     onItemClick={(subItemName) => {
-                      console.log(subItemName);
+                      const updatedSelections = [
+                        ...actionOnDataFieldSelections,
+                      ];
+                      updatedSelections[sectionIndex] = subItemName;
+                      setActionOnDataFieldSelections(updatedSelections);
                     }}
                   />
                 </div>
@@ -792,7 +1244,204 @@ const FunctionCalling = () => {
                                 Existing
                               </th>
                               <th className="px-2.5 py-2 border border-customBorderColor bg-[#6a7581] text-customWhite font-poppins font-semibold">
-                                Revised
+                                <div className="relative">
+                                  <div className="flex gap-2">
+                                    <div>Revised</div>
+                                    <FontAwesomeIcon
+                                      icon={faEdit}
+                                      className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                                      onClick={toggleeditMembershipPermission}
+                                    />
+                                  </div>
+
+                                  {showEditMembershipPermission && (
+                                    <>
+                                      {/* Backdrop */}
+                                      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+                                      {/* Modal */}
+                                      <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                                        <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                          <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
+                                            <span className="text-base font-poppins font-semibold">
+                                              Group Membership
+                                            </span>
+                                            <button
+                                              className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
+                                              onClick={
+                                                toggleeditMembershipPermission
+                                              }
+                                              style={{
+                                                width: "29px",
+                                                height: "29px",
+                                                border: "2px solid #31B47663",
+                                              }}
+                                            >
+                                              &times;
+                                            </button>
+                                          </div>
+
+                                          <div className="p-4 space-y-4">
+                                            {/* Member List */}
+                                            {members.map((member, index) => (
+                                              <div
+                                                key={index}
+                                                className="flex justify-between items-center mb-4"
+                                              >
+                                                <div className="flex items-center">
+                                                  <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                                    <img
+                                                      src={userIcon}
+                                                      alt="icons"
+                                                      style={{
+                                                        width: "47px",
+                                                        height: "47px",
+                                                      }}
+                                                    />
+                                                  </div>
+                                                  <div className="flex flex-col ml-3">
+                                                    <span className="text-white block text-base font-poppins font-semibold">
+                                                      {member}
+                                                    </span>
+                                                    <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                      Member{" "}
+                                                      <FontAwesomeIcon
+                                                        icon={faAngleDown}
+                                                      />
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                                <button
+                                                  className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
+                                                  style={{
+                                                    width: "29px",
+                                                    height: "29px",
+                                                    background: "#FFFFFF00",
+                                                    border:
+                                                      "2px solid #31B47663",
+                                                  }}
+                                                  onMouseEnter={() =>
+                                                    setHoveredRemoveIndex(index)
+                                                  }
+                                                  onMouseLeave={() =>
+                                                    setHoveredRemoveIndex(null)
+                                                  }
+                                                  onClick={() =>
+                                                    removeMember(index)
+                                                  }
+                                                >
+                                                  <FontAwesomeIcon
+                                                    icon={
+                                                      hoveredRemoveIndex ===
+                                                      index
+                                                        ? faClose
+                                                        : faMinus
+                                                    }
+                                                    className="transition-transform duration-1000 ease-in-out"
+                                                  />
+                                                </button>
+                                              </div>
+                                            ))}
+
+                                            {/* Divider */}
+                                            <div className="border-t border-gray-600"></div>
+
+                                            {/* Add Members Input Box */}
+                                            <div className="flex items-center justify-between bg-[#1B1E26] border border-[#31B47633] rounded-[5px] p-3">
+                                              <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={handleSearch}
+                                                placeholder="Add new member"
+                                                className="bg-transparent text-white placeholder-gray-400 w-full outline-none"
+                                              />
+                                              <FontAwesomeIcon
+                                                className="text-[#31B476]"
+                                                icon={faSearch}
+                                              />
+                                            </div>
+                                            {searchResults.map(
+                                              (username, index) => (
+                                                <div
+                                                  key={index}
+                                                  className="flex items-center justify-between bg-[#1B1E26] border border-[#31B476] rounded-[5px] p-3 mt-2"
+                                                >
+                                                  <div className="flex items-center">
+                                                    <img
+                                                      src={userIcon}
+                                                      className="text-[#31B476]"
+                                                      style={{
+                                                        width: "29px",
+                                                        height: "29px",
+                                                      }}
+                                                    />
+                                                    <span className="ml-3 text-white font-poppins font-semibold text-sm">
+                                                      {username}
+                                                    </span>
+                                                  </div>
+                                                  <button
+                                                    className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
+                                                    style={{
+                                                      width: "29px",
+                                                      height: "29px",
+                                                      background: "#FFFFFF00",
+                                                      border:
+                                                        "2px solid #31B47663",
+                                                    }}
+                                                    onClick={() =>
+                                                      addMember(username)
+                                                    }
+                                                    onMouseEnter={() =>
+                                                      setHoveredAddIndex(index)
+                                                    }
+                                                    onMouseLeave={() =>
+                                                      setHoveredAddIndex(null)
+                                                    }
+                                                  >
+                                                    <FontAwesomeIcon
+                                                      icon={
+                                                        hoveredAddIndex ===
+                                                        index
+                                                          ? faPlus
+                                                          : faPlus
+                                                      }
+                                                    />
+                                                  </button>
+                                                </div>
+                                              )
+                                            )}
+
+                                            {/* Footer Buttons */}
+                                            <div className="flex justify-end gap-4 mt-4 group">
+                                              <button className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white">
+                                                <img
+                                                  src={iconsmodel}
+                                                  alt="iconsmodel"
+                                                  className="mr-2 btn-icon"
+                                                />
+                                                <span
+                                                  onClick={
+                                                    toggleeditMembershipPermission
+                                                  }
+                                                >
+                                                  Save
+                                                </span>
+                                              </button>
+                                              <button
+                                                className="text-gray-400"
+                                                onClick={
+                                                  toggleeditMembershipPermission
+                                                }
+                                              >
+                                                Cancel
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
                               </th>
                             </tr>
                           </thead>
@@ -841,7 +1490,8 @@ const FunctionCalling = () => {
                                         checked={item.isChecked}
                                         onChange={() =>
                                           handleCheckboxSelectionsChange(
-                                            item.label
+                                            item.label,
+                                            sectionIndex
                                           )
                                         }
                                       />
@@ -887,36 +1537,44 @@ const FunctionCalling = () => {
                           <tbody>
                             <tr>
                               <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black">
-                                <PrivacyCustomDropdown
+                                <CustomDropdown
                                   options={data.privacyValueOption || []}
-                                  width={"169px "}
-                                  placeholder="None"
-                                  isOpen={openDropdown === "privacyValue"}
+                                  // width={"169px "}
+                                  placeholder="Select Document"
+                                  isOpen={openDropdown === `${section.id}-0`}
                                   onDropdownClick={() =>
-                                    handleDropdownClick("privacyValue")
+                                    handleDropdownClick1(section.id, 0)
                                   }
                                   selectedOption={
-                                    selectedOptions["privacyValue"]
+                                    section.values["privacyValueOption"] || ""
                                   }
-                                  onOptionClick={(option) =>
-                                    handleOptionClick("privacyValue", option)
+                                  setSelectedOption={(value) =>
+                                    handleDropdownChange(
+                                      section.id,
+                                      "privacyValueOption",
+                                      value
+                                    )
                                   }
                                 />
                               </td>
                               <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black">
-                                <PrivacyCustomDropdown
+                            
+                                <CustomDropdown
                                   options={data.privacyActionOption || []}
-                                  placeholder="None"
-                                  width={"139px"}
-                                  isOpen={openDropdown === "privacyAction"}
+                                  placeholder="Select Contains"
+                                  isOpen={openDropdown === `${section.id}-1`}
                                   onDropdownClick={() =>
-                                    handleDropdownClick("privacyAction")
+                                    handleDropdownClick1(section.id, 1)
                                   }
                                   selectedOption={
-                                    selectedOptions["privacyAction"]
+                                    section.values["privacyActionOption"] || ""
                                   }
-                                  onOptionClick={(option) =>
-                                    handleOptionClick("privacyAction", option)
+                                  setSelectedOption={(value) =>
+                                    handleDropdownChange(
+                                      section.id,
+                                      "privacyActionOption",
+                                      value
+                                    )
                                   }
                                 />
                               </td>
@@ -959,57 +1617,65 @@ const FunctionCalling = () => {
                           <tbody>
                             <tr>
                               <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                                <PrivacyCustomDropdown
+                          
+                                <CustomDropdown
                                   options={data.attributeOption || []}
                                   placeholder="Select Option"
-                                  isOpen={openDropdown === "attributeOption"}
-                                  width={"194px"}
+                                  isOpen={openDropdown === `${section.id}-2`}
                                   onDropdownClick={() =>
-                                    handleDropdownClick("attributeOption")
+                                    handleDropdownClick1(section.id, 2)
                                   }
                                   selectedOption={
-                                    selectedOptions["attributeOption"]
+                                    section.values["attributeOption"] || ""
                                   }
-                                  onOptionClick={(option) =>
-                                    handleOptionClick("attributeOption", option)
+                                  setSelectedOption={(value) =>
+                                    handleDropdownChange(
+                                      section.id,
+                                      "attributeOption",
+                                      value
+                                    )
                                   }
                                 />
                               </td>
                               <td className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black">
-                                <PrivacyCustomDropdown
+                            
+                                <CustomDropdown
                                   options={data.attributeValueOption || []}
                                   placeholder="Select Option"
-                                  width={"194px"}
-                                  isOpen={openDropdown === "attributeValue"}
+                                  isOpen={openDropdown === `${section.id}-3`}
                                   onDropdownClick={() =>
-                                    handleDropdownClick("attributeValue")
+                                    handleDropdownClick1(section.id, 3)
                                   }
                                   selectedOption={
-                                    selectedOptions["attributeValue"]
+                                    section.values["attributeValueOption"] || ""
                                   }
-                                  onOptionClick={(option) =>
-                                    handleOptionClick("attributeValue", option)
+                                  setSelectedOption={(value) =>
+                                    handleDropdownChange(
+                                      section.id,
+                                      "attributeValueOption",
+                                      value
+                                    )
                                   }
                                 />
                               </td>
                               <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                                <PrivacyCustomDropdown
+                              
+                                <CustomDropdown
                                   options={data.attributeActionOption || []}
                                   placeholder="Select Option"
-                                  width={"194px"}
-                                  isOpen={
-                                    openDropdown === "attributeActionOption"
-                                  }
+                                  isOpen={openDropdown === `${section.id}-4`}
                                   onDropdownClick={() =>
-                                    handleDropdownClick("attributeActionOption")
+                                    handleDropdownClick1(section.id, 4)
                                   }
                                   selectedOption={
-                                    selectedOptions["attributeActionOption"]
+                                    section.values["attributeActionOption"] ||
+                                    ""
                                   }
-                                  onOptionClick={(option) =>
-                                    handleOptionClick(
+                                  setSelectedOption={(value) =>
+                                    handleDropdownChange(
+                                      section.id,
                                       "attributeActionOption",
-                                      option
+                                      value
                                     )
                                   }
                                 />
@@ -1227,56 +1893,49 @@ const FunctionCalling = () => {
                         <li className="text-[#c4c9d0]">
                           Action on Permission Revised:
                         </li>
-                        {checkboxSelections.map((item) => (
+                        {/* {checkboxSelections.map((item) => (
                           <li key={item.label} className="text-[#c4c9d0]">
                             {item.label}:{" "}
                             {item.isChecked ? "Checked" : "Unchecked"}
                           </li>
-                        ))}
+                        ))} */}
                       </div>
                     </li>
 
-                    <li className="">
-                      <div className="bg-[#2E313B] p-4 rounded-md shadow-md">
-                        <h1 className="font-poppins font-semibold text-[white]">
-                          Privacy Filtering
-                        </h1>
-                        <p className="text-[#c4c9d0]">
-                          <span>Privacy Category:</span>{" "}
-                          {selectedOptions["privacyValue"]}
-                        </p>
-                        <p className="text-[#c4c9d0]">
-                          <span>Privacy Action:</span>{" "}
-                          {selectedOptions["privacyAction"]}
-                        </p>
-                        <p className="text-[#c4c9d0]">
-                          <span>Transformation Value:</span> Transformation
-                        </p>
-                      </div>
-                    </li>
-                    <li className="">
-                      <div className="bg-[#2E313B] p-4 rounded-md shadow-md">
-                        <h1 className="font-poppins font-semibold text-white ">
-                          Attribute Filtering
-                        </h1>
-                        <p className="text-[#c4c9d0]">
-                          <span>Attribute:</span>{" "}
-                          {selectedOptions["attributeOption"]}
-                        </p>
-                        <p className="text-[#c4c9d0]">
-                          <span> Attribute Value:</span>{" "}
-                          {selectedOptions["attributeValue"]}
-                        </p>
-                        <p className="text-[#c4c9d0]">
-                          <span> Attribute Action:</span>{" "}
-                          {selectedOptions["attributeActionOption"]}
-                        </p>
-                        <p className="text-[#c4c9d0]">
-                          <span>Transformation Value:</span> Transformation
-                          Attribute
-                        </p>
-                      </div>
-                    </li>
+                    {sections.map((section) => (
+                      <li key={section.id} className="mb-6">
+                        <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
+                          <div className="mb-2">
+                            <h3 className="font-semibold text-lg text-white">
+                              {/* Section {section.id} */}
+                            </h3>
+                          </div>
+                          <div className="text-white">
+                            <strong>Privacy Category:</strong>{" "}
+                            {section.values["privacyValueOption"]}
+                          </div>
+                          <div className="text-white">
+                            <strong>Privacy Action:</strong>{" "}
+                            {section.values["privacyActionOption"]}
+                          </div>
+                          <p className="text-[#c4c9d0]">
+                            <span>Transformation Value:</span> Transformation
+                          </p>
+                          <div className="text-white">
+                            <strong>Attribute:</strong>{" "}
+                            {section.values["attributeOption"]}
+                          </div>
+                          <div className="text-white">
+                            <strong>Attribute Value:</strong>{" "}
+                            {section.values["attributeValueOption"]}
+                          </div>
+                          <div className="text-white">
+                            <strong>Attribute Action:</strong>{" "}
+                            {section.values["attributeActionOption"]}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div className="flex justify-end">
@@ -1427,101 +2086,7 @@ const FunctionCalling = () => {
         onClose={closeModal} // Close modal handler
         onConfirm={handleDeleteButtonClick} // Confirm deletion handler
       />
-      {/* {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-[#373945] p-6 rounded-lg shadow-lg w-1/2">
-            <h2 className="text-lg font-poppins font-semibold mb-4 text-center text-white">
-              {isEditMode ? "Edit Policy" : "Confirm Policy Save"}
-            </h2>
-            {isSaveSuccessful ? (
-              <p className="text-green-500 text-center">
-                Policy updated successfully!
-              </p>
-            ) : (
-              <>
-                <div className="flex flex-col">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-2">
-                    Target Application
-                  </label>
-                  <PrivacyCustomDropdown
-                    options={data.targetLocationOptions || []}
-                    placeholder="Salesforce"
-                    isOpen={openDropdown === "targetLocation"}
-                    onDropdownClick={() =>
-                      handleDropdownClick("targetLocation")
-                    }
-                    selectedOption={selectedOptions["targetLocation"]}
-                    onOptionClick={(option) =>
-                      handleOptionClick("targetLocation", option)
-                    }
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-2">
-                    GenAPI App
-                  </label>
-                  <PrivacyCustomDropdown
-                    options={data.genAiAppOptions || []}
-                    placeholder="App one"
-                    isOpen={openDropdown === "genAiApp"}
-                    onDropdownClick={() => handleDropdownClick("genAiApp")}
-                    selectedOption={selectedOptions["genAiApp"]}
-                    onOptionClick={(option) =>
-                      handleOptionClick("genAiApp", option)
-                    }
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-2">
-                    Select API Data
-                  </label>
-                  <Dropdown
-                    items={Sales}
-                    iconColor="text-customIconColor"
-                    backgroundColor="bg-black"
-                    textColor="text-white"
-                    onItemClick={(subItemName) => {
-                      console.log("Selected:", subItemName);
-                    }}
-                  />
-
-                  <div className="flex flex-col w-full sm:w-full md:w-full lg:w-[100%] xl:w-[100%] 2xl:w-[100%] mb-4 md:mb-0 pl-[2px] pr-[2px] ipad-width">
-                    <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
-                      Description
-                    </label>
-
-                    <input
-                      type="text"
-                      placeholder="Retrieve sales opportunities"
-                      className="bg-black pb-[96px] pt-[10px] pl-[15px] pr-[9px] text-customWhite text-base font-poppins text-sizess"
-                      value={description} // Controlled input value
-                      onChange={handleDescriptionChange} // Handle input change
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end mt-4">
-                  <button
-                    className="bg-red-500 text-white py-2 px-4 rounded mr-2"
-                    onClick={closeModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-green-500 text-white py-2 px-4 rounded"
-                    onClick={
-                      isEditMode ? handleUpdatePolicy : confirmSavePolicy
-                    }
-                  >
-                    {isEditMode ? "Update Policy" : "Confirm"}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )} */}
+    
 
       <div className="flex justify-end items-center mt-4 space-x-2">
         <button

@@ -117,6 +117,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    const checkForExistingSession = async () => {
+      // Check if there's a refresh token (could be in an HttpOnly cookie)
+      if (localStorage.getItem("tokenExpiry")) {
+        try {
+          await refreshAccessToken(); 
+          navigate("/dashboard"); 
+        } catch (error) {
+          console.error("Failed to refresh token:", error);
+          navigate("/login"); 
+        }
+      } else {
+        navigate("/login"); 
+      }
+    };
+
+    checkForExistingSession();
+  }, []);
+
   // Handle login operation
   const login = async (email, password) => {
     try {
@@ -153,7 +172,7 @@ export const AuthProvider = ({ children }) => {
       });
       localStorage.removeItem("tokenExpiry");
       localStorage.removeItem("userEmail");
-      navigate("/login"); // Redirect to login page after logout
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
     }

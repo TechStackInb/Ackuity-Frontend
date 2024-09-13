@@ -10,6 +10,22 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const CustomBackground = (props) => {
+  const { x, y, width, height, radius } = props;
+
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      rx={radius} // This adds rounded corners to the background
+      ry={radius}
+      fill="#1B1E26"
+    />
+  );
+};
+
 const data1 = [
   {
     day: "All",
@@ -70,14 +86,14 @@ const topItemsThreats = [
   { name: "Salesforce", value: 6 },
 ];
 
-const colors = ["#08683b", "#08683b", "#08683b", "#08683b", "#08683b"]; // Green, Yellow, Red, Black, Grey
+const colors = ["#31B476", "#31B476", "#31B476", "#31B476", "#31B476"]; // Green, Yellow, Red, Black, Grey
 
 const FunctionCalling = () => {
   return (
     <div className="page-center p-4">
       <div className="mt-8">
         <div className="flex flex-col md:flex-row gap-5">
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-white shadow-lg rounded-lg mb-4 md:mb-0">
+          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 width={630}
@@ -86,41 +102,48 @@ const FunctionCalling = () => {
                 margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                 barSize={40}
               >
-                <XAxis dataKey="day" />
-                <YAxis />
+                <XAxis dataKey="day" stroke="#fff" />
+                <YAxis stroke="#fff" />
                 <Tooltip />
-                <Bar dataKey="FunctionCalling" fill={colors[0]} />
+                <Bar
+                  dataKey="FunctionCalling"
+                  fill={colors[0]}
+                  radius={[22, 22, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-white shadow-lg rounded-lg mb-4 md:mb-0">
+          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={data}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 barSize={50}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#85898d87" />
+                <XAxis dataKey="name" stroke="#fff" />
+                <YAxis stroke="#fff" />
+                <Tooltip cursor={{ fill: "#444" }} />
                 <Legend />
                 <Bar
                   dataKey="value"
                   fill={colors[1]}
                   name="# Policy Categories Configured"
+                  radius={[22, 22, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
       </div>
-      <div className="mt-8">
-        <h3 className="text-center mb-4 font-bold text-2xl text-white">
+      <div className="mt-8 bg-[#000000] shadow p-4 rounded-lg">
+        <p className="text-left text-xl text-[#31B476] font-poppins font-semibold">
           Top Items
-        </h3>
+        </p>
+      </div>
+      <div className="mt-6">
         <div className="flex flex-col md:flex-row gap-5">
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-white shadow-lg rounded-lg mb-4 md:mb-0">
+          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={topItemsServed}
@@ -128,16 +151,22 @@ const FunctionCalling = () => {
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 barSize={30}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis type="category" dataKey="name" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#85898d87" />
+                <XAxis type="number" stroke="#fff" />
+                <YAxis type="category" dataKey="name" stroke="#fff" />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill={colors[0]} name="# Queries Served" />
+                <Bar
+                  dataKey="value"
+                  fill={colors[0]}
+                  name="# Queries Served"
+                  radius={[0, 22, 22, 0]}
+                  background={<CustomBackground radius={22} />}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-white shadow-lg rounded-lg mb-4 md:mb-0">
+          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={topItemsDenied}
@@ -145,12 +174,18 @@ const FunctionCalling = () => {
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 barSize={30}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis type="category" dataKey="name" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#85898d87" />
+                <XAxis type="number" stroke="#fff" />
+                <YAxis type="category" dataKey="name" stroke="#fff" />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill={colors[2]} name="# Queries Denied" />
+                <Bar
+                  dataKey="value"
+                  fill={colors[2]}
+                  name="# Queries Denied"
+                  radius={[0, 22, 22, 0]}
+                  background={<CustomBackground radius={22} />}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -158,7 +193,7 @@ const FunctionCalling = () => {
       </div>
       <div className="mt-8">
         <div className="flex flex-col md:flex-row gap-5">
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-white shadow-lg rounded-lg mb-4 md:mb-0">
+          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={topItemTransformed}
@@ -166,20 +201,22 @@ const FunctionCalling = () => {
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 barSize={30}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis type="category" dataKey="name" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#85898d87" />
+                <XAxis type="number" stroke="#fff" />
+                <YAxis type="category" dataKey="name" stroke="#fff" />
                 <Tooltip />
                 <Legend />
                 <Bar
                   dataKey="value"
                   fill={colors[1]}
                   name="# Queries Transformed"
+                  radius={[0, 22, 22, 0]}
+                  background={<CustomBackground radius={22} />}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-white shadow-lg rounded-lg mb-4 md:mb-0">
+          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={topItemsThreats}
@@ -187,15 +224,18 @@ const FunctionCalling = () => {
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 barSize={30}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis type="category" dataKey="name" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#85898d87" />
+                <XAxis type="number" stroke="#fff" />
+                <YAxis type="category" dataKey="name" stroke="#fff" />
                 <Tooltip />
                 <Legend />
                 <Bar
                   dataKey="value"
                   fill={colors[3]}
                   name="# Queries Threats"
+                  radius={[0, 22, 22, 0]}
+                  // background={{ fill: "#1B1E26" }}
+                  background={<CustomBackground radius={22} />}
                 />
               </BarChart>
             </ResponsiveContainer>

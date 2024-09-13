@@ -37,6 +37,44 @@ function PermissionsTab() {
   const [hoveredRemoveIndex, setHoveredRemoveIndex] = useState(null);
   const [hoveredAddIndex, setHoveredAddIndex] = useState(null);
 
+  const [members, setMembers] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const availableUsers = [
+    "Rajat Mohanty",
+    "Vinod Vasudevan",
+    "John Doe",
+    "Jane Smith",
+  ];
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+    if (query) {
+      const filteredUsers = availableUsers.filter(
+        (user) => user.toLowerCase().includes(query) && !members.includes(user)
+      );
+      setSearchResults(filteredUsers);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  // Function to add a user to the member list
+  const addMember = (username) => {
+    setMembers([...members, username]);
+    setSearchResults(searchResults.filter((user) => user !== username));
+    setSearchQuery("");
+  };
+
+  // Function to remove a user from the member list
+  const removeMember = (index) => {
+    const updatedMembers = [...members];
+    updatedMembers.splice(index, 1);
+    setMembers(updatedMembers);
+  };
+
   const toggleMembership = () => {
     setShowMembership(!showMembership);
   };
@@ -168,11 +206,11 @@ function PermissionsTab() {
                           <div className="p-4">
                             <div className="flex justify-between items-center mb-4">
                               <span className="text-white tex-sm font-poppins font-medium">
-                                2 Members
+                                {members.length} Members
                               </span>
                             </div>
 
-                            <div className="space-y-4">
+                            {/* <div className="space-y-4">
                               <div className="flex ">
                                 <div
                                   className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
@@ -232,7 +270,36 @@ function PermissionsTab() {
                                   </span>
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
+                            {members.map((member, index) => (
+                              <div
+                                key={index}
+                                className="flex justify-between items-center mb-4"
+                              >
+                                <div className="flex items-center">
+                                  <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                    <img
+                                      src={userIcon}
+                                      alt="icons"
+                                      style={{
+                                        width: "47px",
+                                        height: "47px",
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col ml-3">
+                                    <span className="text-white block text-base font-poppins font-semibold">
+                                      {member}
+                                    </span>
+                                    <span className="text-gray-400 text-sm font-poppins font-normal">
+                                      Member{" "}
+                                      <FontAwesomeIcon icon={faAngleDown} />
+                                    </span>
+                                  </div>
+                                </div>
+                           
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
@@ -286,77 +353,69 @@ function PermissionsTab() {
 
                           <div className="p-4 space-y-4">
                             {/* Member List */}
-                            {["Rajat Mohanty", "Rajat Mohanty"].map(
-                              (member, index) => (
-                                <div
-                                  key={index}
-                                  className="flex justify-between items-center mb-4"
-                                >
-                                  <div className="flex items-center">
-                                    <div
-                                      className="flex items-center justify-center text-black bg-gray-700 rounded-full"
-                                      // style={{
-                                      //   width: "47px",
-                                      //   height: "47px",
-                                      //   background: "#FFFFFF",
-                                      //   opacity: 1,
-                                      // }}
-                                    >
-                                      {/* <FontAwesomeIcon icon={faUserLarge} /> */}
-                                      <img
-                                        src={userIcon}
-                                        alt="icons"
-                                        style={{
-                                          width: "47px",
-                                          height: "47px",
-                                        }}
-                                      />
-                                    </div>
-                                    <div className="flex flex-col ml-3">
-                                      <span className="text-white block text-base font-poppins font-semibold">
-                                        {member}
-                                      </span>
-                                      <span className="text-gray-400 text-sm font-poppins font-normal">
-                                        Member{" "}
-                                        <FontAwesomeIcon icon={faAngleDown} />
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <button
-                                    className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
-                                    style={{
-                                      width: "29px",
-                                      height: "29px",
-                                      background: "#FFFFFF00",
-                                      border: "2px solid #31B47663",
-                                    }}
-                                    onMouseEnter={() =>
-                                      setHoveredRemoveIndex(index)
-                                    }
-                                    onMouseLeave={() =>
-                                      setHoveredRemoveIndex(null)
-                                    }
-                                  >
-                                    <FontAwesomeIcon
-                                      icon={
-                                        hoveredRemoveIndex === index
-                                          ? faClose
-                                          : faMinus
-                                      }
-                                      className="transition-transform duration-1000 ease-in-out"
+                            {members.map((member, index) => (
+                              <div
+                                key={index}
+                                className="flex justify-between items-center mb-4"
+                              >
+                                <div className="flex items-center">
+                                  <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                    <img
+                                      src={userIcon}
+                                      alt="icons"
+                                      style={{
+                                        width: "47px",
+                                        height: "47px",
+                                      }}
                                     />
-                                  </button>
+                                  </div>
+                                  <div className="flex flex-col ml-3">
+                                    <span className="text-white block text-base font-poppins font-semibold">
+                                      {member}
+                                    </span>
+                                    <span className="text-gray-400 text-sm font-poppins font-normal">
+                                      Member{" "}
+                                      <FontAwesomeIcon icon={faAngleDown} />
+                                    </span>
+                                  </div>
                                 </div>
-                              )
-                            )}
+                                <button
+                                  className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
+                                  style={{
+                                    width: "29px",
+                                    height: "29px",
+                                    background: "#FFFFFF00",
+                                    border: "2px solid #31B47663",
+                                  }}
+                                  onMouseEnter={() =>
+                                    setHoveredRemoveIndex(index)
+                                  }
+                                  onMouseLeave={() =>
+                                    setHoveredRemoveIndex(null)
+                                  }
+                                  onClick={() => removeMember(index)}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={
+                                      hoveredRemoveIndex === index
+                                        ? faClose
+                                        : faMinus
+                                    }
+                                    className="transition-transform duration-1000 ease-in-out"
+                                  />
+                                </button>
+                              </div>
+                            ))}
 
                             {/* Divider */}
                             <div className="border-t border-gray-600"></div>
 
-                            {/* Add Members Input Box - Aligned with Member List */}
+                            {/* Add Members Input Box */}
                             <div className="flex items-center justify-between bg-[#1B1E26] border border-[#31B47633] rounded-[5px] p-3">
                               <input
                                 type="text"
+                                value={searchQuery}
+                                onChange={handleSearch}
                                 placeholder="Add new member"
                                 className="bg-transparent text-white placeholder-gray-400 w-full outline-none"
                               />
@@ -366,12 +425,8 @@ function PermissionsTab() {
                               />
                             </div>
 
-                            {/* Add Member List */}
-                            {[
-                              "Rajat Mohanty",
-                              "Vinod Vasudevan",
-                              "Rajat Mohanty",
-                            ].map((username, index) => (
+                            {/* Search Results */}
+                            {searchResults.map((username, index) => (
                               <div
                                 key={index}
                                 className="flex items-center justify-between bg-[#1B1E26] border border-[#31B476] rounded-[5px] p-3 mt-2"
@@ -379,7 +434,6 @@ function PermissionsTab() {
                                 <div className="flex items-center">
                                   <img
                                     src={userIcon}
-                                    // icon={faUserLarge}
                                     className="text-[#31B476]"
                                     style={{ width: "29px", height: "29px" }}
                                   />
@@ -395,13 +449,14 @@ function PermissionsTab() {
                                     background: "#FFFFFF00",
                                     border: "2px solid #31B47663",
                                   }}
+                                  onClick={() => addMember(username)}
                                   onMouseEnter={() => setHoveredAddIndex(index)}
                                   onMouseLeave={() => setHoveredAddIndex(null)}
                                 >
                                   <FontAwesomeIcon
                                     icon={
                                       hoveredAddIndex === index
-                                        ? faClose
+                                        ? faPlus
                                         : faPlus
                                     }
                                   />
@@ -417,9 +472,9 @@ function PermissionsTab() {
                                   alt="iconsmodel"
                                   className="mr-2 btn-icon"
                                 />
-                                <span>Save</span>
+                                <span  onClick={toggleeditMembership}>Save</span>
                               </button>
-                              <button className="text-gray-400">Cancel</button>
+                              <button className="text-gray-400" onClick={toggleeditMembership}>Cancel</button>
                             </div>
                           </div>
                         </div>

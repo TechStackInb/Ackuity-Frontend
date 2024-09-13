@@ -1338,21 +1338,7 @@ const Chart2DatabasePage = () => {
                                 <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                                 <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                               </tr>
-                              <tr>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              </tr>
-                              <tr>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              </tr>
-                              <tr>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              </tr>
+                   
                             </tbody>
                           </table>
                         </div>

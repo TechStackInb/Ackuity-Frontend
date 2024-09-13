@@ -12,6 +12,7 @@ import ChartSection from "./contexts/ChartSection";
 import Header from "./components/Header/Header";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { ChartProvider } from "./contexts/ChartContext";
+import PrivateRoute from "./PrivateRoute";
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,23 +25,26 @@ const App = () => {
         <Route
           path="/dashboard"
           element={
-            <div className="flex h-screen overflow-hidden bg-customGray">
-              <Sidebar
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-              />
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <Header
+            <PrivateRoute>
+              <div className="flex h-screen overflow-hidden bg-customGray">
+                <Sidebar
                   isSidebarOpen={isSidebarOpen}
                   setIsSidebarOpen={setIsSidebarOpen}
                 />
-                <div className="flex-1 overflow-y-auto p-4">
-                  <ChartSection />
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  <Header
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                  />
+                  <div className="flex-1 overflow-y-auto p-4">
+                    <ChartSection />
+                  </div>
                 </div>
               </div>
-            </div>
+            </PrivateRoute>
           }
         />
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </ChartProvider>

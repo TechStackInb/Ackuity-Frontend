@@ -60,7 +60,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     }
   };
 
-  console.log(policies, "policies");
+  // console.log(policies, "policies");
 
   // Call fetchPolicies after saving policy and also on component mount
   useEffect(() => {
