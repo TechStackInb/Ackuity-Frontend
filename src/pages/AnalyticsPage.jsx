@@ -184,7 +184,7 @@ const Analytics = () => {
 
         <div className="relative inline-block text-left">
           <button
-            className="group flex items-center px-4 py-2 border border-[#1b1e26] rounded-t-lg bg-[#1b1e26] shadow-sm"
+            className="group flex items-center px-4 py-2  rounded-t-lg bg-[#1b1e26] shadow-sm"
             onClick={toggleDropdown}
           >
             <FontAwesomeIcon icon={faClock} className="mr-2 text-[#31B476]" />
@@ -195,7 +195,7 @@ const Analytics = () => {
             />
           </button>
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26] rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26]  rounded-lg shadow-lg z-10">
               <ul className="py-2">
                 <li
                   className={`px-4 py-2 cursor-pointer ${
