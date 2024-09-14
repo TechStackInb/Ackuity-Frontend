@@ -86,6 +86,8 @@ const FunctionCalling = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const availableUsers = [
     "Rajat Mohanty",
     "Vinod Vasudevan",
@@ -249,10 +251,121 @@ const FunctionCalling = () => {
   //   }
   // };
 
+  // const handleConfirm = async () => {
+  //   const trimmedPolicyName = policyName.trim();
+
+  //   const functionCallingPlusData = sections.map((section, index) => ({
+  //     actionOnDataField: section.values["actionOnDataField"] || "",
+  //     actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
+  //     actionOnPermissionExisting:
+  //       section.values.actionOnPermissionExisting || "Management",
+  //     actionOnPermissionRevised: checkboxSelections,
+  //     actionOnPrivacyFilteringCategory:
+  //       section.values["privacyValueOption"] || "",
+  //     actionOnPrivacyFilteringAction:
+  //       section.values["privacyActionOption"] || "",
+  //     actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
+  //     actionOnAttributeFilteringAttribute:
+  //       section.values["attributeOption"] || "",
+  //     actionOnAttributeFilteringValue:
+  //       section.values["attributeValueOption"] || "",
+  //     actionOnAttributeFilteringAction:
+  //       section.values["attributeActionOption"] || "",
+  //     actionOnAttributeFilteringTransformValue:
+  //       "Transformation Attribute" || "",
+  //   }));
+
+  //   const postData = {
+  //     policyName: trimmedPolicyName,
+  //     query: selectedOptions["netSales"],
+  //     targetApplication: selectedOptions["targetLocation"],
+  //     genAiApp: selectedOptions["genAiApp"],
+  //     selectApiName: selectedOptions["selectApiName"],
+  //     selectApiDescription: description,
+  //     selectApiDataFields: Object.keys(dataFields).map((key) => ({
+  //       label: key,
+  //       isChecked: dataFields[key],
+  //     })),
+  //     functionCallingPlusData,
+  //   };
+
+  //   // console.log(postData, "functionCalling");
+
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerFunctionCalling`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(postData),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Policy saved successfully:", result);
+  //     setIsSaveSuccessful(true);
+
+  //     // Clear all dropdown selections and section data
+  //     setSelectedOptions({});
+  //     setDataFields({
+  //       "Opportunity Name": false,
+  //       "Lead Source": false,
+  //       Close_Date: false,
+  //       "Account Name": false,
+  //       Amount: false,
+  //       Age: false,
+  //       Type: false,
+  //       Probability: false,
+  //       Created_Date: false,
+  //     });
+  //     setCheckboxSelections([
+  //       { label: "Sales NA", isChecked: false },
+  //       { label: "Management", isChecked: false },
+  //     ]);
+  //     setDescription("");
+  //     setActionOnDataField("Account");
+  //     setActionOnPermission("ReadOrWrite");
+  //     setActionOnPermissionExisting("Management");
+
+  //     // Call fetchData to update table data
+  //     await fetchData();
+
+  //     setTimeout(() => {
+  //       setIsSaveSuccessful(false);
+  //       closeModal();
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error saving policy:", error);
+  //     setIsSaveSuccessful(false);
+  //   }
+  // };
+
   const handleConfirm = async () => {
     const trimmedPolicyName = policyName.trim();
 
-    const functionCallingPlusData = sections.map((section, index) => ({
+    // Validation
+    if (
+      !trimmedPolicyName ||
+      !selectedOptions["netSales"] ||
+      !selectedOptions["targetLocation"] ||
+      !selectedOptions["genAiApp"] ||
+      !selectedOptions["selectApiName"]
+    ) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
+
+    // If validation passes, clear the error message
+    setErrorMessage("");
+
+    const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
       actionOnPermissionExisting:
@@ -286,8 +399,6 @@ const FunctionCalling = () => {
       })),
       functionCallingPlusData,
     };
-
-    // console.log(postData, "functionCalling");
 
     try {
       const response = await fetch(
@@ -331,6 +442,7 @@ const FunctionCalling = () => {
       setActionOnDataField("Account");
       setActionOnPermission("ReadOrWrite");
       setActionOnPermissionExisting("Management");
+      setPolicyName("");
 
       // Call fetchData to update table data
       await fetchData();
@@ -1842,6 +1954,7 @@ const FunctionCalling = () => {
             <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
               Confirm Policy Save
             </h2>
+
             {isSaveSuccessful ? (
               <p className="text-green-500 text-center">
                 Policy saved successfully!
@@ -1851,7 +1964,7 @@ const FunctionCalling = () => {
                 <div className="mb-4">
                   <label
                     htmlFor="policyName"
-                    className="block text-sm font-medium text-white  mb-2"
+                    className="block text-sm font-medium text-white mb-2"
                   >
                     Policy Name
                   </label>
@@ -1879,12 +1992,6 @@ const FunctionCalling = () => {
                         <li className="text-[#c4c9d0]">
                           Description: {description}
                         </li>
-                        {/* {Object.keys(dataFields).map((field) => (
-                          <li key={field} className="text-[#c4c9d0]">
-                            {field}:{" "}
-                            {dataFields[field] ? "Checked" : "Unchecked"}
-                          </li>
-                        ))} */}
                       </div>
                     </div>
 
@@ -1903,15 +2010,6 @@ const FunctionCalling = () => {
                           Action on Permission Existing:{" "}
                           {actionOnPermissionExisting}
                         </li>
-                        {/* <li className="text-[#c4c9d0]">
-                          Action on Permission Revised:
-                        </li> */}
-                        {/* {checkboxSelections.map((item) => (
-                          <li key={item.label} className="text-[#c4c9d0]">
-                            {item.label}:{" "}
-                            {item.isChecked ? "Checked" : "Unchecked"}
-                          </li>
-                        ))} */}
                       </div>
                     </li>
 
@@ -1951,6 +2049,11 @@ const FunctionCalling = () => {
                     ))}
                   </ul>
                 </div>
+                {errorMessage && (
+                  <p className="text-red-500 text-center mb-4">
+                    {errorMessage}
+                  </p>
+                )}
                 <div className="flex justify-end">
                   <button
                     className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mr-2 transition-all duration-200 ease-in-out"
