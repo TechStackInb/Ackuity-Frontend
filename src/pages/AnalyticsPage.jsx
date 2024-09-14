@@ -247,7 +247,8 @@ const Analytics = () => {
       </div>
 
       <div className="font-poppins font-semibold space-x-4">
-        <DashboardChart chartData={chartData} />
+        {/* <DashboardChart chartData={chartData} /> */}
+        <DashboardChart />
       </div>
 
       <div className="mt-8 bg-[#000000] shadow p-4 rounded-lg">
