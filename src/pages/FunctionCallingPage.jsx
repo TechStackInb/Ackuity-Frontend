@@ -72,9 +72,7 @@ const FunctionCalling = () => {
   const [selectedApiName, setSelectedApiName] = useState("");
 
   const [actionOnDataFieldSelections, setActionOnDataFieldSelections] =
-    useState(
-      Array(sections.length).fill("") 
-    );
+    useState(Array(sections.length).fill(""));
 
   const topRef = useRef(null);
 
@@ -255,7 +253,7 @@ const FunctionCalling = () => {
     const trimmedPolicyName = policyName.trim();
 
     const functionCallingPlusData = sections.map((section, index) => ({
-      actionOnDataField: actionOnDataFieldSelections[index] || "Account",
+      actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
       actionOnPermissionExisting:
         section.values.actionOnPermissionExisting || "Management",
@@ -280,7 +278,7 @@ const FunctionCalling = () => {
       query: selectedOptions["netSales"],
       targetApplication: selectedOptions["targetLocation"],
       genAiApp: selectedOptions["genAiApp"],
-      selectApiName: selectedApiName,
+      selectApiName: selectedOptions["selectApiName"],
       selectApiDescription: description,
       selectApiDataFields: Object.keys(dataFields).map((key) => ({
         label: key,
@@ -467,13 +465,14 @@ const FunctionCalling = () => {
         netSales: policyToEdit.query,
         targetLocation: policyToEdit.targetApplication,
         genAiApp: policyToEdit.genAiApp,
+        selectApiName: policyToEdit.selectApiName,
         privacyValueOption: policyToEdit.actionOnPrivacyFilteringCategory,
         privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
         attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
         attributeValue: policyToEdit.actionOnAttributeFilteringValue,
         attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
       });
-      setSelectedApiName(policyToEdit.selectedApiName);
+      // setSelectedApiName(policyToEdit.selectedApiName);
       setDescription(policyToEdit.selectApiDescription);
       setDataFields(
         policyToEdit.selectApiDataFields.reduce((acc, field) => {
@@ -622,7 +621,7 @@ const FunctionCalling = () => {
 
     // Map through sections to build the functionCallingPlusData array
     const functionCallingPlusData = sections.map((section) => ({
-      actionOnDataField: section.values.actionOnDataField || "Account",
+      actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
       actionOnPermissionExisting:
         section.values.actionOnPermissionExisting || "Management",
@@ -653,7 +652,7 @@ const FunctionCalling = () => {
       query: selectedOptions["netSales"],
       targetApplication: selectedOptions["targetLocation"],
       genAiApp: selectedOptions["genAiApp"],
-      selectApiName: selectedApiName,
+      selectApiName: selectedOptions["selectApiName"],
       selectApiDescription: description,
       selectApiDataFields: Object.keys(dataFields).map((key) => ({
         label: key,
@@ -887,6 +886,8 @@ const FunctionCalling = () => {
     attributeOption: ["Department", "Location"],
     attributeValueOption: ["Asia", "America"],
     attributeActionOption: ["Allow", "Reduct"],
+    actionOnDataField: ["Oppurtunity Name", "Account Name", "Account", "Age"],
+    selectApiName: ["App1", "App2", "App3"],
   };
 
   const items = {
@@ -1058,7 +1059,7 @@ const FunctionCalling = () => {
                       Select API Data
                     </label>
                     <div>
-                      <Dropdown
+                      {/* <Dropdown
                         items={Sales}
                         iconColor="text-customIconColor"
                         backgroundColor="bg-black"
@@ -1068,6 +1069,18 @@ const FunctionCalling = () => {
                           console.log("Selected:", subItemName);
                           setSelectedApiName(subItemName);
                         }}
+                      /> */}
+                      <PrivacyCustomDropdown
+                        options={data.selectApiName || []}
+                        placeholder="Select API"
+                        isOpen={openDropdown === "selectApiName"}
+                        onDropdownClick={() =>
+                          handleDropdownClick("selectApiName")
+                        }
+                        selectedOption={selectedOptions["selectApiName"]}
+                        onOptionClick={(option) =>
+                          handleOptionClick("selectApiName", option)
+                        }
                       />
                     </div>
                   </div>
@@ -1203,25 +1216,25 @@ const FunctionCalling = () => {
         sections.map((section, sectionIndex) => (
           <div key={sectionIndex} className=" bg-customBlack  opacity-100 ">
             <div className="page-center">
-              <div className="pt-[1rem] ">
+              <div className=" w-full md:w-[35%]  pt-[1rem] ">
                 <div className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5">
                   <span className="text-[#31B476]  mr-2 font-poppins  font-semibold">
                     DataField
                   </span>
-                  <Dropdown
-                    width={"200px"}
-                    items={items}
-                    iconColor="text-customIconColor"
-                    backgroundColor="bg-black"
-                    textColor="text-white"
-                    selectedItem={actionOnDataFieldSelections[sectionIndex]}
-                    onItemClick={(subItemName) => {
-                      const updatedSelections = [
-                        ...actionOnDataFieldSelections,
-                      ];
-                      updatedSelections[sectionIndex] = subItemName;
-                      setActionOnDataFieldSelections(updatedSelections);
-                    }}
+
+                  <CustomDropdown
+                    options={data.actionOnDataField || []}
+                    placeholder="Select Data Field"
+                    isOpen={openDropdown === `${section.id}-5`}
+                    onDropdownClick={() => handleDropdownClick1(section.id, 5)}
+                    selectedOption={section.values["actionOnDataField"] || ""}
+                    setSelectedOption={(value) =>
+                      handleDropdownChange(
+                        section.id,
+                        "actionOnDataField",
+                        value
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -1558,7 +1571,6 @@ const FunctionCalling = () => {
                                 />
                               </td>
                               <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black">
-                            
                                 <CustomDropdown
                                   options={data.privacyActionOption || []}
                                   placeholder="Select Contains"
@@ -1617,7 +1629,6 @@ const FunctionCalling = () => {
                           <tbody>
                             <tr>
                               <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                          
                                 <CustomDropdown
                                   options={data.attributeOption || []}
                                   placeholder="Select Option"
@@ -1638,7 +1649,6 @@ const FunctionCalling = () => {
                                 />
                               </td>
                               <td className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black">
-                            
                                 <CustomDropdown
                                   options={data.attributeValueOption || []}
                                   placeholder="Select Option"
@@ -1659,7 +1669,6 @@ const FunctionCalling = () => {
                                 />
                               </td>
                               <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                              
                                 <CustomDropdown
                                   options={data.attributeActionOption || []}
                                   placeholder="Select Option"
@@ -1790,6 +1799,10 @@ const FunctionCalling = () => {
               Probability: false,
               Created_Date: false,
             });
+            setCheckboxSelections([
+              { label: "Sales NA", isChecked: false },
+              { label: "Management", isChecked: false },
+            ]);
           }}
         >
           <span className="transition-transform duration-300 ease-out">
@@ -1859,19 +1872,19 @@ const FunctionCalling = () => {
                     <div className="">
                       <div className="bg-[#2E313B] p-4 rounded-md shadow-md">
                         {Object.entries(selectedOptions).map(([key, value]) => (
-                          <li key={key} className="text-white">
+                          <li key={key} className="text-[#c4c9d0]">
                             {key}: {value}
                           </li>
                         ))}
                         <li className="text-[#c4c9d0]">
                           Description: {description}
                         </li>
-                        {Object.keys(dataFields).map((field) => (
+                        {/* {Object.keys(dataFields).map((field) => (
                           <li key={field} className="text-[#c4c9d0]">
                             {field}:{" "}
                             {dataFields[field] ? "Checked" : "Unchecked"}
                           </li>
-                        ))}
+                        ))} */}
                       </div>
                     </div>
 
@@ -1890,9 +1903,9 @@ const FunctionCalling = () => {
                           Action on Permission Existing:{" "}
                           {actionOnPermissionExisting}
                         </li>
-                        <li className="text-[#c4c9d0]">
+                        {/* <li className="text-[#c4c9d0]">
                           Action on Permission Revised:
-                        </li>
+                        </li> */}
                         {/* {checkboxSelections.map((item) => (
                           <li key={item.label} className="text-[#c4c9d0]">
                             {item.label}:{" "}
@@ -1910,26 +1923,26 @@ const FunctionCalling = () => {
                               {/* Section {section.id} */}
                             </h3>
                           </div>
-                          <div className="text-white">
+                          <div className="text-[#c4c9d0]">
                             <strong>Privacy Category:</strong>{" "}
                             {section.values["privacyValueOption"]}
                           </div>
-                          <div className="text-white">
+                          <div className="text-[#c4c9d0]">
                             <strong>Privacy Action:</strong>{" "}
                             {section.values["privacyActionOption"]}
                           </div>
                           <p className="text-[#c4c9d0]">
                             <span>Transformation Value:</span> Transformation
                           </p>
-                          <div className="text-white">
+                          <div className="text-[#c4c9d0]">
                             <strong>Attribute:</strong>{" "}
                             {section.values["attributeOption"]}
                           </div>
-                          <div className="text-white">
+                          <div className="text-[#c4c9d0]">
                             <strong>Attribute Value:</strong>{" "}
                             {section.values["attributeValueOption"]}
                           </div>
-                          <div className="text-white">
+                          <div className="text-[#c4c9d0]">
                             <strong>Attribute Action:</strong>{" "}
                             {section.values["attributeActionOption"]}
                           </div>
@@ -2086,7 +2099,6 @@ const FunctionCalling = () => {
         onClose={closeModal} // Close modal handler
         onConfirm={handleDeleteButtonClick} // Confirm deletion handler
       />
-    
 
       <div className="flex justify-end items-center mt-4 space-x-2">
         <button
