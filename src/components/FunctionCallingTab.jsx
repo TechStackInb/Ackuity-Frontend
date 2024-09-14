@@ -9,6 +9,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import WaterfallChart from "./WaterfallChart";
+
 
 const CustomBackground = (props) => {
   const { x, y, width, height, radius } = props;
@@ -26,28 +28,66 @@ const CustomBackground = (props) => {
   );
 };
 
+
+const options = {
+  chart: {
+    type: 'waterfall',
+  },
+  title: {
+    text: 'Waterfall Chart',
+  },
+  xAxis: {
+    categories: ['All', 'Served', 'Denied', 'Transformed', 'Flagged'],
+    crosshair: true,
+  },
+  yAxis: {
+    title: {
+      text: 'Value',
+    },
+  },
+  series: [
+    {
+      data: [
+        { name: 'All', y: 12 },
+        { name: 'Served', y: -4 },
+        { name: 'Denied', y: -3 },
+        { name: 'Transformed', y: -2 },
+        { name: 'Flagged', y: -1 },
+      ],
+      color: '#6baed6',
+    },
+  ],
+};
+
 const data1 = [
-  {
-    day: "All",
-    FunctionCalling: [-4, 16],
-  },
-  {
-    day: "Served",
-    FunctionCalling: [5, 16],
-  },
-  {
-    day: "Denied",
-    FunctionCalling: [3, 12],
-  },
-  {
-    day: "Transformed",
-    FunctionCalling: [0, 8],
-  },
-  {
-    day: "Flagged",
-    FunctionCalling: [-3, 5],
-  },
+  { day: "All", value: 12, base: 0 },
+  { day: "Served", value: -4, base: 12 },
+  { day: "Denied", value: -3, base: 8 },
+  { day: "Transformed", value: -2, base: 5 },
+  { day: "Flagged", value: -1, base: 3 },
 ];
+// const data1 = [
+//   {
+//     day: "All",
+//     FunctionCalling: [-4, 16],
+//   },
+//   {
+//     day: "Served",
+//     FunctionCalling: [5, 16],
+//   },
+//   {
+//     day: "Denied",
+//     FunctionCalling: [3, 12],
+//   },
+//   {
+//     day: "Transformed",
+//     FunctionCalling: [0, 8],
+//   },
+//   {
+//     day: "Flagged",
+//     FunctionCalling: [-3, 5],
+//   },
+// ];
 const data = [
   { name: "Permissions", value: 10 },
   { name: "Attributes", value: 50 },
@@ -93,7 +133,7 @@ const FunctionCalling = () => {
     <div className="page-center p-4">
       <div className="mt-8">
         <div className="flex flex-col md:flex-row gap-5">
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
+          {/* <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 width={630}
@@ -112,7 +152,34 @@ const FunctionCalling = () => {
                 />
               </BarChart>
             </ResponsiveContainer>
+          </div> */}
+          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
+            {/* <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                width={630}
+                height={250}
+                data={data1}
+                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              >
+                <XAxis dataKey="day" stroke="#fff" />
+                <YAxis stroke="#fff" />
+                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" />
+
+                <Bar dataKey="base" fill="transparent" stackId="a" />
+
+                <Bar
+                  dataKey="value"
+                  fill={colors[0]}
+                  stackId="a"
+                  radius={[22, 22, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer> */}
+          <WaterfallChart />
+            
           </div>
+          
           <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
