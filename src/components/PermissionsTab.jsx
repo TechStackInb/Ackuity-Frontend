@@ -45,6 +45,8 @@ function PermissionsTab() {
   const [savedData, setSavedData] = useState([]);
   const [Members, setAllMembers] = useState([]);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   // const fetchPolicyUsers = async () => {
   //   try {
   //     const response = await fetch(`${BASE_URL}/api/data/members`, {
@@ -204,7 +206,64 @@ function PermissionsTab() {
     setMembers(updatedMembers);
   };
 
+  // const handleSave = async () => {
+
+  //   const memberIds = members.map((member) => member._id);
+  //   const jsonPayload = {
+  //     documentRepository: selectedOptions["attributeOption"],
+  //     documentName: selectedOptions["documentOption"],
+  //     members: memberIds,
+  //   };
+
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPermissions`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(jsonPayload),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to save members");
+  //     }
+
+  //     const data = await response.json();
+  //     console.log("Successfully saved:", data);
+
+  //     setSuccessMessage("Permissions saved successfully!");
+  //     setIsSuccessModalOpen(true);
+
+  //     setTimeout(() => {
+  //       setIsSuccessModalOpen(false);
+  //       setShowEditMembership(false);
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error saving members:", error);
+  //   }
+  // };
+
   const handleSave = async () => {
+    // Check for missing fields
+    if (!selectedOptions["attributeOption"]) {
+      setErrorMessage("Document Repository is required.");
+      return;
+    }
+
+    if (!selectedOptions["documentOption"]) {
+      setErrorMessage("Document Name is required.");
+      return;
+    }
+
+    if (members.length === 0) {
+      setErrorMessage("At least one member must be selected.");
+      return;
+    }
+
     const memberIds = members.map((member) => member._id);
     const jsonPayload = {
       documentRepository: selectedOptions["attributeOption"],
@@ -241,6 +300,7 @@ function PermissionsTab() {
       }, 2000);
     } catch (error) {
       console.error("Error saving members:", error);
+      setErrorMessage("Failed to save permissions. Please try again.");
     }
   };
 
@@ -683,6 +743,12 @@ function PermissionsTab() {
                                         </button>
                                       </div>
                                     ))}
+                                  </div>
+                                )}
+
+                                {errorMessage && (
+                                  <div className="text-red-500 mb-4">
+                                    {errorMessage}
                                   </div>
                                 )}
 
