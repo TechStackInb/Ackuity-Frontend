@@ -123,26 +123,70 @@ function PermissionsTab() {
   //     setSearchResults([]);
   //   }
   // };
-  const handleSearch = (event) => {
+  // const handleSearch = (event) => {
+  //   const query = event.target.value.toLowerCase();
+  //   setSearchQuery(query);
+
+  //   if (query) {
+  //     const filteredUsers = availableUsers
+  //       .filter(
+  //         (user) =>
+  //           user.name.toLowerCase().includes(query) &&
+  //           !members.some((member) => member._id === user._id)
+  //       )
+  //       // Use a Map to filter out duplicate users based on _id
+  //       .reduce((acc, current) => {
+  //         if (!acc.find((user) => user._id === current._id)) {
+  //           acc.push(current);
+  //         }
+  //         return acc;
+  //       }, []);
+
+  //     setSearchResults(filteredUsers);
+  //   } else {
+  //     setSearchResults([]);
+  //   }
+  // };
+
+  const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
 
     if (query) {
-      const filteredUsers = availableUsers
-        .filter(
-          (user) =>
-            user.name.toLowerCase().includes(query) &&
-            !members.some((member) => member._id === user._id)
-        )
-        // Use a Map to filter out duplicate users based on _id
-        .reduce((acc, current) => {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/api/data/members?query=${query}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch members");
+        }
+
+        const data = await response.json();
+        const filteredUsers = data.data.filter((user) => {
+          const userNameLower = user.name.toLowerCase();
+          return query === userNameLower || userNameLower.startsWith(query);
+        });
+
+        // Ensure no duplicate members are added
+        const uniqueFilteredUsers = filteredUsers.reduce((acc, current) => {
           if (!acc.find((user) => user._id === current._id)) {
             acc.push(current);
           }
           return acc;
         }, []);
 
-      setSearchResults(filteredUsers);
+        setSearchResults(uniqueFilteredUsers);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
     } else {
       setSearchResults([]);
     }
@@ -542,7 +586,7 @@ function PermissionsTab() {
                                   />
                                 </div>
 
-                                {searchResults.length > 0 && (
+                                {/* {searchResults.length > 0 && (
                                   <div>
                                     {searchResults.map((user, index) => (
                                       <div
@@ -584,6 +628,57 @@ function PermissionsTab() {
                                                 ? faPlus
                                                 : faPlus
                                             }
+                                          />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )} */}
+                                {searchResults.length > 0 && (
+                                  <div>
+                                    {searchResults.map((user) => (
+                                      <div
+                                        key={user._id}
+                                        className="flex items-center justify-between bg-[#1B1E26] border border-[#31B476] rounded-[5px] p-3 mt-2"
+                                      >
+                                        <div className="flex items-center">
+                                          <img
+                                            src={userIcon}
+                                            className="text-[#31B476]"
+                                            style={{
+                                              width: "29px",
+                                              height: "29px",
+                                            }}
+                                            alt="User Icon"
+                                          />
+                                          <span className="ml-3 text-white font-poppins font-semibold text-sm">
+                                            {user.name}
+                                          </span>
+                                        </div>
+                                        <button
+                                          className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
+                                          style={{
+                                            width: "29px",
+                                            height: "29px",
+                                            background: "#FFFFFF00",
+                                            border: "2px solid #31B47663",
+                                          }}
+                                          onClick={() => addMember(user)}
+                                          onMouseEnter={() =>
+                                            setHoveredAddIndex(user._id)
+                                          }
+                                          onMouseLeave={() =>
+                                            setHoveredAddIndex(null)
+                                          }
+                                          title="Add Member"
+                                        >
+                                          <FontAwesomeIcon
+                                            icon={faPlus}
+                                            className={`transition-transform duration-300 ${
+                                              hoveredAddIndex === user._id
+                                                ? "text-green-500"
+                                                : "text-green-400"
+                                            }`}
                                           />
                                         </button>
                                       </div>
@@ -693,18 +788,6 @@ function PermissionsTab() {
               {/* Members Column */}
               <td className="px-4 py-6 border border-customBorderColor bg-[#000000]">
                 <div>
-                  {/* {data.members.length > 0 ? (
-                    <div>
-                      {data.members.map((member, memberIndex) => (
-                        <div key={memberIndex}>
-                          <span>{member.name}</span> -{" "}
-                          <span>{member.email}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <span>No Members</span>
-                  )} */}
                   {Array.isArray(data.members) && data.members.length > 0 ? (
                     <div>
                       {data.members.map((member, memberIndex) => (
@@ -744,14 +827,6 @@ function PermissionsTab() {
           ))}
         </tbody>
       </table>
-
-      {/* {isGroupMembershipOpen && (
-        <GroupMembershipModal onClose={() => setGroupMembershipOpen(false)} />
-      )}
-
-      {isEditPermissionsOpen && (
-        <EditPermissionsModal onClose={() => setEditPermissionsOpen(false)} />
-      )} */}
     </>
   );
 }
