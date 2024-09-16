@@ -123,23 +123,19 @@ const Analytics = () => {
     setIsOpen(false);
   };
 
-  // Function to fetch data based on selected time range
   const fetchChartData = async () => {
     try {
       let response;
       if (selectedOption === "Last 24 hours") {
-        // Call the recent data API
         response = await axiosInstance.get("/api/data/chartData");
         setChartData(response.data.recentEntries);
       } else {
-        // Call the average data API
         response = await axiosInstance.get("/api/data/chartData/getAverage");
         const data =
           selectedOption === "Last 7 days"
             ? response.data.sevenDayAverages
             : response.data.thirtyDayAverages;
 
-        // Map the data to match the format of the pie chart
         const mappedData = data.map((entry) => ({
           title: entry._id,
           data: {
@@ -154,12 +150,15 @@ const Analytics = () => {
         }));
         setChartData(mappedData);
       }
-      // Display success toast
-      // toast.success("Data refreshed successfully!");
     } catch (error) {
       console.error("Error fetching chart data:", error);
-      toast.error("Failed to refresh data.");
     }
+  };
+
+  // Modify the refresh button click handler
+  const handleRefreshClick = async () => {
+    await fetchChartData();
+    setSelectedOption("Last 24 hours"); // Reset dropdown to "Last 24 hours" only on refresh
   };
 
   // Fetch data whenever the selectedOption changes
@@ -179,7 +178,9 @@ const Analytics = () => {
             icon={faSyncAlt}
             className="mr-2 text-[#31B476] group-hover:text-white"
           />
-          <span className="text-white">Refresh</span>
+          <span className="text-white " onClick={handleRefreshClick}>
+            Refresh
+          </span>
         </button>
 
         <div className="relative inline-block text-left">
@@ -238,7 +239,7 @@ const Analytics = () => {
             <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
               Dashboard
             </h2>
-            <h2 className="text-sm text-[#eff2f6] font-poppins mb-4">
+            <h2 className="text-sm text-[#eff2f6] font-poppins">
               Dashboard
               <span className="text-customWhite text-sm"> / Analytics</span>
             </h2>

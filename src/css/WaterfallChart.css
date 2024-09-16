@@ -1,0 +1,13 @@
+.custom-waterfall-chart .g2-axis-title,
+.custom-waterfall-chart .g2-axis-label {
+  fill: #ffffff !important; /* Force the axis labels to be white */
+}
+
+.custom-waterfall-chart .g2-axis-line {
+  stroke: #ffffff !important; /* Force the axis line to be white */
+}
+
+.custom-waterfall-chart .g2-grid-line {
+  stroke: #ffffff !important; /* Force the grid lines to be white */
+  opacity: 0.3; /* Optional opacity for grid lines */
+}

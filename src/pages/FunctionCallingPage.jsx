@@ -1148,7 +1148,7 @@ const FunctionCalling = () => {
               Select API Data
             </h2>
             <button
-              className="bg-[#2F3A45] text-[#000000] px-2 py-2 rounded hover:text-customGreen"
+              className="bg-[#2F3A45] text-[#000000] px-2 rounded hover:text-customGreen"
               onClick={() => setContentVisible(!isContentVisible)}
             >
               <FontAwesomeIcon
@@ -1312,7 +1312,7 @@ const FunctionCalling = () => {
               With the following Action on Data
             </h2>
             <button
-              className="bg-[#2F3A45] text-[#000000] px-2 py-2 rounded hover:text-customGreen"
+              className="bg-[#2F3A45] text-[#000000] px-2  rounded hover:text-customGreen"
               onClick={() => setSectionVisible(!isSectionVisible)}
             >
               <FontAwesomeIcon
@@ -1661,7 +1661,10 @@ const FunctionCalling = () => {
                           </thead>
                           <tbody>
                             <tr>
-                              <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black">
+                              <td
+                                className=" py-2.5 border border-customBorderColor text-customWhite bg-black"
+                                style={{ width: "200px" }}
+                              >
                                 <CustomDropdown
                                   options={data.privacyValueOption || []}
                                   // width={"169px "}
@@ -1682,7 +1685,10 @@ const FunctionCalling = () => {
                                   }
                                 />
                               </td>
-                              <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black">
+                              <td
+                                className=" py-2.5 border border-customBorderColor text-customWhite bg-black"
+                                style={{ width: "200px" }}
+                              >
                                 <CustomDropdown
                                   options={data.privacyActionOption || []}
                                   placeholder="Select Contains"
@@ -1740,7 +1746,10 @@ const FunctionCalling = () => {
                           </thead>
                           <tbody>
                             <tr>
-                              <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
+                              <td
+                                className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
+                                style={{ width: "200px" }}
+                              >
                                 <CustomDropdown
                                   options={data.attributeOption || []}
                                   placeholder="Select Option"
@@ -1760,7 +1769,10 @@ const FunctionCalling = () => {
                                   }
                                 />
                               </td>
-                              <td className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black">
+                              <td
+                                className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
+                                style={{ width: "200px" }}
+                              >
                                 <CustomDropdown
                                   options={data.attributeValueOption || []}
                                   placeholder="Select Option"
@@ -1780,7 +1792,10 @@ const FunctionCalling = () => {
                                   }
                                 />
                               </td>
-                              <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
+                              <td
+                                className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
+                                style={{ width: "200px" }}
+                              >
                                 <CustomDropdown
                                   options={data.attributeActionOption || []}
                                   placeholder="Select Option"

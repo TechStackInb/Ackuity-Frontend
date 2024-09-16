@@ -20,6 +20,9 @@ const ThreatManagement = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [threatData, setThreatData] = useState([]);
+
+  const [threatDataDashboard, setThreatDataDashboard] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -64,6 +67,42 @@ const ThreatManagement = () => {
   useEffect(() => {
     const fetchThreatData = async () => {
       try {
+        const response = await fetch(
+          `${BASE_URL}/api/data/threatManagementacdata`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          // Map the data into a more usable format for the UI
+          const threatData = [
+            { type: "Total Threats", count: data.data[0].totalThreats },
+            { type: "Injection Attacks", count: data.data[0].injectionAttacks },
+            { type: "API Attacks", count: data.data[0].apiAttacks },
+            { type: "Agent Anomalies", count: data.data[0].agentAnamalies },
+            { type: "User Anomalies", count: data.data[0].userAnamalies },
+          ];
+          setThreatDataDashboard(threatData); // Set the formatted data to the state
+        } else {
+          console.error("Failed to fetch threat data");
+        }
+      } catch (error) {
+        console.error("Error fetching threat data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchThreatData();
+  }, []);
+  console.log(threatDataDashboard, "threatDataDashboard");
+
+  useEffect(() => {
+    const fetchThreatData = async () => {
+      try {
         const response = await fetch(`${BASE_URL}/api/data/threatManagement`, {
           method: "GET",
           credentials: "include", // Include credentials
@@ -71,7 +110,7 @@ const ThreatManagement = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data, "threat");
+          // console.log(data, "threat");
           setThreatData(data.data); // Set fetched data to state
         } else {
           console.error("Failed to fetch threat data");
@@ -153,12 +192,7 @@ const ThreatManagement = () => {
                   icon={faSyncAlt}
                   className="mr-2 text-[#31B476] group-hover:text-white"
                 />
-                <span
-                  className="text-white"
-                  onClick={() => window.location.reload()}
-                >
-                  Refresh
-                </span>
+                <span className="text-white">Refresh</span>
               </button>
 
               <div className="relative inline-block text-left">
@@ -202,22 +236,28 @@ const ThreatManagement = () => {
           <div className="flex items-center">
             <div className="flex basis-[80%] border-t-2 border-[#091024dc]"></div>
           </div>
-          <div className="flex flex-wrap gap-4 mt-4">
-            {threatDatas.map((threat, index) => (
-              <div
-                key={index}
-                className="  flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[15%] xl:basis-[15%] 2xl:basis-[15%] items-center justify-between rounded-md overflow-hidden ipad-threat"
-              >
-                <div className="w-full bg-[#2a2f3a] p-2 text-center text-[#d1d5db] text-sm font-medium">
-                  {threat.type}
-                </div>
-                <div className="w-full bg-black flex-grow flex items-center justify-center py-8">
-                  <div className="text-4xl text-white font-bold">
-                    {threat.count}
+          <div>
+            {loading ? (
+              <div>Loading...</div>
+            ) : (
+              <div className="flex flex-wrap gap-4 mt-4">
+                {threatDataDashboard.map((threat, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[15%] xl:basis-[15%] 2xl:basis-[15%] items-center justify-between rounded-md overflow-hidden ipad-threat"
+                  >
+                    <div className="w-full bg-[#2a2f3a] p-2 text-center text-[#d1d5db] text-sm font-medium">
+                      {threat.type}
+                    </div>
+                    <div className="w-full bg-black flex-grow flex items-center justify-center py-8">
+                      <div className="text-4xl text-white font-bold">
+                        {threat.count}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
