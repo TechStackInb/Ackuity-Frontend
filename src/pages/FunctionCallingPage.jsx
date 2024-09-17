@@ -24,6 +24,7 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import { saveAs } from "file-saver";
 import userIcon from "../assets/usericon.svg";
 import iconsmodel from "../assets/save.svg";
+import ThreeDotsButton from "../components/ThreeDotsButton";
 
 const FunctionCalling = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -61,7 +62,7 @@ const FunctionCalling = () => {
   const [actionOnDataField, setActionOnDataField] = useState("Account");
   const [actionOnPermission, setActionOnPermission] = useState("ReadOrWrite");
   const [actionOnPermissionExisting, setActionOnPermissionExisting] =
-    useState("Management");
+    useState("Rajat");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -88,6 +89,8 @@ const FunctionCalling = () => {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [showMembership, setShowMembership] = useState(false);
+
   const availableUsers = [
     "Rajat Mohanty",
     "Vinod Vasudevan",
@@ -95,35 +98,68 @@ const FunctionCalling = () => {
     "Jane Smith",
   ];
 
-  const handleSearch = (event) => {
+  const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
+
     if (query) {
-      const filteredUsers = availableUsers.filter(
-        (user) => user.toLowerCase().includes(query) && !members.includes(user)
-      );
-      setSearchResults(filteredUsers);
+      try {
+        const response = await fetch(
+          `${BASE_URL}/api/data/members?query=${query}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch members");
+        }
+
+        const data = await response.json();
+        const filteredUsers = data.data.filter((user) => {
+          const userNameLower = user.name.toLowerCase();
+          return query === userNameLower || userNameLower.startsWith(query);
+        });
+
+        // Ensure no duplicate members are added
+        const uniqueFilteredUsers = filteredUsers.reduce((acc, current) => {
+          if (!acc.find((user) => user._id === current._id)) {
+            acc.push(current);
+          }
+          return acc;
+        }, []);
+
+        setSearchResults(uniqueFilteredUsers);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
     } else {
       setSearchResults([]);
     }
   };
 
-  // Function to add a user to the member list
-  const addMember = (username) => {
-    setMembers([...members, username]);
-    setSearchResults(searchResults.filter((user) => user !== username));
+  const addMember = (user) => {
+    setMembers([...members, user]);
+    setSearchResults(searchResults.filter((u) => u._id !== user._id));
     setSearchQuery("");
   };
 
-  // Function to remove a user from the member list
   const removeMember = (index) => {
     const updatedMembers = [...members];
     updatedMembers.splice(index, 1);
     setMembers(updatedMembers);
   };
 
-  const toggleeditMembershipPermission = () => {
-    setShowEditMembershipPermission(!showEditMembershipPermission);
+  const toggleeditMembership = () => {
+    setShowEditMembership(!showEditMembership);
+  };
+
+  const toggleMemberships = () => {
+    setShowMembership(!showMembership);
   };
 
   const fetchData = async (page = 1) => {
@@ -349,6 +385,9 @@ const FunctionCalling = () => {
 
   const handleConfirm = async () => {
     const trimmedPolicyName = policyName.trim();
+    const trimmedDescription = description.trim();
+
+    const memberIds = members.map((member) => member._id);
 
     // Validation
     if (
@@ -356,7 +395,8 @@ const FunctionCalling = () => {
       !selectedOptions["netSales"] ||
       !selectedOptions["targetLocation"] ||
       !selectedOptions["genAiApp"] ||
-      !selectedOptions["selectApiName"]
+      !selectedOptions["selectApiName"] ||
+      !trimmedDescription
     ) {
       setErrorMessage("Please fill in all required fields.");
       return;
@@ -368,9 +408,8 @@ const FunctionCalling = () => {
     const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
-      actionOnPermissionExisting:
-        section.values.actionOnPermissionExisting || "Management",
-      actionOnPermissionRevised: checkboxSelections,
+      actionOnPermissionExistingMember: memberIds,
+      actionOnPermissionRevisedMember: memberIds,
       actionOnPrivacyFilteringCategory:
         section.values["privacyValueOption"] || "",
       actionOnPrivacyFilteringAction:
@@ -399,6 +438,8 @@ const FunctionCalling = () => {
       })),
       functionCallingPlusData,
     };
+
+    console.log(postData, "postData");
 
     try {
       const response = await fetch(
@@ -563,12 +604,85 @@ const FunctionCalling = () => {
   //   }
   // };
 
-  const fetchDataForEdit = (id) => {
+  // const fetchDataForEdit = (id) => {
+  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  //   setIsSaveSuccessful(false);
+  //   const policyToEdit = tableData.find((policy) => policy._id === id);
+  //   // console.log(policyToEdit.selectApiName, "selectApiName");
+
+  //   if (policyToEdit) {
+  //     setPolicyName(policyToEdit.policyName);
+
+  //     setSelectedOptions({
+  //       netSales: policyToEdit.query,
+  //       targetLocation: policyToEdit.targetApplication,
+  //       genAiApp: policyToEdit.genAiApp,
+  //       selectApiName: policyToEdit.selectApiName,
+  //       privacyValueOption: policyToEdit.actionOnPrivacyFilteringCategory,
+  //       privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
+  //       attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
+  //       attributeValue: policyToEdit.actionOnAttributeFilteringValue,
+  //       attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
+  //     });
+  //     // setSelectedApiName(policyToEdit.selectedApiName);
+  //     setDescription(policyToEdit.selectApiDescription);
+  //     setDataFields(
+  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
+  //         acc[field.label] = field.isChecked;
+  //         return acc;
+  //       }, {})
+  //     );
+
+  //     // Initialize checkboxSelections based on actionOnPermissionRevised
+  //     const checkboxSelectionsMap = (label) => {
+  //       return policyToEdit.functionCallingPlusData.some((section) =>
+  //         section.actionOnPermissionRevised.some(
+  //           (perm) => perm.label === label && perm.isChecked
+  //         )
+  //       );
+  //     };
+
+  //     setCheckboxSelections([
+  //       { label: "Sales NA", isChecked: checkboxSelectionsMap("Sales NA") },
+  //       { label: "Management", isChecked: checkboxSelectionsMap("Management") },
+  //     ]);
+
+  //     const memberIds = members.map((member) => member._id);
+
+  //     const sectionsData = policyToEdit.functionCallingPlusData.map(
+  //       (section, index) => ({
+  //         id: Date.now() + index,
+  //         values: {
+  //           actionOnDataField: section.actionOnDataField,
+  //           actionOnPermission: section.actionOnPermission,
+  //           actionOnPermissionExisting: memberIds,
+  //           actionOnPermissionRevised: memberIds,
+  //           privacyValueOption: section.actionOnPrivacyFilteringCategory,
+  //           privacyActionOption: section.actionOnPrivacyFilteringAction,
+  //           actionOnPrivacyFilteringTransformValue:
+  //             section.actionOnPrivacyFilteringTransformValue,
+  //           attributeOption: section.actionOnAttributeFilteringAttribute,
+  //           attributeValueOption: section.actionOnAttributeFilteringValue,
+  //           attributeActionOption: section.actionOnAttributeFilteringAction,
+  //           actionOnAttributeFilteringTransformValue:
+  //             section.actionOnAttributeFilteringTransformValue,
+  //         },
+  //       })
+  //     );
+
+  //     setSections(sectionsData);
+  //     setPolicyId(id);
+  //   } else {
+  //     console.error("Policy not found with ID:", id);
+  //   }
+  // };
+
+  const fetchDataForEdit = async (id) => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
 
     setIsSaveSuccessful(false);
     const policyToEdit = tableData.find((policy) => policy._id === id);
-    // console.log(policyToEdit.selectApiName, "selectApiName");
 
     if (policyToEdit) {
       setPolicyName(policyToEdit.policyName);
@@ -578,13 +692,8 @@ const FunctionCalling = () => {
         targetLocation: policyToEdit.targetApplication,
         genAiApp: policyToEdit.genAiApp,
         selectApiName: policyToEdit.selectApiName,
-        privacyValueOption: policyToEdit.actionOnPrivacyFilteringCategory,
-        privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
-        attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
-        attributeValue: policyToEdit.actionOnAttributeFilteringValue,
-        attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
       });
-      // setSelectedApiName(policyToEdit.selectedApiName);
+
       setDescription(policyToEdit.selectApiDescription);
       setDataFields(
         policyToEdit.selectApiDataFields.reduce((acc, field) => {
@@ -593,28 +702,55 @@ const FunctionCalling = () => {
         }, {})
       );
 
-      // Initialize checkboxSelections based on actionOnPermissionRevised
-      const checkboxSelectionsMap = (label) => {
-        return policyToEdit.functionCallingPlusData.some((section) =>
-          section.actionOnPermissionRevised.some(
-            (perm) => perm.label === label && perm.isChecked
-          )
+      // Fetch members based on actionOnPermissionRevised member IDs
+      const memberIds = policyToEdit.functionCallingPlusData.flatMap(
+        (section) => section.actionOnPermissionRevisedMember
+      );
+
+      try {
+        // Construct query parameters for the GET request
+        const queryParams = new URLSearchParams({
+          memberIds: memberIds.join(","),
+        }).toString();
+
+        const response = await fetch(
+          `${BASE_URL}/api/data/members?${queryParams}`, // Use GET method with query parameters
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
         );
-      };
 
-      setCheckboxSelections([
-        { label: "Sales NA", isChecked: checkboxSelectionsMap("Sales NA") },
-        { label: "Management", isChecked: checkboxSelectionsMap("Management") },
-      ]);
+        if (!response.ok) {
+          throw new Error("Failed to fetch members");
+        }
 
+        const memberData = await response.json();
+
+        // Filter members based on actionOnPermissionRevisedMember IDs
+        const filteredMembers = memberData.data.filter((member) =>
+          memberIds.includes(member._id)
+        );
+
+        setMembers(filteredMembers); // Populate members into state for display
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
+
+      // Populate sections data
       const sectionsData = policyToEdit.functionCallingPlusData.map(
         (section, index) => ({
           id: Date.now() + index,
           values: {
             actionOnDataField: section.actionOnDataField,
             actionOnPermission: section.actionOnPermission,
-            actionOnPermissionExisting: section.actionOnPermissionExisting,
-            actionOnPermissionRevised: section.actionOnPermissionRevised,
+            actionOnPermissionExistingMember:
+              section.actionOnPermissionExistingMember, // Passing member IDs
+            actionOnPermissionRevisedMember:
+              section.actionOnPermissionRevisedMember, // Passing member IDs
             privacyValueOption: section.actionOnPrivacyFilteringCategory,
             privacyActionOption: section.actionOnPrivacyFilteringAction,
             actionOnPrivacyFilteringTransformValue:
@@ -731,16 +867,13 @@ const FunctionCalling = () => {
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();
 
+    const memberIds = members.map((member) => member._id);
     // Map through sections to build the functionCallingPlusData array
     const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
-      actionOnPermissionExisting:
-        section.values.actionOnPermissionExisting || "Management",
-      actionOnPermissionRevised: checkboxSelections.map((item) => ({
-        label: item.label,
-        isChecked: item.isChecked,
-      })),
+      actionOnPermissionExistingMember: memberIds,
+      actionOnPermissionRevisedMember: memberIds,
       actionOnPrivacyFilteringCategory:
         section.values["privacyValueOption"] || "",
       actionOnPrivacyFilteringAction:
@@ -993,13 +1126,13 @@ const FunctionCalling = () => {
     targetLocationOptions: ["Salesforce", "Servicenow", "Microsoft Dynamics"],
     genAiAppOptions: ["App1", "App2", "App3"],
     locationOption: ["Department", "Location"],
-    privacyValueOption: ["Asia", "North America"],
-    privacyActionOption: ["Allow", "Reduct"],
+    privacyValueOption: ["Name", "Dob", "SSN", "None"],
+    privacyActionOption: ["Anonymize", "Tokenize", "None", "De-identification"],
     attributeOption: ["Department", "Location"],
-    attributeValueOption: ["Asia", "America"],
-    attributeActionOption: ["Allow", "Reduct"],
-    actionOnDataField: ["Oppurtunity Name", "Account Name", "Account", "Age"],
-    selectApiName: ["App1", "App2", "App3"],
+    attributeValueOption: ["Asia", "North America"],
+    attributeActionOption: ["Allow", "Redact"],
+    actionOnDataField: ["Oppurtunity Name", "Account Name", "Amount", "Age"],
+    selectApiName: ["Sales Opportunities", "API2", "API3", "API4"],
   };
 
   const items = {
@@ -1017,6 +1150,8 @@ const FunctionCalling = () => {
     subItems: [{ name: "App1" }, { name: "App2" }, { name: "App3" }],
   };
 
+  console.log(members);
+
   return (
     <>
       <div
@@ -1027,7 +1162,7 @@ const FunctionCalling = () => {
           <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
             Policy Manager
           </h2>
-          <h2 className="text-sm text-[#2F3A45] font-poppins mb-4">
+          <h2 className="text-sm text-[#2F3A45] font-poppins ">
             Policy Manager
             <span className="text-customWhite text-sm">
               {" "}
@@ -1203,7 +1338,7 @@ const FunctionCalling = () => {
 
                     <input
                       type="text"
-                      placeholder="Retrieve sales opportunities"
+                      placeholder="Enter Description"
                       className="bg-black pb-[96px] pt-[10px] pl-[15px] pr-[9px] text-customWhite text-base font-poppins text-sizess"
                       value={description} // Controlled input value
                       onChange={handleDescriptionChange} // Handle input change
@@ -1365,26 +1500,24 @@ const FunctionCalling = () => {
                               <th className="px-2.5 py-2 border border-customBorderColor bg-[#1b1e26] text-customWhite font-poppins font-semibold">
                                 Permission
                               </th>
-                              <th className="px-2.5 py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibolde">
-                                Existing
-                              </th>
-                              <th className="px-2.5 py-2 border border-customBorderColor bg-[#6a7581] text-customWhite font-poppins font-semibold">
+                              <th className="px-2.5 py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibold">
                                 <div className="relative">
-                                  <div className="flex gap-2">
-                                    <div>Revised</div>
-                                    <FontAwesomeIcon
-                                      icon={faEdit}
-                                      className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
-                                      onClick={toggleeditMembershipPermission}
-                                    />
+                                  <div className="flex justify-between items-start">
+                                    <div className="flex flex-col">
+                                      <span className="text-customWhite font-poppins font-semibold">
+                                        Existing
+                                      </span>
+                                    </div>
+                                    <div className="flex">
+                                      <button onClick={toggleMemberships}>
+                                        <ThreeDotsButton />
+                                      </button>
+                                    </div>
                                   </div>
 
-                                  {showEditMembershipPermission && (
+                                  {showMembership && (
                                     <>
-                                      {/* Backdrop */}
                                       <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-
-                                      {/* Modal */}
                                       <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
                                         <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
                                           <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
@@ -1393,9 +1526,7 @@ const FunctionCalling = () => {
                                             </span>
                                             <button
                                               className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
-                                              onClick={
-                                                toggleeditMembershipPermission
-                                              }
+                                              onClick={toggleMemberships}
                                               style={{
                                                 width: "29px",
                                                 height: "29px",
@@ -1407,7 +1538,11 @@ const FunctionCalling = () => {
                                           </div>
 
                                           <div className="p-4 space-y-4">
-                                            {/* Member List */}
+                                            <div className="flex justify-between items-center mb-4">
+                                              <span className="text-white text-sm font-poppins font-medium">
+                                                {members.length} Members
+                                              </span>
+                                            </div>
                                             {members.map((member, index) => (
                                               <div
                                                 key={index}
@@ -1424,9 +1559,90 @@ const FunctionCalling = () => {
                                                       }}
                                                     />
                                                   </div>
-                                                  <div className="flex flex-col ml-3">
+                                                  <div className="flex flex-col ml-3 text-left">
                                                     <span className="text-white block text-base font-poppins font-semibold">
-                                                      {member}
+                                                      {member.name}
+                                                    </span>
+                                                    <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                      Member{" "}
+                                                      <FontAwesomeIcon
+                                                        icon={faAngleDown}
+                                                      />
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              </th>
+                              <th className="px-2.5 py-2 border border-customBorderColor bg-[#6a7581] text-customWhite font-poppins font-semibold">
+                                <div className="relative">
+                                  <div className="flex justify-between items-start">
+                                    <div className="flex flex-col">
+                                      <span className="text-customWhite font-poppins font-semibold">
+                                        Revised
+                                      </span>
+                                    </div>
+                                    <div className="flex">
+                                      <button
+                                        onClick={toggleeditMembership}
+                                        className="bg-customBlack text-[#6A7581] px-2 rounded hover:text-customGreen"
+                                      >
+                                        <FontAwesomeIcon
+                                          icon={faEdit}
+                                          className="transition ease-out duration-300 hover:transform hover:scale-110 "
+                                        />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {showEditMembership && (
+                                    <>
+                                      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+                                      <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                                        <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                          <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
+                                            <span className="text-base font-poppins font-semibold">
+                                              Group Membership
+                                            </span>
+                                            <button
+                                              className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
+                                              onClick={toggleeditMembership}
+                                              style={{
+                                                width: "29px",
+                                                height: "29px",
+                                                border: "2px solid #31B47663",
+                                              }}
+                                            >
+                                              &times;
+                                            </button>
+                                          </div>
+
+                                          <div className="p-4 space-y-4">
+                                            {members.map((member, index) => (
+                                              <div
+                                                key={index}
+                                                className="flex justify-between items-center mb-4"
+                                              >
+                                                <div className="flex items-center">
+                                                  <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                                    <img
+                                                      src={userIcon}
+                                                      alt="icons"
+                                                      style={{
+                                                        width: "47px",
+                                                        height: "47px",
+                                                      }}
+                                                    />
+                                                  </div>
+                                                  <div className="flex flex-col ml-3 text-left">
+                                                    <span className="text-white block text-base font-poppins font-semibold">
+                                                      {member.name}
                                                     </span>
                                                     <span className="text-gray-400 text-sm font-poppins font-normal">
                                                       Member{" "}
@@ -1471,7 +1687,6 @@ const FunctionCalling = () => {
                                             {/* Divider */}
                                             <div className="border-t border-gray-600"></div>
 
-                                            {/* Add Members Input Box */}
                                             <div className="flex items-center justify-between bg-[#1B1E26] border border-[#31B47633] rounded-[5px] p-3">
                                               <input
                                                 type="text"
@@ -1485,78 +1700,86 @@ const FunctionCalling = () => {
                                                 icon={faSearch}
                                               />
                                             </div>
-                                            {searchResults.map(
-                                              (username, index) => (
-                                                <div
-                                                  key={index}
-                                                  className="flex items-center justify-between bg-[#1B1E26] border border-[#31B476] rounded-[5px] p-3 mt-2"
-                                                >
-                                                  <div className="flex items-center">
-                                                    <img
-                                                      src={userIcon}
-                                                      className="text-[#31B476]"
+
+                                            {searchResults.length > 0 && (
+                                              <div>
+                                                {searchResults.map((user) => (
+                                                  <div
+                                                    key={user._id}
+                                                    className="flex items-center justify-between bg-[#1B1E26] border border-[#31B476] rounded-[5px] p-3 mt-2"
+                                                  >
+                                                    <div className="flex items-center">
+                                                      <img
+                                                        src={userIcon}
+                                                        className="text-[#31B476]"
+                                                        style={{
+                                                          width: "29px",
+                                                          height: "29px",
+                                                        }}
+                                                        alt="User Icon"
+                                                      />
+                                                      <span className="ml-3 text-white font-poppins font-semibold text-sm">
+                                                        {user.name}
+                                                      </span>
+                                                    </div>
+                                                    <button
+                                                      className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
                                                       style={{
                                                         width: "29px",
                                                         height: "29px",
+                                                        background: "#FFFFFF00",
+                                                        border:
+                                                          "2px solid #31B47663",
                                                       }}
-                                                    />
-                                                    <span className="ml-3 text-white font-poppins font-semibold text-sm">
-                                                      {username}
-                                                    </span>
-                                                  </div>
-                                                  <button
-                                                    className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
-                                                    style={{
-                                                      width: "29px",
-                                                      height: "29px",
-                                                      background: "#FFFFFF00",
-                                                      border:
-                                                        "2px solid #31B47663",
-                                                    }}
-                                                    onClick={() =>
-                                                      addMember(username)
-                                                    }
-                                                    onMouseEnter={() =>
-                                                      setHoveredAddIndex(index)
-                                                    }
-                                                    onMouseLeave={() =>
-                                                      setHoveredAddIndex(null)
-                                                    }
-                                                  >
-                                                    <FontAwesomeIcon
-                                                      icon={
-                                                        hoveredAddIndex ===
-                                                        index
-                                                          ? faPlus
-                                                          : faPlus
+                                                      onClick={() =>
+                                                        addMember(user)
                                                       }
-                                                    />
-                                                  </button>
-                                                </div>
-                                              )
+                                                      onMouseEnter={() =>
+                                                        setHoveredAddIndex(
+                                                          user._id
+                                                        )
+                                                      }
+                                                      onMouseLeave={() =>
+                                                        setHoveredAddIndex(null)
+                                                      }
+                                                      title="Add Member"
+                                                    >
+                                                      <FontAwesomeIcon
+                                                        icon={faPlus}
+                                                        className={`transition-transform duration-300 ${
+                                                          hoveredAddIndex ===
+                                                          user._id
+                                                            ? "text-green-500"
+                                                            : "text-green-400"
+                                                        }`}
+                                                      />
+                                                    </button>
+                                                  </div>
+                                                ))}
+                                              </div>
                                             )}
 
                                             {/* Footer Buttons */}
                                             <div className="flex justify-end gap-4 mt-4 group">
-                                              <button className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white">
+                                              <button
+                                                // onClick={handleSave}
+                                                className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
+                                              >
                                                 <img
                                                   src={iconsmodel}
                                                   alt="iconsmodel"
                                                   className="mr-2 btn-icon"
                                                 />
                                                 <span
-                                                  onClick={
-                                                    toggleeditMembershipPermission
-                                                  }
+                                                  onClick={toggleeditMembership}
                                                 >
+                                                  {" "}
                                                   Save
                                                 </span>
                                               </button>
                                               <button
+                                                onClick={toggleeditMembership}
                                                 className="text-gray-400"
-                                                onClick={
-                                                  toggleeditMembershipPermission
-                                                }
                                               >
                                                 Cancel
                                               </button>
@@ -1579,31 +1802,31 @@ const FunctionCalling = () => {
                               <td className="border border-customBorderColor text-customWhite bg-black">
                                 <div className="flex flex-col">
                                   <span
-                                    onClick={() => handleSpanClick("Sales NA")}
-                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
-                                      selectedItems.includes("Sales NA")
-                                        ? "text-white bg-[#0a854b]"
-                                        : "bg-black"
-                                    }`}
-                                  >
-                                    Sales NA
-                                  </span>
-                                  <span
                                     onClick={() =>
-                                      handleSpanClick("Management")
+                                      handleSpanClick("Vinod Vasudevan")
                                     }
                                     className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
-                                      selectedItems.includes("Management")
+                                      selectedItems.includes("Vinod Vasudevan")
                                         ? "text-white bg-[#0a854b]"
                                         : "bg-black"
                                     }`}
                                   >
-                                    Management
+                                    Vinod Vasudevan
+                                  </span>
+                                  <span
+                                    onClick={() => handleSpanClick("Rajat")}
+                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
+                                      selectedItems.includes("Rajat")
+                                        ? "text-white bg-[#0a854b]"
+                                        : "bg-black"
+                                    }`}
+                                  >
+                                    Rajat
                                   </span>
                                 </div>
                               </td>
                               <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black">
-                                <div className="flex flex-col">
+                                {/* <div className="flex flex-col">
                                   {checkboxSelections.map((item) => (
                                     <label
                                       key={item.label}
@@ -1625,7 +1848,29 @@ const FunctionCalling = () => {
                                       </span>
                                     </label>
                                   ))}
-                                </div>
+                                </div> */}
+
+                                {Array.isArray(members) &&
+                                  members.map((member, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex justify-between items-center mb-4"
+                                    >
+                                      <div className="flex items-center">
+                                        <div className="flex flex-col ml-3 text-left">
+                                          <span className="text-white block text-base font-poppins font-semibold">
+                                            {member.name}
+                                          </span>
+                                          <span className="text-gray-400 text-sm font-poppins font-normal">
+                                            Member{" "}
+                                            <FontAwesomeIcon
+                                              icon={faAngleDown}
+                                            />
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
                               </td>
                             </tr>
                             <tr>
@@ -1662,13 +1907,13 @@ const FunctionCalling = () => {
                           <tbody>
                             <tr>
                               <td
-                                className=" py-2.5 border border-customBorderColor text-customWhite bg-black"
+                                className=" py-2.5 border border-customBorderColor text-customWhite bg-black "
                                 style={{ width: "200px" }}
                               >
                                 <CustomDropdown
                                   options={data.privacyValueOption || []}
                                   // width={"169px "}
-                                  placeholder="Select Document"
+                                  placeholder="None"
                                   isOpen={openDropdown === `${section.id}-0`}
                                   onDropdownClick={() =>
                                     handleDropdownClick1(section.id, 0)
@@ -1711,9 +1956,24 @@ const FunctionCalling = () => {
                               <td className=" py-2.5 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
                             <tr>
-                              <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className=" py-7 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                            </tr>
+                            <tr>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                            </tr>
+                            <tr>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                            </tr>
+                            <tr>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
                           </tbody>
                         </table>

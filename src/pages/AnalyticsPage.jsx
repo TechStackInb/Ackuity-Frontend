@@ -252,11 +252,11 @@ const Analytics = () => {
         {/* <DashboardChart /> */}
       </div>
 
-      <div className="mt-8 bg-[#000000] shadow p-4 rounded-lg">
+      {/* <div className="mt-8 bg-[#000000] shadow p-4 rounded-lg">
         <p className="text-left text-xl text-[#31B476] font-poppins font-semibold">
           Inventory Information
         </p>
-      </div>
+      </div> */}
       <div className="flex gap-[4px] mt-4">
         {tabs.map((tab, index) => (
           <button

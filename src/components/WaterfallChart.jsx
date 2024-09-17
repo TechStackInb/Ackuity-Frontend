@@ -12,9 +12,9 @@ import {
 const datas = [
   { name: "All", value: 1000, label: "All" },
   { name: "Served", value: [750, 1000], label: "Served" },
-  { name: "Denied", value: [600, 750], label: "Denied" },
-  { name: "Transformed", value: [400, 600], label: "Transformed" },
-  { name: "Flagged", value: [299, 400], label: "Flagged" },
+  { name: "Denied", value: [500, 750], label: "Denied" },
+  { name: "Transformed", value: [240, 500], label: "Transformed" },
+  { name: "Flagged", value: [0, 240], label: "Flagged" },
 ];
 
 const horizontalPoints = [0, 60, 110, 160, 210, 260, 310, 360, 410, 480];
