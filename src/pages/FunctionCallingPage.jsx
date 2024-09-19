@@ -101,11 +101,11 @@ const FunctionCalling = () => {
   const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
-
+  
     if (query) {
       try {
         const response = await fetch(
-          `${BASE_URL}/api/data/members?query=${query}`,
+          `${BASE_URL}/api/data/members?query=${query}&page=${currentPage}&limit=100`,
           {
             method: "GET",
             headers: {
@@ -114,17 +114,17 @@ const FunctionCalling = () => {
             credentials: "include",
           }
         );
-
+  
         if (!response.ok) {
           throw new Error("Failed to fetch members");
         }
-
+  
         const data = await response.json();
         const filteredUsers = data.data.filter((user) => {
           const userNameLower = user.name.toLowerCase();
           return query === userNameLower || userNameLower.startsWith(query);
         });
-
+  
         // Ensure no duplicate members are added
         const uniqueFilteredUsers = filteredUsers.reduce((acc, current) => {
           if (!acc.find((user) => user._id === current._id)) {
@@ -132,8 +132,13 @@ const FunctionCalling = () => {
           }
           return acc;
         }, []);
-
+  
         setSearchResults(uniqueFilteredUsers);
+  
+        // Set total pages based on response (if included in API response)
+        if (data.totalPages) {
+          setTotalPages(data.totalPages);
+        }
       } catch (error) {
         console.error("Error fetching members:", error);
       }
@@ -141,6 +146,7 @@ const FunctionCalling = () => {
       setSearchResults([]);
     }
   };
+  
 
   const addMember = (user) => {
     setMembers([...members, user]);
@@ -389,17 +395,82 @@ const FunctionCalling = () => {
 
     const memberIds = members.map((member) => member._id);
 
-    // Validation
-    if (
-      !trimmedPolicyName ||
-      !selectedOptions["netSales"] ||
-      !selectedOptions["targetLocation"] ||
-      !selectedOptions["genAiApp"] ||
-      !selectedOptions["selectApiName"] ||
-      !trimmedDescription
-    ) {
-      setErrorMessage("Please fill in all required fields.");
+    // Validation for top-level fields
+    if (!trimmedPolicyName) {
+      setErrorMessage("Policy Name is required.");
       return;
+    }
+
+    if (!selectedOptions["netSales"]) {
+      setErrorMessage("Net Sales is required.");
+      return;
+    }
+
+    if (!selectedOptions["targetLocation"]) {
+      setErrorMessage("Target Location is required.");
+      return;
+    }
+
+    if (!selectedOptions["genAiApp"]) {
+      setErrorMessage("Gen AI App is required.");
+      return;
+    }
+
+    if (!selectedOptions["selectApiName"]) {
+      setErrorMessage("API Name is required.");
+      return;
+    }
+
+    if (!trimmedDescription) {
+      setErrorMessage("Description is required.");
+      return;
+    }
+
+    // Validation for fields inside functionCallingPlusData
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i];
+
+      if (!section.values["actionOnDataField"]) {
+        setErrorMessage(
+          `Action on Data Field is required for section ${i + 1}.`
+        );
+        return;
+      }
+
+      if (!section.values["privacyValueOption"]) {
+        setErrorMessage(
+          `Privacy Filtering Category is required for section ${i + 1}.`
+        );
+        return;
+      }
+
+      if (!section.values["privacyActionOption"]) {
+        setErrorMessage(
+          `Privacy Filtering Action is required for section ${i + 1}.`
+        );
+        return;
+      }
+
+      if (!section.values["attributeOption"]) {
+        setErrorMessage(
+          `Attribute Filtering Attribute is required for section ${i + 1}.`
+        );
+        return;
+      }
+
+      if (!section.values["attributeValueOption"]) {
+        setErrorMessage(
+          `Attribute Filtering Value is required for section ${i + 1}.`
+        );
+        return;
+      }
+
+      if (!section.values["attributeActionOption"]) {
+        setErrorMessage(
+          `Attribute Filtering Action is required for section ${i + 1}.`
+        );
+        return;
+      }
     }
 
     // If validation passes, clear the error message

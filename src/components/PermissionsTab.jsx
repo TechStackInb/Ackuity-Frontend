@@ -53,6 +53,9 @@ function PermissionsTab({}) {
 
   const [currentEditData, setCurrentEditData] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   // const fetchPolicyUsers = async () => {
   //   try {
   //     const response = await fetch(`${BASE_URL}/api/data/members`, {
@@ -163,7 +166,7 @@ function PermissionsTab({}) {
     if (query) {
       try {
         const response = await fetch(
-          `${BASE_URL}/api/data/members?query=${query}`,
+          `${BASE_URL}/api/data/members?query=${query}&page=${currentPage}&limit=100`,
           {
             method: "GET",
             headers: {
@@ -192,6 +195,11 @@ function PermissionsTab({}) {
         }, []);
 
         setSearchResults(uniqueFilteredUsers);
+
+        // Set total pages based on response (if included in API response)
+        if (data.totalPages) {
+          setTotalPages(data.totalPages);
+        }
       } catch (error) {
         console.error("Error fetching members:", error);
       }
