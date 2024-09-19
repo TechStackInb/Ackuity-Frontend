@@ -229,7 +229,7 @@ const Chart2DatabasePage = () => {
       return;
     }
     if (!selectedOptions["tableOptions"]) {
-      setErrorMessage("table view option is required.");
+      setErrorMessage("Table view option is required.");
       return;
     }
     if (!selectedOptions["dataFeildOption"]) {
@@ -248,23 +248,18 @@ const Chart2DatabasePage = () => {
       setErrorMessage("Attribute action is required.");
       return;
     }
-
     if (!selectedOptions["privacyValueOption"]) {
-      setErrorMessage("Privacy Value is required.");
+      setErrorMessage("Privacy value is required.");
       return;
     }
     if (!selectedOptions["privacyActionOption"]) {
-      setErrorMessage("Privacy Action is required.");
+      setErrorMessage("Privacy action is required.");
       return;
     }
-
     if (!selectedOptions["rowLevelFilterinOption"]) {
-      setErrorMessage("Row level Filtering is required.");
+      setErrorMessage("Row level filtering is required.");
       return;
     }
-
-    // If validation passes, clear the error message
-    setErrorMessage("");
 
     // Prepare member IDs for each section
     const configurePermissionsSelectRevised = membersBySection[0].map(
@@ -497,16 +492,16 @@ const Chart2DatabasePage = () => {
 
   const handleUpdatePolicy = async () => {
     setIsSaveSuccessful(false);
-  
+
     // Trim the policy name for validation
     const trimmedPolicyName = policyName.trim();
-  
+
     // Validate the policy name
     if (!trimmedPolicyName) {
       setErrorMessage("Policy name is required.");
       return;
     }
-  
+
     // Validate selected options
     if (!selectedOptions["dataStoreOptions"]) {
       setErrorMessage("Data store option is required.");
@@ -532,7 +527,7 @@ const Chart2DatabasePage = () => {
       setErrorMessage("Attribute action is required.");
       return;
     }
-  
+
     if (!selectedOptions["privacyValueOption"]) {
       setErrorMessage("Privacy Value is required.");
       return;
@@ -541,15 +536,15 @@ const Chart2DatabasePage = () => {
       setErrorMessage("Privacy Action is required.");
       return;
     }
-  
+
     if (!selectedOptions["rowLevelFilterinOption"]) {
       setErrorMessage("Row level Filtering is required.");
       return;
     }
-  
+
     // Clear the error message if validation passes
     setErrorMessage("");
-  
+
     // Map member IDs for each section
     const configurePermissionsSelectRevised = membersBySection[0].map(
       (member) => member._id
@@ -563,7 +558,7 @@ const Chart2DatabasePage = () => {
     const configurePermissionsDeleteRevised = membersBySection[3].map(
       (member) => member._id
     );
-  
+
     // Prepare the updated policy data
     const updatedPolicy = {
       policyName: trimmedPolicyName,
@@ -582,16 +577,16 @@ const Chart2DatabasePage = () => {
       ONattributeFilteringAction: selectedOptions["attributeActionOption"],
       rowLevelFilteringBasedonValue: selectedOptions["rowLevelFilterinOption"],
     };
-  
+
     // Log the policy ID to ensure correctness
     console.log("Updating policy with ID:", policyId);
-  
+
     // Validate the existence of a policy ID before proceeding with the update
     if (!policyId) {
       console.error("Invalid policy ID.");
       return;
     }
-  
+
     try {
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerChat2Db/${policyId}`,
@@ -604,24 +599,24 @@ const Chart2DatabasePage = () => {
           credentials: "include",
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-  
+
       const result = await response.json();
       console.log("Policy updated successfully:", result);
-  
+
       setSuccessMessage("Policy updated successfully!");
       setIsSuccessModalOpen(true);
       setSelectedOptions({});
       setPolicyName("");
       setMembersBySection([[], [], [], []]);
       setPolicyId(null); // Reset the policy ID after updating
-  
+
       // Fetch the updated data to reflect the changes in the UI
       await fetchData();
-  
+
       setTimeout(() => {
         setIsSaveSuccessful(false);
         closeModal();
@@ -631,7 +626,7 @@ const Chart2DatabasePage = () => {
       setIsSaveSuccessful(false);
     }
   };
-  
+
   const openDeleteModal = (id) => {
     setSelectedPolicyId(id);
     setDeleteModel(true);
@@ -701,13 +696,21 @@ const Chart2DatabasePage = () => {
     );
   };
 
-  const handleDropdownClick = (dropdownId) => {
-    setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
+  const handleDropdownClick = (dropdownKey) => {
+    if (openDropdown === dropdownKey) {
+      setOpenDropdown(null); // Close if it's already open
+    } else {
+      setOpenDropdown(dropdownKey); // Open the clicked dropdown
+    }
   };
 
-  const handleOptionClick = (dropdownId, option) => {
-    setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
-    setOpenDropdown(null);
+  const handleOptionClick = (dropdownKey, option) => {
+    setSelectedOptions({
+      ...selectedOptions,
+      [dropdownKey]: option,
+    });
+
+    // You can also perform additional error handling here if needed.
   };
 
   const data = {
@@ -1746,6 +1749,11 @@ const Chart2DatabasePage = () => {
 
                                               <div className="flex justify-end gap-4 mt-4 group">
                                                 <button
+                                                  onClick={() =>
+                                                    toggleMembershipEdit(
+                                                      sectionIndex
+                                                    )
+                                                  }
                                                   // onClick={handleSave}
                                                   className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
                                                 >
@@ -1754,16 +1762,7 @@ const Chart2DatabasePage = () => {
                                                     alt="iconsmodel"
                                                     className="mr-2 btn-icon"
                                                   />
-                                                  <span
-                                                    onClick={() =>
-                                                      toggleMembershipEdit(
-                                                        sectionIndex
-                                                      )
-                                                    }
-                                                  >
-                                                    {" "}
-                                                    Save
-                                                  </span>
+                                                  <span> Save</span>
                                                 </button>
                                                 <button
                                                   onClick={() =>
@@ -1822,9 +1821,13 @@ const Chart2DatabasePage = () => {
                             handleDropdownClick("dataStoreOptions")
                           }
                           selectedOption={selectedOptions["dataStoreOptions"]}
-                          onOptionClick={(option) =>
-                            handleOptionClick("dataStoreOptions", option)
-                          }
+                          onOptionClick={(option) => {
+                            handleOptionClick("dataStoreOptions", option);
+                            if (option) {
+                              setErrorMessage(""); // Clear error message if a valid option is selected
+                            }
+                            setOpenDropdown(null); // Close the dropdown after selecting an option
+                          }}
                           // paddingLeft={"1rem"}
                           // paddingRight={"1rem"}
                         />
@@ -1851,9 +1854,14 @@ const Chart2DatabasePage = () => {
                             handleDropdownClick("tableOptions")
                           }
                           selectedOption={selectedOptions["tableOptions"]}
-                          onOptionClick={(option) =>
-                            handleOptionClick("tableOptions", option)
-                          }
+                          onOptionClick={(option) => {
+                            handleOptionClick("tableOptions", option);
+                            if (option) {
+                              setErrorMessage(""); // Clear error message if a valid option is selected
+                            }
+                            setOpenDropdown(null); // Close the dropdown after selecting an option
+                          }}
+
                           // paddingLeft={"1rem"}
                           // paddingRight={"1rem"}
                         />
@@ -1877,12 +1885,14 @@ const Chart2DatabasePage = () => {
                         handleDropdownClick("dataFeildOption")
                       }
                       selectedOption={selectedOptions["dataFeildOption"]}
-                      onOptionClick={(option) =>
-                        handleOptionClick("dataFeildOption", option)
-                      }
                       width={"250px"}
-                      // paddingLeft={"1rem"}
-                      // paddingRight={"1rem"}
+                      onOptionClick={(option) => {
+                        handleOptionClick("dataFeildOption", option);
+                        if (option) {
+                          setErrorMessage(""); // Clear error message if a valid option is selected
+                        }
+                        setOpenDropdown(null); // Close the dropdown after selecting an option
+                      }}
                     />
                   </div>
                 </div>
@@ -1967,7 +1977,7 @@ const Chart2DatabasePage = () => {
                                               >
                                                 Rajat
                                               </button>
-{/* 
+                                              {/* 
                                               <div className="flex ">
                                                 <button
                                                   onClick={() =>
@@ -2305,7 +2315,7 @@ const Chart2DatabasePage = () => {
                                               >
                                                 Rajat
                                               </button>
-{/* 
+                                              {/* 
                                               <div className="flex ">
                                                 <button
                                                   onClick={() =>
@@ -2838,6 +2848,11 @@ const Chart2DatabasePage = () => {
 
                                                 <div className="flex justify-end gap-4 mt-4 group">
                                                   <button
+                                                    onClick={() =>
+                                                      toggleMembershipEdit(
+                                                        sectionIndex
+                                                      )
+                                                    }
                                                     // onClick={handleSave}
                                                     className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
                                                   >
@@ -2846,16 +2861,7 @@ const Chart2DatabasePage = () => {
                                                       alt="iconsmodel"
                                                       className="mr-2 btn-icon"
                                                     />
-                                                    <span
-                                                      onClick={() =>
-                                                        toggleMembershipEdit(
-                                                          sectionIndex
-                                                        )
-                                                      }
-                                                    >
-                                                      {" "}
-                                                      Save
-                                                    </span>
+                                                    <span> Save</span>
                                                   </button>
                                                   <button
                                                     onClick={() =>
@@ -2917,12 +2923,16 @@ const Chart2DatabasePage = () => {
                                     selectedOption={
                                       selectedOptions["privacyValueOption"]
                                     }
-                                    onOptionClick={(option) =>
+                                    onOptionClick={(option) => {
                                       handleOptionClick(
                                         "privacyValueOption",
                                         option
-                                      )
-                                    }
+                                      );
+                                      if (option) {
+                                        setErrorMessage(""); // Clear error message if a valid option is selected
+                                      }
+                                      setOpenDropdown(null); // Close the dropdown after selecting an option
+                                    }}
                                   />
                                 </td>
                                 <td className=" py-2 border border-customBorderColor text-customWhite bg-black">
@@ -2939,12 +2949,16 @@ const Chart2DatabasePage = () => {
                                     selectedOption={
                                       selectedOptions["privacyActionOption"]
                                     }
-                                    onOptionClick={(option) =>
+                                    onOptionClick={(option) => {
                                       handleOptionClick(
                                         "privacyActionOption",
                                         option
-                                      )
-                                    }
+                                      );
+                                      if (option) {
+                                        setErrorMessage(""); // Clear error message if a valid option is selected
+                                      }
+                                      setOpenDropdown(null); // Close the dropdown after selecting an option
+                                    }}
                                   />
                                 </td>
                                 <td className=" py-2 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
@@ -3007,12 +3021,16 @@ const Chart2DatabasePage = () => {
                                     selectedOption={
                                       selectedOptions["attributeOption"]
                                     }
-                                    onOptionClick={(option) =>
+                                    onOptionClick={(option) => {
                                       handleOptionClick(
                                         "attributeOption",
                                         option
-                                      )
-                                    }
+                                      );
+                                      if (option) {
+                                        setErrorMessage(""); // Clear error message if a valid option is selected
+                                      }
+                                      setOpenDropdown(null); // Close the dropdown after selecting an option
+                                    }}
                                   />
                                 </td>
                                 <td className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black">
@@ -3027,12 +3045,16 @@ const Chart2DatabasePage = () => {
                                     selectedOption={
                                       selectedOptions["attributeValue"]
                                     }
-                                    onOptionClick={(option) =>
+                                    onOptionClick={(option) => {
                                       handleOptionClick(
                                         "attributeValue",
                                         option
-                                      )
-                                    }
+                                      );
+                                      if (option) {
+                                        setErrorMessage(""); // Clear error message if a valid option is selected
+                                      }
+                                      setOpenDropdown(null); // Close the dropdown after selecting an option
+                                    }}
                                   />
                                 </td>
                                 <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
@@ -3051,12 +3073,16 @@ const Chart2DatabasePage = () => {
                                     selectedOption={
                                       selectedOptions["attributeActionOption"]
                                     }
-                                    onOptionClick={(option) =>
+                                    onOptionClick={(option) => {
                                       handleOptionClick(
                                         "attributeActionOption",
                                         option
-                                      )
-                                    }
+                                      );
+                                      if (option) {
+                                        setErrorMessage(""); // Clear error message if a valid option is selected
+                                      }
+                                      setOpenDropdown(null); // Close the dropdown after selecting an option
+                                    }}
                                   />
                                 </td>
                                 <td className="pl-4  py-6 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
@@ -3089,9 +3115,13 @@ const Chart2DatabasePage = () => {
                         selectedOption={
                           selectedOptions["rowLevelFilterinOption"]
                         }
-                        onOptionClick={(option) =>
-                          handleOptionClick("rowLevelFilterinOption", option)
-                        }
+                        onOptionClick={(option) => {
+                          handleOptionClick("rowLevelFilterinOption", option);
+                          if (option) {
+                            setErrorMessage(""); // Clear error message if a valid option is selected
+                          }
+                          setOpenDropdown(null); // Close the dropdown after selecting an option
+                        }}
                         width={"250px"}
                         // paddingLeft={"1rem"}
                         // paddingRight={"1rem"}
@@ -3140,7 +3170,7 @@ const Chart2DatabasePage = () => {
                     </div>
                   )}
 
-                  {isModalOpen && (
+                  {/* {isModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                       <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
                         <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
@@ -3197,6 +3227,109 @@ const Chart2DatabasePage = () => {
                                 </p>
                               </div>
                             </li>
+                            {errorMessage && (
+                              <p className="text-red-500 text-center mb-4">
+                                {errorMessage}
+                              </p>
+                            )}
+
+                            <div className="flex justify-end">
+                              <button
+                                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mr-2 transition-all duration-200 ease-in-out"
+                                onClick={closeModal}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
+                                onClick={handleConfirm}
+                              >
+                                Confirm
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )} */}
+                  {isModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                      <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
+                        <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
+                          Confirm Policy Save
+                        </h2>
+
+                        {isSaveSuccessful ? (
+                          <p className="text-green-500 text-center">
+                            Policy saved successfully!
+                          </p>
+                        ) : (
+                          <>
+                            <div className="mb-4">
+                              <label
+                                htmlFor="policyName"
+                                className="block text-sm font-medium text-white mb-2"
+                              >
+                                Policy Name
+                              </label>
+                              <input
+                                type="text"
+                                id="policyName"
+                                value={policyName}
+                                onChange={(e) => {
+                                  handlePolicyNameChange(e);
+                                  if (e.target.value.trim() !== "") {
+                                    setErrorMessage(""); // Clear the error if field is filled
+                                  }
+                                }}
+                                className="w-full rounded-md shadow-sm px-4 py-2 border-2 border-gray-400 focus:border-green-500 focus:ring-green-500 bg-[#393C46] text-white transition-all duration-200 ease-in-out"
+                                placeholder="Enter policy name"
+                              />
+                            </div>
+
+                            <li className="mb-6">
+                              <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
+                                <p className="text-white">
+                                  <strong>Document Store:</strong>{" "}
+                                  {selectedOptions["dataStoreOptions"]}
+                                </p>
+                                <p className="text-white">
+                                  <strong>Table Option:</strong>{" "}
+                                  {selectedOptions["tableOptions"]}
+                                </p>
+                                <p className="text-white">
+                                  <strong>Data Field:</strong>{" "}
+                                  {selectedOptions["dataFeildOption"]}
+                                </p>
+                                <p className="text-white">
+                                  <strong>Privacy Option:</strong>{" "}
+                                  {selectedOptions["privacyValueOption"]}
+                                </p>
+
+                                <p className="text-white">
+                                  <strong>Privacy Action:</strong>{" "}
+                                  {selectedOptions["privacyActionOption"]}
+                                </p>
+                                <p className="text-white">
+                                  <strong>Attribute Option:</strong>{" "}
+                                  {selectedOptions["attributeOption"]}
+                                </p>
+                                <p className="text-white">
+                                  <strong>Attribute Value:</strong>{" "}
+                                  {selectedOptions["attributeValue"]}
+                                </p>
+                                <p className="text-white">
+                                  <strong>Attribute Action:</strong>{" "}
+                                  {selectedOptions["attributeActionOption"]}
+                                </p>
+                                <p className="text-white">
+                                  <strong>Attribute Action:</strong>{" "}
+                                  {selectedOptions["rowLevelFilterinOption"]}
+                                </p>
+                              </div>
+                            </li>
+
+                            {/* Display error message */}
                             {errorMessage && (
                               <p className="text-red-500 text-center mb-4">
                                 {errorMessage}
