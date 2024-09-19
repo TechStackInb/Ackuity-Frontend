@@ -31,10 +31,10 @@ const ThreatManagement = () => {
 
   const [averages, setAverages] = useState({});
 
-  const handleDropdownClick = (dropdownId) => {
-    // Only open one dropdown at a time
-    setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
-  };
+  // const handleDropdownClick = (dropdownId) => {
+  //   // Only open one dropdown at a time
+  //   setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
+  // };
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -97,6 +97,23 @@ const ThreatManagement = () => {
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleDropdownClick = (dropdownKey) => {
+    if (openDropdown === dropdownKey) {
+      setOpenDropdown(null); // Close if it's already open
+    } else {
+      setOpenDropdown(dropdownKey); // Open the clicked dropdown
+    }
+  };
+
+  const handleOptionClickDrop = (dropdownKey, option) => {
+    setSelectedOptions({
+      ...selectedOptions,
+      [dropdownKey]: option,
+    });
+
+    // You can also perform additional error handling here if needed.
   };
 
   const handleOptionClicks = (option) => {
@@ -403,9 +420,11 @@ const ThreatManagement = () => {
                       width={"144px"}
                       onDropdownClick={() => handleDropdownClick("userOption")}
                       selectedOption={selectedOptions["userOption"]}
-                      onOptionClick={(option) =>
-                        handleOptionClick("userOption", option)
-                      }
+                      onOptionClick={(option) => {
+                        handleOptionClickDrop("userOption", option);
+      
+                        setOpenDropdown(null); 
+                      }}
                     />
                   </td>
                   <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black">
@@ -418,9 +437,10 @@ const ThreatManagement = () => {
                         handleDropdownClick("statusOption")
                       }
                       selectedOption={selectedOptions["statusOption"]}
-                      onOptionClick={(option) =>
-                        handleOptionClick("statusOption", option)
-                      }
+                      onOptionClick={(option) => {
+                        handleOptionClickDrop("statusOption", option);
+                        setOpenDropdown(null); // Close the dropdown after selecting an option
+                      }}
                     />
                   </td>
                   <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
