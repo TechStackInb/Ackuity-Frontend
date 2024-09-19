@@ -29,15 +29,72 @@ const ThreatManagement = () => {
   const [isSaveSuccessful, setIsSaveSuccessful] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [averages, setAverages] = useState({});
+
   const handleDropdownClick = (dropdownId) => {
     // Only open one dropdown at a time
     setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
   };
 
-  const handleOptionClick = (dropdownId, option) => {
-    setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
-    setOpenDropdown(null); // Close the dropdown after selecting an option
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+    const selectedData = averages[optionMapping[option]];
+    updateThreatData(selectedData); // Update dashboard based on the selected option
+    setIsOpen(false);
   };
+
+  const handleRefreshClick = () => {
+    setSelectedOption("Last 24 hours");
+    const last24HoursData = averages.last24Hours;
+    updateThreatData(last24HoursData); // Reset to "Last 24 hours" data
+  };
+
+  const optionMapping = {
+    "Last 24 hours": "last24Hours",
+    "Last 7 days": "last7Days",
+    "Last 30 days": "last30Days",
+  };
+
+  const updateThreatData = (data) => {
+    if (data) {
+      const threatData = [
+        { type: "Total Threats", count: data.totalThreats },
+        { type: "Injection Attacks", count: data.injectionAttacks },
+        { type: "API Attacks", count: data.apiAttacks },
+        { type: "Agent Anomalies", count: data.agentAnamalies },
+        { type: "User Anomalies", count: data.userAnamalies },
+      ];
+      setThreatDataDashboard(threatData);
+    }
+  };
+
+  useEffect(() => {
+    const fetchThreatData = async () => {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/api/data/threatManagementacdata`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setAverages(data.averages);
+          updateThreatData(data.averages.last24Hours); // Default to "Last 24 hours"
+        } else {
+          console.error("Failed to fetch threat data");
+        }
+      } catch (error) {
+        console.error("Error fetching threat data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchThreatData();
+  }, []);
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
@@ -64,40 +121,6 @@ const ThreatManagement = () => {
     { type: "User Anomalies", count: 3 },
   ];
 
-  useEffect(() => {
-    const fetchThreatData = async () => {
-      try {
-        const response = await fetch(
-          `${BASE_URL}/api/data/threatManagementacdata`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          // Map the data into a more usable format for the UI
-          const threatData = [
-            { type: "Total Threats", count: data.data[0].totalThreats },
-            { type: "Injection Attacks", count: data.data[0].injectionAttacks },
-            { type: "API Attacks", count: data.data[0].apiAttacks },
-            { type: "Agent Anomalies", count: data.data[0].agentAnamalies },
-            { type: "User Anomalies", count: data.data[0].userAnamalies },
-          ];
-          setThreatDataDashboard(threatData); // Set the formatted data to the state
-        } else {
-          console.error("Failed to fetch threat data");
-        }
-      } catch (error) {
-        console.error("Error fetching threat data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchThreatData();
-  }, []);
   console.log(threatDataDashboard, "threatDataDashboard");
 
   useEffect(() => {
@@ -187,7 +210,10 @@ const ThreatManagement = () => {
         <div className="page-center">
           <div className="flex items-center ">
             <div className="flex basis-[80%] justify-end gap-[10px]">
-              <button className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]">
+              <button
+                className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]"
+                onClick={handleRefreshClick} // Reset to "Last 24 hours"
+              >
                 <FontAwesomeIcon
                   icon={faSyncAlt}
                   className="mr-2 text-[#31B476] group-hover:text-white"
@@ -195,36 +221,48 @@ const ThreatManagement = () => {
                 <span className="text-white">Refresh</span>
               </button>
 
-              <div className="relative inline-block text-left">
+              <div className="relative inline-block text-left w-48">
+                {" "}
+                {/* Set a fixed width for the dropdown */}
                 <button
-                  className="group flex items-center px-4 py-2 border border-[#1b1e26] rounded-t-lg bg-[#1b1e26] shadow-sm"
+                  className="group flex items-center justify-between px-4 py-2 border border-[#1b1e26] rounded-t-lg bg-[#1b1e26] shadow-sm w-full" // Make the button take full width
                   onClick={toggleDropdown}
                 >
                   <FontAwesomeIcon
                     icon={faClock}
                     className="mr-2 text-[#31B476]"
                   />
-                  <span className="text-[#31B476]">{selectedOption}</span>
+                  <span className="text-[#31B476] truncate">
+                    {selectedOption}
+                  </span>{" "}
+                  {/* Use 'truncate' to prevent text overflow */}
                   <FontAwesomeIcon
                     icon={isOpen ? faChevronUp : faChevronDown}
                     className="ml-2 text-[#31B476]"
                   />
                 </button>
-
                 {isOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26]   rounded-lg shadow-lg z-10">
+                  <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26] rounded-lg shadow-lg z-10">
+                    {" "}
+                    {/* Fixed width for dropdown content */}
                     <ul className="py-2">
                       <li
                         className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
-                        onClick={() => handleOptionClicks("Last 24 hours")}
+                        onClick={() => handleOptionClick("Last 24 hours")}
                       >
                         Last 24 hours
                       </li>
                       <li
                         className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
-                        onClick={() => handleOptionClicks("Last 7 days")}
+                        onClick={() => handleOptionClick("Last 7 days")}
                       >
                         Last 7 days
+                      </li>
+                      <li
+                        className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
+                        onClick={() => handleOptionClick("Last 30 days")}
+                      >
+                        Last 30 days
                       </li>
                     </ul>
                   </div>
@@ -236,6 +274,7 @@ const ThreatManagement = () => {
           <div className="flex items-center">
             <div className="flex basis-[80%] border-t-2 border-[#091024dc]"></div>
           </div>
+
           <div>
             {loading ? (
               <div>Loading...</div>
