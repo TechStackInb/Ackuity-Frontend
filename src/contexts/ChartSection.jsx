@@ -18,7 +18,7 @@ const ChartSection = () => {
         {selectedChart === "Function Calling" && <FunctionCalling />}
         {selectedChart === "Document RAG" && <DocumentRAG />}
         {selectedChart === "Threat Management" && <ThreatManagement />}
-        {selectedChart === "Chat2Database" && <Chart2DatabasePage />}
+        {selectedChart === "text2SQL" && <Chart2DatabasePage />}
       </div>
     </div>
   );

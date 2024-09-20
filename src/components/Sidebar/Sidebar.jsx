@@ -55,7 +55,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         { name: "Function Calling" },
         { name: "Agents" },
         { name: "Document RAG" },
-        { name: "Chat2Database" },
+        { name: "text2SQL" },
         { name: "User View" },
       ],
     },
@@ -77,7 +77,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         { name: "Function Calling" },
         { name: "Agents" },
         { name: "Document RAG" },
-        { name: "Chat2Database" },
+        { name: "text2SQL" },
       ],
     },
   ];

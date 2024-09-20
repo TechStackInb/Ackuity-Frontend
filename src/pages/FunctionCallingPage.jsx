@@ -101,7 +101,7 @@ const FunctionCalling = () => {
   const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
-  
+
     if (query) {
       try {
         const response = await fetch(
@@ -114,17 +114,17 @@ const FunctionCalling = () => {
             credentials: "include",
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Failed to fetch members");
         }
-  
+
         const data = await response.json();
         const filteredUsers = data.data.filter((user) => {
           const userNameLower = user.name.toLowerCase();
           return query === userNameLower || userNameLower.startsWith(query);
         });
-  
+
         // Ensure no duplicate members are added
         const uniqueFilteredUsers = filteredUsers.reduce((acc, current) => {
           if (!acc.find((user) => user._id === current._id)) {
@@ -132,9 +132,9 @@ const FunctionCalling = () => {
           }
           return acc;
         }, []);
-  
+
         setSearchResults(uniqueFilteredUsers);
-  
+
         // Set total pages based on response (if included in API response)
         if (data.totalPages) {
           setTotalPages(data.totalPages);
@@ -146,7 +146,6 @@ const FunctionCalling = () => {
       setSearchResults([]);
     }
   };
-  
 
   const addMember = (user) => {
     setMembers([...members, user]);
@@ -437,12 +436,12 @@ const FunctionCalling = () => {
         return;
       }
 
-      if (!section.values["privacyValueOption"]) {
-        setErrorMessage(
-          `Privacy Filtering Category is required for section ${i + 1}.`
-        );
-        return;
-      }
+      // if (!section.values["privacyValueOption"]) {
+      //   setErrorMessage(
+      //     `Privacy Filtering Category is required for section ${i + 1}.`
+      //   );
+      //   return;
+      // }
 
       if (!section.values["privacyActionOption"]) {
         setErrorMessage(
@@ -481,8 +480,8 @@ const FunctionCalling = () => {
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
       actionOnPermissionExistingMember: memberIds,
       actionOnPermissionRevisedMember: memberIds,
-      actionOnPrivacyFilteringCategory:
-        section.values["privacyValueOption"] || "",
+      // actionOnPrivacyFilteringCategory:
+      //   section.values["privacyValueOption"] || "",
       actionOnPrivacyFilteringAction:
         section.values["privacyActionOption"] || "",
       actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
@@ -822,7 +821,7 @@ const FunctionCalling = () => {
               section.actionOnPermissionExistingMember, // Passing member IDs
             actionOnPermissionRevisedMember:
               section.actionOnPermissionRevisedMember, // Passing member IDs
-            privacyValueOption: section.actionOnPrivacyFilteringCategory,
+            // privacyValueOption: section.actionOnPrivacyFilteringCategory,
             privacyActionOption: section.actionOnPrivacyFilteringAction,
             actionOnPrivacyFilteringTransformValue:
               section.actionOnPrivacyFilteringTransformValue,
@@ -945,8 +944,8 @@ const FunctionCalling = () => {
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
       actionOnPermissionExistingMember: memberIds,
       actionOnPermissionRevisedMember: memberIds,
-      actionOnPrivacyFilteringCategory:
-        section.values["privacyValueOption"] || "",
+      // actionOnPrivacyFilteringCategory:
+      //   section.values["privacyValueOption"] || "",
       actionOnPrivacyFilteringAction:
         section.values["privacyActionOption"] || "",
       actionOnPrivacyFilteringTransformValue:
@@ -1202,7 +1201,7 @@ const FunctionCalling = () => {
     attributeOption: ["Department", "Location"],
     attributeValueOption: ["Asia", "North America"],
     attributeActionOption: ["Allow", "Redact"],
-    actionOnDataField: ["Oppurtunity Name", "Account Name", "Amount", "Age"],
+    actionOnDataField: ["Opportunity name", "Account Name", "Amount", "Age"],
     selectApiName: ["Sales Opportunities", "API2", "API3", "API4"],
   };
 
@@ -1611,8 +1610,73 @@ const FunctionCalling = () => {
                                           <div className="p-4 space-y-4">
                                             <div className="flex justify-between items-center mb-4">
                                               <span className="text-white text-sm font-poppins font-medium">
-                                                {members.length} Members
+                                               Members
                                               </span>
+                                            </div>
+                                            <div className="space-y-4">
+                                              <div className="flex ">
+                                                <div
+                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                  // style={{
+                                                  //   width: "47px",
+                                                  //   height: "47px",
+                                                  //   background: "#FFFFFF",
+                                                  //   opacity: 1,
+                                                  // }}
+                                                >
+                                                  <img
+                                                    src={userIcon}
+                                                    alt="icons"
+                                                    style={{
+                                                      width: "47px",
+                                                      height: "47px",
+                                                    }}
+                                                  />
+                                                </div>
+                                                <div className="flex flex-col ml-3">
+                                                  <span className="text-white block text-base font-poppins font-semibold">
+                                                    Vinod Vasudevan
+                                                  </span>
+                                                  <span className="text-gray-400 text-sm font-poppins font-normal text-left">
+                                                    Member{" "}
+                                                    <FontAwesomeIcon
+                                                      icon={faAngleDown}
+                                                    />
+                                                  </span>
+                                                </div>
+                                              </div>
+                                              <div className="border-t border-gray-600"></div>
+                                              <div className="flex ">
+                                                <div
+                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                  style={{
+                                                    width: "47px",
+                                                    height: "47px",
+                                                    background: "#FFFFFF",
+                                                    opacity: 1,
+                                                  }}
+                                                >
+                                                  <img
+                                                    src={userIcon}
+                                                    alt="icons"
+                                                    style={{
+                                                      width: "47px",
+                                                      height: "47px",
+                                                    }}
+                                                  />
+                                                </div>
+                                                <div className="flex flex-col ml-3">
+                                                  <span className="text-white block text-base font-poppins font-semibold">
+                                                    Rajat Mohanty
+                                                  </span>
+                                                  <span className="text-gray-400 text-sm font-poppins font-normal text-left">
+                                                    Member{" "}
+                                                    <FontAwesomeIcon
+                                                      icon={faAngleDown}
+                                                    />
+                                                  </span>
+                                                </div>
+                                              </div>
                                             </div>
                                             {members.map((member, index) => (
                                               <div
@@ -1948,7 +2012,32 @@ const FunctionCalling = () => {
                               <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                 Read + Write
                               </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                <div className="flex flex-col">
+                                  <span
+                                    onClick={() =>
+                                      handleSpanClick("Vinod Vasudevan1")
+                                    }
+                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
+                                      selectedItems.includes("Vinod Vasudevan1")
+                                        ? "text-white bg-[#0a854b]"
+                                        : "bg-black"
+                                    }`}
+                                  >
+                                    Vinod Vasudevan
+                                  </span>
+                                  <span
+                                    onClick={() => handleSpanClick("Rajat1")}
+                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
+                                      selectedItems.includes("Rajat1")
+                                        ? "text-white bg-[#0a854b]"
+                                        : "bg-black"
+                                    }`}
+                                  >
+                                    Rajat
+                                  </span>
+                                </div>
+                              </td>
                               <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
                           </tbody>
@@ -1964,9 +2053,9 @@ const FunctionCalling = () => {
                         <table className="bg-customBlack border border-gray-200 w-full">
                           <thead>
                             <tr>
-                              <th className=" py-2 border border-customBorderColor bg-[#1b1e26] text-customWhite font-poppins font-semibold">
+                              {/* <th className=" py-2 border border-customBorderColor bg-[#1b1e26] text-customWhite font-poppins font-semibold">
                                 Category
-                              </th>
+                              </th> */}
                               <th className=" py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibold">
                                 Action
                               </th>
@@ -1977,7 +2066,7 @@ const FunctionCalling = () => {
                           </thead>
                           <tbody>
                             <tr>
-                              <td
+                              {/* <td
                                 className=" py-2.5 border border-customBorderColor text-customWhite bg-black "
                                 style={{ width: "200px" }}
                               >
@@ -2000,7 +2089,7 @@ const FunctionCalling = () => {
                                     )
                                   }
                                 />
-                              </td>
+                              </td> */}
                               <td
                                 className=" py-2.5 border border-customBorderColor text-customWhite bg-black"
                                 style={{ width: "200px" }}
@@ -2029,20 +2118,16 @@ const FunctionCalling = () => {
                             <tr>
                               <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                               <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                            </tr>
+                            <tr>
+                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                               <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
                             <tr>
                               <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                               <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
                             <tr>
-                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                            </tr>
-                            <tr>
-                              <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                               <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                               <td className=" py-4 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
@@ -2367,10 +2452,10 @@ const FunctionCalling = () => {
                               {/* Section {section.id} */}
                             </h3>
                           </div>
-                          <div className="text-[#c4c9d0]">
+                          {/* <div className="text-[#c4c9d0]">
                             <strong>Privacy Category:</strong>{" "}
                             {section.values["privacyValueOption"]}
-                          </div>
+                          </div> */}
                           <div className="text-[#c4c9d0]">
                             <strong>Privacy Action:</strong>{" "}
                             {section.values["privacyActionOption"]}

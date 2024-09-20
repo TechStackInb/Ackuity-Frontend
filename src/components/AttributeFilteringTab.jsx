@@ -370,6 +370,8 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     setOpenDropdown(null);
   };
 
+  console.log(sections,"sections")
+
   const datas = {
     documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
     documentLocationOptions: [
