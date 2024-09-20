@@ -2351,10 +2351,10 @@ const Chart2DatabasePage = () => {
                                     <strong>Data Field:</strong>{" "}
                                     {selectedOptions["dataFeildOption"]}
                                   </p>
-                                  <p className="text-white">
+                                  {/* <p className="text-white">
                                     <strong>Privacy Option:</strong>{" "}
                                     {selectedOptions["privacyValueOption"]}
-                                  </p>
+                                  </p> */}
 
                                   <p className="text-white">
                                     <strong>Privacy Action:</strong>{" "}
