@@ -2560,6 +2560,9 @@ const Chart2DatabasePage = () => {
                     Name
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
+                    Row Level Filter
+                  </th>
+                  <th className="px-4 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold">
                     JSON Format
                   </th>
                 </tr>
@@ -2579,6 +2582,9 @@ const Chart2DatabasePage = () => {
                     </td>
                     <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
                       {item.ONname}
+                    </td>
+                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                      {item.rowLevelFilteringBasedonValue}
                     </td>
 
                     <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
