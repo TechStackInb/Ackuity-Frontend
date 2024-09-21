@@ -63,9 +63,78 @@ function PermissionsTab({}) {
 
   const [loading, setLoading] = useState(false);
 
+  // const [sections, setSections] = useState([
+  //   {
+  //     id: 1,
+  //     values: {
+  //       documentStore: "",
+  //       documentRepository: "",
+  //       documentLocation: "",
+  //     },
+  //     members: [],
+  //   },
+
+  //   {
+  //     id: 2,
+  //     values: {
+  //       documentStore: "",
+  //       documentRepository: "",
+  //       documentLocation: "",
+  //     },
+  //     members: [],
+  //   },
+  //   {
+  //     id: 3,
+  //     values: {
+  //       documentStore: "",
+  //       documentRepository: "",
+  //       documentLocation: "",
+  //     },
+  //     members: [],
+  //   },
+  //   {
+  //     id: 4,
+  //     values: {
+  //       documentStore: "",
+  //       documentRepository: "",
+  //       documentLocation: "",
+  //     },
+  //     members: [],
+  //   },
+  //   {
+  //     id: 5,
+  //     values: {
+  //       documentStore: "",
+  //       documentRepository: "",
+  //       documentLocation: "",
+  //     },
+  //     members: [],
+  //   },
+  //   {
+  //     id: 6,
+  //     values: {
+  //       documentStore: "",
+  //       documentRepository: "",
+  //       documentLocation: "",
+  //     },
+  //     members: [],
+  //   },
+  //   {
+  //     id: 7,
+  //     values: {
+  //       documentStore: "",
+  //       documentRepository: "",
+  //       documentLocation: "",
+  //     },
+  //     members: [],
+  //   },
+
+  //   // Add more sections as needed
+  // ]);
+
   const [sections, setSections] = useState([
     {
-      id: 1,
+      id: Date.now(),
       values: {
         documentStore: "",
         documentRepository: "",
@@ -73,65 +142,8 @@ function PermissionsTab({}) {
       },
       members: [],
     },
-
-    {
-      id: 2,
-      values: {
-        documentStore: "",
-        documentRepository: "",
-        documentLocation: "",
-      },
-      members: [],
-    },
-    {
-      id: 3,
-      values: {
-        documentStore: "",
-        documentRepository: "",
-        documentLocation: "",
-      },
-      members: [],
-    },
-    {
-      id: 4,
-      values: {
-        documentStore: "",
-        documentRepository: "",
-        documentLocation: "",
-      },
-      members: [],
-    },
-    {
-      id: 5,
-      values: {
-        documentStore: "",
-        documentRepository: "",
-        documentLocation: "",
-      },
-      members: [],
-    },
-    {
-      id: 6,
-      values: {
-        documentStore: "",
-        documentRepository: "",
-        documentLocation: "",
-      },
-      members: [],
-    },
-    {
-      id: 7,
-      values: {
-        documentStore: "",
-        documentRepository: "",
-        documentLocation: "",
-      },
-      members: [],
-    },
-
-    // Add more sections as needed
+    // Add other initial sections here...
   ]);
-
   console.log(sections, "sections");
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
@@ -139,12 +151,22 @@ function PermissionsTab({}) {
   const [visibleSections, setVisibleSections] = useState(2);
 
   const addSection = () => {
-    if (visibleSections < sections.length) {
-      setVisibleSections(visibleSections + 1); // Show one more section
-    } else {
-      // Add a new section if the number of visible sections is less than 10
-      setSections([...sections, { id: Date.now(), values: {}, members: [] }]);
+    if (sections.length < 10) {
+      const newSection = {
+        id: Date.now() + sections.length + 1, // Unique ID
+        values: {
+          documentStore: "",
+          documentRepository: "",
+          documentLocation: "",
+        },
+        members: [],
+      };
+      setSections([...sections, newSection]); // Add new section to state
     }
+  };
+
+  const removeSection = (id) => {
+    setSections(sections.filter((section) => section.id !== id));
   };
 
   const removeMember = (user, sectionIndex) => {
@@ -165,17 +187,19 @@ function PermissionsTab({}) {
 
   // console.log(sections, "sections");
 
-  const removeSection = (id) => {
-    setSections(sections.filter((section) => section.id !== id));
-  };
+  // const removeSection = (id) => {
+  //   setSections(sections.filter((section) => section.id !== id));
+  // };
 
-  const clearSection = (id) => {
-    setSections(
-      sections.map((section) =>
-        section.id === id ? { ...section, values: {} } : section
-      )
-    );
-  };
+  // const removeSection = (id) => {
+  //   const updatedSections = sections.filter((section) => section.id !== id);
+
+  //   setSections(updatedSections);
+
+  //   if (visibleSections > updatedSections.length) {
+  //     setVisibleSections(updatedSections.length);
+  //   }
+  // };
 
   const handleDropdownChange = (sectionId, fieldName, value) => {
     setErrorMessage("");
@@ -587,7 +611,7 @@ function PermissionsTab({}) {
                 </tr>
               </thead>
               <tbody className="bg-customTablebG">
-                {sections.slice(0, visibleSections).map((section, index) => (
+                {sections.map((section, index) => (
                   <tr key={section.id}>
                     <td
                       className="px-4 py-12  border border-customBorderColor text-customWhite bg-black"
@@ -1006,9 +1030,9 @@ function PermissionsTab({}) {
                         className="absolute bottom-0 right-0 flex justify-end gap-2 min-w-[100px] ifmarginleft"
                         style={{ marginRight: "17px" }}
                       >
-                        {sections.length < 10 && (
+                        {/* {sections.length < 10 && (
                           <div className="flex gap-2">
-                            {/* Add Section Button */}
+                    
                             <button
                               className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
                               onClick={addSection}
@@ -1019,9 +1043,9 @@ function PermissionsTab({}) {
                               />
                             </button>
 
-                            {/* Clear or Remove button depending on section count */}
+                
                             {sections.length === 1 ? (
-                              // Only show Clear button if there's only one section
+                        
                               <button
                                 className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
                                 onClick={() => clearSection(section.id)}
@@ -1032,7 +1056,7 @@ function PermissionsTab({}) {
                                 />
                               </button>
                             ) : (
-                              // Show Remove button if more than one section
+                       
                               <button
                                 className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
                                 onClick={() => removeSection(section.id)}
@@ -1044,7 +1068,44 @@ function PermissionsTab({}) {
                               </button>
                             )}
                           </div>
-                        )}
+                        )} */}
+                        <div className="flex gap-2">
+                          {sections.length === 1 ? (
+                            <button
+                              className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
+                              onClick={() => clearSection(section.id)}
+                            >
+                              <FontAwesomeIcon
+                                className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
+                                icon={faEraser}
+                              />
+                            </button>
+                          ) : (
+                            <button
+                              className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
+                              onClick={() => removeSection(section.id)}
+                            >
+                              <FontAwesomeIcon
+                                className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
+                                icon={faTrash}
+                              />
+                            </button>
+                          )}
+
+                          {sections.length < 10 && (
+                            <div className="flex gap-2">
+                              <button
+                                className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
+                                onClick={addSection}
+                              >
+                                <FontAwesomeIcon
+                                  className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
+                                  icon={faPlus}
+                                />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
