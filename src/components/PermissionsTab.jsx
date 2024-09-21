@@ -68,8 +68,8 @@ function PermissionsTab({}) {
       id: 1,
       values: {
         documentStore: "",
-        attributeOption: "",
-        documentOption: "",
+        documentRepository: "",
+        documentLocation: "",
       },
       members: [],
     },
@@ -78,8 +78,8 @@ function PermissionsTab({}) {
       id: 2,
       values: {
         documentStore: "",
-        attributeOption: "",
-        documentOption: "",
+        documentRepository: "",
+        documentLocation: "",
       },
       members: [],
     },
@@ -87,8 +87,8 @@ function PermissionsTab({}) {
       id: 3,
       values: {
         documentStore: "",
-        attributeOption: "",
-        documentOption: "",
+        documentRepository: "",
+        documentLocation: "",
       },
       members: [],
     },
@@ -96,8 +96,8 @@ function PermissionsTab({}) {
       id: 4,
       values: {
         documentStore: "",
-        attributeOption: "",
-        documentOption: "",
+        documentRepository: "",
+        documentLocation: "",
       },
       members: [],
     },
@@ -105,8 +105,8 @@ function PermissionsTab({}) {
       id: 5,
       values: {
         documentStore: "",
-        attributeOption: "",
-        documentOption: "",
+        documentRepository: "",
+        documentLocation: "",
       },
       members: [],
     },
@@ -114,8 +114,8 @@ function PermissionsTab({}) {
       id: 6,
       values: {
         documentStore: "",
-        attributeOption: "",
-        documentOption: "",
+        documentRepository: "",
+        documentLocation: "",
       },
       members: [],
     },
@@ -123,8 +123,8 @@ function PermissionsTab({}) {
       id: 7,
       values: {
         documentStore: "",
-        attributeOption: "",
-        documentOption: "",
+        documentRepository: "",
+        documentLocation: "",
       },
       members: [],
     },
@@ -365,19 +365,30 @@ function PermissionsTab({}) {
     try {
       const selectedSection = sections[activeSectionIndex]; // Get the active section
 
-      if (!selectedSection) {
-        throw new Error("Selected section does not exist.");
-      }
+      console.log(selectedSection, "selectedSection");
+
+      // if (!selectedSection) {
+      //   throw new Error("Selected section does not exist.");
+      // }
 
       const members = selectedSection.members.map((member) => member._id); // Get member IDs
 
+      // const jsonPayload = {
+      //   documentStore: selectedSection.values.documentStore,
+      //   documentRepository: selectedSection.values.documentRepository,
+      //   documentLocation: selectedSection.values.documentLocation, // Adjust as necessary
+      //   members,
+      // };
+
       const jsonPayload = {
         documentStore: selectedSection.values.documentStore,
-        documentRepository: selectedSection.values.attributeOption,
-        // documentName: selectedSection.values.documentOption,
-        documentLocation: selectedSection.values.documentOption, // Adjust as necessary
+        documentRepository: selectedSection.values.documentRepository,
+        documentName: "Document1",
+        documentLocation: selectedSection.values.documentLocation, // Adjust as necessary
         members,
       };
+
+      console.log(jsonPayload, "jsonPayload");
 
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPermissions`,
@@ -427,9 +438,9 @@ function PermissionsTab({}) {
 
       const payloadSection = sections[0];
       const jsonPayload = {
-        documentStore: payloadSection.values["documentStoreOptions"],
-        documentRepository: payloadSection.values["attributeOption"],
-        documentLocation: payloadSection.values["documentOption"],
+        documentStore: payloadSection.values["documentStore"],
+        documentRepository: payloadSection.values["documentRepository"],
+        documentLocation: payloadSection.values["documentLocation"],
         members: memberIds, // Updated list of members
       };
 
@@ -542,9 +553,9 @@ function PermissionsTab({}) {
   };
 
   const data = {
-    documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
-    attributeOption: ["item2", "item3", "item4", "item5"],
-    documentOption: ["Document Location", "Another Option", "Another Option"],
+    documentStore: ["Document Store", "Share Point", "One Drive"],
+    documentRepository: ["item2", "item3", "item4", "item5"],
+    documentLocation: ["Document Location", "Another Option", "Another Option"],
   };
 
   return (
@@ -583,7 +594,7 @@ function PermissionsTab({}) {
                       width={"250px"}
                     >
                       <CustomDropdown
-                        options={data.documentStoreOptions || []}
+                        options={data.documentStore || []}
                         placeholder="Select store"
                         isOpen={openDropdown === `${section.id}-0`}
                         onDropdownClick={() =>
@@ -604,17 +615,17 @@ function PermissionsTab({}) {
                       width={"250px"}
                     >
                       <CustomDropdown
-                        options={data.attributeOption || []}
+                        options={data.documentRepository || []}
                         placeholder="Select Document"
                         isOpen={openDropdown === `${section.id}-1`}
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 1)
                         }
-                        selectedOption={section.values.attributeOption || ""}
+                        selectedOption={section.values.documentRepository || ""}
                         setSelectedOption={(value) =>
                           handleDropdownChange(
                             section.id,
-                            "attributeOption",
+                            "documentRepository",
                             value
                           )
                         }
@@ -625,17 +636,17 @@ function PermissionsTab({}) {
                       width={"200px"}
                     >
                       <CustomDropdown
-                        options={data.documentOption || []}
+                        options={data.documentLocation || []}
                         placeholder="Select Document"
                         isOpen={openDropdown === `${section.id}-2`}
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 2)
                         }
-                        selectedOption={section.values.documentOption || ""}
+                        selectedOption={section.values.documentLocation || ""}
                         setSelectedOption={(value) =>
                           handleDropdownChange(
                             section.id,
-                            "documentOption",
+                            "documentLocation",
                             value
                           )
                         }
