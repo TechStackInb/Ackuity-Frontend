@@ -1095,6 +1095,9 @@ const FunctionCalling = () => {
 
   const handlePolicyNameChange = (e) => {
     setPolicyName(e.target.value);
+    if (errorMessage) {
+      setErrorMessage("");
+    }
   };
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
@@ -1146,11 +1149,18 @@ const FunctionCalling = () => {
       )
     );
     setOpenDropdown(null);
+
+    if (errorMessage) {
+      setErrorMessage("");
+    }
   };
 
   const handleOptionClick = (dropdownId, option) => {
     setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
     setOpenDropdown(null);
+    if (errorMessage) {
+      setErrorMessage("");
+    }
   };
 
   const handleSpanClick = (item) => {
@@ -1610,7 +1620,7 @@ const FunctionCalling = () => {
                                           <div className="p-4 space-y-4">
                                             <div className="flex justify-between items-center mb-4">
                                               <span className="text-white text-sm font-poppins font-medium">
-                                               Members
+                                                Members
                                               </span>
                                             </div>
                                             <div className="space-y-4">

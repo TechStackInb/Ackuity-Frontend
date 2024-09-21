@@ -16,6 +16,7 @@ import {
   faAngleDown,
   faUserLarge,
   faEraser,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import userIcon from "../assets/usericon.svg";
 import iconsmodel from "../assets/save.svg";
@@ -59,6 +60,8 @@ function PermissionsTab({}) {
   const [totalPages, setTotalPages] = useState(1);
 
   // const [sections, setSections] = useState([{ id: Date.now(), values: {} }]);
+
+  const [loading, setLoading] = useState(false);
 
   const [sections, setSections] = useState([
     {
@@ -175,6 +178,8 @@ function PermissionsTab({}) {
   };
 
   const handleDropdownChange = (sectionId, fieldName, value) => {
+    setErrorMessage("");
+
     const updatedSections = sections.map((section) => {
       if (section.id === sectionId) {
         return {
@@ -356,6 +361,7 @@ function PermissionsTab({}) {
   // };
 
   const handleSave = async () => {
+    setLoading(true);
     try {
       const selectedSection = sections[activeSectionIndex]; // Get the active section
 
@@ -368,8 +374,8 @@ function PermissionsTab({}) {
       const jsonPayload = {
         documentStore: selectedSection.values.documentStore,
         documentRepository: selectedSection.values.attributeOption,
-        documentName: selectedSection.values.documentOption,
-        documentLocation: "Another Option", // Adjust as necessary
+        // documentName: selectedSection.values.documentOption,
+        documentLocation: selectedSection.values.documentOption, // Adjust as necessary
         members,
       };
 
@@ -400,12 +406,14 @@ function PermissionsTab({}) {
 
       setTimeout(() => {
         setIsSuccessModalOpen(false);
-      }, 2000); // Close success modal after 2 seconds
+      }, 2000);
     } catch (error) {
       console.error("Error saving members:", error);
       setErrorMessage(
         error.message || "An error occurred while saving members."
-      ); // Set error message
+      );
+    } finally {
+      setLoading(false);
     }
   };
   const handleUpdate = async (policyId) => {
@@ -571,7 +579,7 @@ function PermissionsTab({}) {
                 {sections.slice(0, visibleSections).map((section, index) => (
                   <tr key={section.id}>
                     <td
-                      className="px-4 py-8  border border-customBorderColor text-customWhite bg-black"
+                      className="px-4 py-12  border border-customBorderColor text-customWhite bg-black"
                       width={"250px"}
                     >
                       <CustomDropdown
@@ -592,7 +600,7 @@ function PermissionsTab({}) {
                       />
                     </td>
                     <td
-                      className="px-4 py-8  border border-customBorderColor text-customWhite bg-black"
+                      className="px-4 py-12  border border-customBorderColor text-customWhite bg-black"
                       width={"250px"}
                     >
                       <CustomDropdown
@@ -613,7 +621,7 @@ function PermissionsTab({}) {
                       />
                     </td>
                     <td
-                      className="px-4 py-8 border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
+                      className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
                       width={"200px"}
                     >
                       <CustomDropdown
@@ -633,7 +641,7 @@ function PermissionsTab({}) {
                         }
                       />
                     </td>
-                    <td className="px-4 py-8 border border-customBorderColor text-customWhite font-poppins bg-[#000000]">
+                    <td className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]">
                       <div className="relative">
                         <div className="flex justify-between items-start">
                           <div className="flex flex-col">
@@ -750,7 +758,7 @@ function PermissionsTab({}) {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-8 border border-customBorderColor text-customWhite font-poppins bg-[#000000]">
+                    <td className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]">
                       <div className="relative">
                         <div>
                           <div className="flex justify-between items-start">
@@ -925,18 +933,29 @@ function PermissionsTab({}) {
                                         <button
                                           onClick={handleSave}
                                           className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
+                                          disabled={loading} // Disable button while loading
                                         >
-                                          <img
-                                            src={iconsmodel}
-                                            alt="iconsmodel"
-                                            className="mr-2 btn-icon"
-                                          />
-                                          <span> Save</span>
+                                          {loading ? (
+                                            <FontAwesomeIcon
+                                              icon={faSpinner}
+                                              spin
+                                              className="mr-2"
+                                            />
+                                          ) : (
+                                            <img
+                                              src={iconsmodel}
+                                              alt="iconsmodel"
+                                              className="mr-2 btn-icon"
+                                            />
+                                          )}
+                                          <span>
+                                            {loading ? "Saving..." : "Save"}
+                                          </span>
                                         </button>
                                         <button
                                           onClick={() =>
                                             toggleEditMembership(index)
-                                          } // Close modal
+                                          }
                                           className="text-gray-400"
                                         >
                                           Cancel

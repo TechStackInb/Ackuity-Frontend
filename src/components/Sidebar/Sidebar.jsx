@@ -9,7 +9,7 @@ import {
   faUser,
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import Logo from "./../../assets/Logo@2x.png";
+import Logo from "./../../assets/ackuity_logo.svg";
 import DashboardIcon from "./../../assets/Dashboard-cion.png";
 import PolicyManagerIcon from "./../../assets/Policy Manager-cion.png";
 import AuditIcon from "./../../assets/Audit-cion.png";
