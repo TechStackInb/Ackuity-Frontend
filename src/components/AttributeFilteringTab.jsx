@@ -370,21 +370,21 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     setOpenDropdown(null);
   };
 
-  console.log(sections,"sections")
+  // console.log(sections,"sections")
 
   const datas = {
     documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
     documentLocationOptions: [
-      "Document Location",
-      "Another Option",
-      "Another Option",
+      "http://acmecorp.sharepoint.com/sites/operations",
+      "http://acmecorp.sharepoint.com/sites/marketing",
+      "http://acmecorp.sharepoint.com/sites/sales",
     ],
     documentOptions: ["Document1", "Document2", "Document3", "Document4"],
     containsOptions: ["Document Classification", "Location", "Division"],
     withOptions: ["Confidential", "Private", "Public"],
     thenOptions: ["Anonymize", "Tokenize", "Encrypt", "De-identification"],
     roleOptions: ["Role1", "Role2", "Role3", "Role4"],
-    atOptions: ["All times", "One Day", "One Week", "All Month"],
+    atOptions: ["All times", "1 Day", "1 Week", "One Month", "1 Year"],
   };
 
   const openModal = () => {

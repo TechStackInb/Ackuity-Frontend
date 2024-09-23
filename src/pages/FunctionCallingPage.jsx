@@ -109,7 +109,7 @@ const FunctionCalling = () => {
     }
   }, [policyId]);
 
-  console.log(membersBySection, "membersBySection");
+  // console.log(membersBySection, "membersBySection");
 
   const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
@@ -506,28 +506,28 @@ const FunctionCalling = () => {
     // If validation passes, clear the error message
     setErrorMessage("");
 
-    const configurePermissionsReadRevised = membersBySection[0].map(
+    const actionOnPermissionReadRevisedMember = membersBySection[0].map(
       (member) => member._id
     );
-    const configurePermissionsReadWriteRevised = membersBySection[1].map(
-      (member) => member._id
-    );
-
-    const configurePermissionsReadExisting = membersBySection[0].map(
-      (member) => member._id
-    );
-    const configurePermissionsReadWriteExisting = membersBySection[1].map(
+    const actionOnPermissionReadorWriteRevisedMember = membersBySection[1].map(
       (member) => member._id
     );
 
+    const actionOnPermissionReadExistingMember = membersBySection[0].map(
+      (member) => member._id
+    );
+    const actionOnPermissionReadorWriteExistingMember = membersBySection[1].map(
+      (member) => member._id
+    );
 
-    console.log(configurePermissionsReadRevised,configurePermissionsReadWriteRevised,configurePermissionsReadExisting,configurePermissionsReadWriteExisting)
+    // console.log(configurePermissionsReadRevised,configurePermissionsReadWriteRevised,configurePermissionsReadExisting,configurePermissionsReadWriteExisting)
 
     const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
-      actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
-      actionOnPermissionExistingMember: memberIds,
-      actionOnPermissionRevisedMember: memberIds,
+      actionOnPermissionReadExistingMember,
+      actionOnPermissionReadRevisedMember,
+      actionOnPermissionReadorWriteExistingMember,
+      actionOnPermissionReadorWriteRevisedMember,
       // actionOnPrivacyFilteringCategory:
       //   section.values["privacyValueOption"] || "",
       actionOnPrivacyFilteringAction:
@@ -557,7 +557,7 @@ const FunctionCalling = () => {
       functionCallingPlusData,
     };
 
-    console.log(postData, "postData");
+    // console.log(postData, "postData");
 
     try {
       const response = await fetch(
@@ -602,6 +602,7 @@ const FunctionCalling = () => {
       setActionOnPermission("ReadOrWrite");
       setActionOnPermissionExisting("Management");
       setPolicyName("");
+      setMembersBySection([[], []]);
 
       // Call fetchData to update table data
       await fetchData();
@@ -795,23 +796,131 @@ const FunctionCalling = () => {
   //   }
   // };
 
-  const fetchDataForEdit = async (id) => {
+  // const handleEditButtonClick = async (policyId) => {
+  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   setIsSaveSuccessful(false);
+
+  //   const policyToEdit = tableData.find((policy) => policy._id === policyId);
+  //   if (policyToEdit) {
+  //     // Set policy data
+  //     setPolicyName(policyToEdit.policyName);
+  //     setSelectedOptions({
+  //       netSales: policyToEdit.query,
+  //       targetLocation: policyToEdit.targetApplication,
+  //       genAiApp: policyToEdit.genAiApp,
+  //       selectApiName: policyToEdit.selectApiName,
+  //     });
+  //     setDescription(policyToEdit.selectApiDescription);
+
+  //     // Set the data fields with isChecked status
+  //     setDataFields(
+  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
+  //         acc[field.label] = field.isChecked;
+  //         return acc;
+  //       }, {})
+  //     );
+
+  //     // Fetch members based on actionOnPermissionRevisedMember and actionOnPermissionReadorWriteRevisedMember IDs
+  //     const memberIds = [
+  //       ...new Set(
+  //         policyToEdit.functionCallingPlusData.flatMap((section) => [
+  //           ...section.actionOnPermissionReadRevisedMember,
+  //           ...section.actionOnPermissionReadorWriteRevisedMember,
+  //         ])
+  //       ),
+  //     ];
+
+  //     if (memberIds.length > 0) {
+  //       // Fetch members based on the constructed query
+  //       const queryParams = new URLSearchParams({
+  //         ids: memberIds.join(","),
+  //       }).toString();
+
+  //       try {
+  //         const response = await fetch(
+  //           `${BASE_URL}/api/data/members?${queryParams}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             credentials: "include",
+  //           }
+  //         );
+
+  //         const memberData = await response.json();
+
+  //         // Organize members into sections
+  //         // const organizedMembers = policyToEdit.functionCallingPlusData.map(
+  //         //   (section) => ({
+  //         //     memberData.data.filter((member) => section.includes(member._id))
+  //         //   })
+  //         // );
+
+  //         const sections = [
+  //           ...new Set(
+  //             policyToEdit.functionCallingPlusData.flatMap((section) => [
+  //               ...section.actionOnPermissionReadRevisedMember,
+  //               ...section.actionOnPermissionReadorWriteRevisedMember,
+  //             ])
+  //           ),
+  //         ];
+
+  //         const organizedMembers = sections.map(
+  //           (section) =>
+  //             memberData.data.filter((member) => section.includes(member._id))
+  //         );
+
+  //         setMembersBySection(organizedMembers);
+  //       } catch (error) {
+  //         console.error("Error fetching members:", error);
+  //       }
+  //     } else {
+  //       console.log("No members found in the permission fields.");
+  //     }
+
+  //     // Populate sections data for editing
+  //     const sectionsData = policyToEdit.functionCallingPlusData.map(
+  //       (section, index) => ({
+  //         id: Date.now() + index,
+  //         values: {
+  //           actionOnDataField: section.actionOnDataField,
+  //           privacyActionOption: section.actionOnPrivacyFilteringAction,
+  //           actionOnPrivacyFilteringTransformValue:
+  //             section.actionOnPrivacyFilteringTransformValue,
+  //           attributeOption: section.actionOnAttributeFilteringAttribute,
+  //           attributeValueOption: section.actionOnAttributeFilteringValue,
+  //           attributeActionOption: section.actionOnAttributeFilteringAction,
+  //           actionOnAttributeFilteringTransformValue:
+  //             section.actionOnAttributeFilteringTransformValue,
+  //         },
+  //       })
+  //     );
+
+  //     setSections(sectionsData);
+  //     setPolicyId(policyId);
+  //   } else {
+  //     console.error("Policy not found with ID:", policyId);
+  //   }
+  // };
+
+  const handleEditButtonClick = async (policyId) => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
-
     setIsSaveSuccessful(false);
-    const policyToEdit = tableData.find((policy) => policy._id === id);
 
+    const policyToEdit = tableData.find((policy) => policy._id === policyId);
     if (policyToEdit) {
+      // Set policy data
       setPolicyName(policyToEdit.policyName);
-
       setSelectedOptions({
         netSales: policyToEdit.query,
         targetLocation: policyToEdit.targetApplication,
         genAiApp: policyToEdit.genAiApp,
         selectApiName: policyToEdit.selectApiName,
       });
-
       setDescription(policyToEdit.selectApiDescription);
+
+      // Set the data fields with isChecked status
       setDataFields(
         policyToEdit.selectApiDataFields.reduce((acc, field) => {
           acc[field.label] = field.isChecked;
@@ -819,56 +928,66 @@ const FunctionCalling = () => {
         }, {})
       );
 
-      // Fetch members based on actionOnPermissionRevised member IDs
-      const memberIds = policyToEdit.functionCallingPlusData.flatMap(
-        (section) => section.actionOnPermissionRevisedMember
-      );
+      // Fetch members based on actionOnPermissionRevisedMember and actionOnPermissionReadorWriteRevisedMember IDs
+      const memberIds = [
+        ...new Set(
+          policyToEdit.functionCallingPlusData.flatMap((section) => [
+            ...section.actionOnPermissionReadRevisedMember,
+            ...section.actionOnPermissionReadorWriteRevisedMember,
+          ])
+        ),
+      ];
 
-      try {
-        // Construct query parameters for the GET request
+      if (memberIds.length > 0) {
+        // Fetch members based on the constructed query
         const queryParams = new URLSearchParams({
-          memberIds: memberIds.join(","),
+          ids: memberIds.join(","),
         }).toString();
 
-        const response = await fetch(
-          `${BASE_URL}/api/data/members?${queryParams}`, // Use GET method with query parameters
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
+        try {
+          const response = await fetch(
+            `${BASE_URL}/api/data/members?${queryParams}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+            }
+          );
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch members");
+          const memberData = await response.json();
+
+          // Organize members into two sections based on the actionOnPermission* fields
+          const readMembers = memberData.data.filter((member) =>
+            policyToEdit.functionCallingPlusData.some((section) =>
+              section.actionOnPermissionReadRevisedMember.includes(member._id)
+            )
+          );
+
+          const readWriteMembers = memberData.data.filter((member) =>
+            policyToEdit.functionCallingPlusData.some((section) =>
+              section.actionOnPermissionReadorWriteRevisedMember.includes(
+                member._id
+              )
+            )
+          );
+
+          // Set the members into the state
+          setMembersBySection([readMembers, readWriteMembers]);
+        } catch (error) {
+          console.error("Error fetching members:", error);
         }
-
-        const memberData = await response.json();
-
-        // Filter members based on actionOnPermissionRevisedMember IDs
-        const filteredMembers = memberData.data.filter((member) =>
-          memberIds.includes(member._id)
-        );
-
-        setMembers(filteredMembers); // Populate members into state for display
-      } catch (error) {
-        console.error("Error fetching members:", error);
+      } else {
+        console.log("No members found in the permission fields.");
       }
 
-      // Populate sections data
+      // Populate sections data for editing
       const sectionsData = policyToEdit.functionCallingPlusData.map(
         (section, index) => ({
           id: Date.now() + index,
           values: {
             actionOnDataField: section.actionOnDataField,
-            actionOnPermission: section.actionOnPermission,
-            actionOnPermissionExistingMember:
-              section.actionOnPermissionExistingMember, // Passing member IDs
-            actionOnPermissionRevisedMember:
-              section.actionOnPermissionRevisedMember, // Passing member IDs
-            // privacyValueOption: section.actionOnPrivacyFilteringCategory,
             privacyActionOption: section.actionOnPrivacyFilteringAction,
             actionOnPrivacyFilteringTransformValue:
               section.actionOnPrivacyFilteringTransformValue,
@@ -882,17 +1001,16 @@ const FunctionCalling = () => {
       );
 
       setSections(sectionsData);
-      setPolicyId(id);
+      setPolicyId(policyId);
     } else {
-      console.error("Policy not found with ID:", id);
+      console.error("Policy not found with ID:", policyId);
     }
   };
 
-  const handleEditButtonClick = (id) => {
-    setIsEditMode(true);
-    fetchDataForEdit(id);
-    // setIsEditModalOpen(true);
-  };
+  // const handleEditButtonClick = (id) => {
+  //   setIsEditMode(true);
+  //   fetchDataForEdit(id);
+  // };
 
   //   const trimmedPolicyName = policyName.trim();
   //   const postData = {
@@ -980,18 +1098,126 @@ const FunctionCalling = () => {
   //     // setIsSaveSuccessful(false);
   //   }
   // };
+  // const handleUpdatePolicy = async () => {
+  //   const trimmedPolicyName = policyName.trim();
+
+  //   const actionOnPermissionReadRevisedMember = membersBySection[0].map(
+  //     (member) => member._id
+  //   );
+  //   const actionOnPermissionReadorWriteRevisedMember = membersBySection[1].map(
+  //     (member) => member._id
+  //   );
+  //   // Map through sections to build the functionCallingPlusData array
+  //   const functionCallingPlusData = sections.map((section) => ({
+  //     actionOnDataField: section.values["actionOnDataField"] || "",
+  //     actionOnPermissionReadRevisedMember,
+  //     actionOnPermissionReadorWriteRevisedMember,
+  //     actionOnPrivacyFilteringAction:
+  //       section.values["privacyActionOption"] || "",
+  //     actionOnPrivacyFilteringTransformValue:
+  //       section.values.actionOnPrivacyFilteringTransformValue ||
+  //       "Transformation privacy",
+  //     actionOnAttributeFilteringAttribute:
+  //       section.values["attributeOption"] || "",
+  //     actionOnAttributeFilteringValue:
+  //       section.values["attributeValueOption"] || "",
+  //     actionOnAttributeFilteringAction:
+  //       section.values["attributeActionOption"] || "",
+  //     actionOnAttributeFilteringTransformValue:
+  //       section.values.actionOnAttributeFilteringTransformValue ||
+  //       "Transformation Attribute",
+  //   }));
+
+  //   const postData = {
+  //     policyName: trimmedPolicyName,
+  //     query: selectedOptions["netSales"],
+  //     targetApplication: selectedOptions["targetLocation"],
+  //     genAiApp: selectedOptions["genAiApp"],
+  //     selectApiName: selectedOptions["selectApiName"],
+  //     selectApiDescription: description,
+  //     selectApiDataFields: Object.keys(dataFields).map((key) => ({
+  //       label: key,
+  //       isChecked: dataFields[key],
+  //     })),
+  //     functionCallingPlusData,
+  //   };
+
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerFunctionCalling/${policyId}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(postData),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Policy updated successfully:", result);
+
+  //     setSuccessMessage("Policy updated successfully!");
+  //     setIsSuccessModalOpen(true);
+
+  //     // Reset form fields
+  //     setSections([{ id: Date.now(), values: {} }]);
+  //     setPolicyName("");
+  //     setSelectedOptions({});
+  //     setDataFields({
+  //       "Opportunity Name": false,
+  //       "Lead Source": false,
+  //       Close_Date: false,
+  //       "Account Name": false,
+  //       Amount: false,
+  //       Age: false,
+  //       Type: false,
+  //       Probability: false,
+  //       Created_Date: false,
+  //     });
+  //     setCheckboxSelections([
+  //       { label: "Sales NA", isChecked: false },
+  //       { label: "Management", isChecked: false },
+  //     ]);
+  //     setDescription("");
+  //     setActionOnDataField("Account");
+  //     setActionOnPermission("ReadOrWrite");
+  //     setActionOnPermissionExisting("Management");
+  //     setMembersBySection([[], []]);
+
+  //     await fetchData();
+
+  //     setTimeout(() => {
+  //       setIsSaveSuccessful(false);
+  //       closeModal();
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error updating policy:", error);
+  //     setIsSaveSuccessful(false);
+  //   }
+  // };
+
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();
 
-    const memberIds = members.map((member) => member._id);
+    // Map the members from the sections
+    const actionOnPermissionReadRevisedMember = membersBySection[0].map(
+      (member) => member._id
+    );
+    const actionOnPermissionReadorWriteRevisedMember = membersBySection[1].map(
+      (member) => member._id
+    );
+
     // Map through sections to build the functionCallingPlusData array
     const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
-      actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
-      actionOnPermissionExistingMember: memberIds,
-      actionOnPermissionRevisedMember: memberIds,
-      // actionOnPrivacyFilteringCategory:
-      //   section.values["privacyValueOption"] || "",
+      actionOnPermissionReadRevisedMember,
+      actionOnPermissionReadorWriteRevisedMember,
       actionOnPrivacyFilteringAction:
         section.values["privacyActionOption"] || "",
       actionOnPrivacyFilteringTransformValue:
@@ -1019,7 +1245,7 @@ const FunctionCalling = () => {
         label: key,
         isChecked: dataFields[key],
       })),
-      functionCallingPlusData, // Add the sections data here
+      functionCallingPlusData,
     };
 
     try {
@@ -1060,16 +1286,8 @@ const FunctionCalling = () => {
         Probability: false,
         Created_Date: false,
       });
-      setCheckboxSelections([
-        { label: "Sales NA", isChecked: false },
-        { label: "Management", isChecked: false },
-      ]);
-      setDescription("");
-      setActionOnDataField("Account");
-      setActionOnPermission("ReadOrWrite");
-      setActionOnPermissionExisting("Management");
+      setMembersBySection([[], []]);
 
-      // Call fetchData to update table data
       await fetchData();
 
       setTimeout(() => {
@@ -1276,7 +1494,7 @@ const FunctionCalling = () => {
     subItems: [{ name: "App1" }, { name: "App2" }, { name: "App3" }],
   };
 
-  console.log(members);
+  // console.log(members);
 
   return (
     <>
@@ -1652,14 +1870,14 @@ const FunctionCalling = () => {
                                   <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                     {sectionIndex === 0 && (
                                       <div className="relative">
-                                        <div className="flex flex-wrap">
-                                          <div className="px-4 flex gap-4">
+                                        <div className="flex flex-wrap justify-between">
+                                          <div className="px-4 flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[20%] xl:basis-[20%] 2xl:basis-[20%]">
                                             <button
                                               type="button"
                                               onClick={() =>
                                                 handleClick("Vinod")
                                               }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
+                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  py-2 mb-4 ${
                                                 selectedItems.includes("Vinod")
                                                   ? "text-white bg-[#0a854b]"
                                                   : "bg-black"
@@ -1680,16 +1898,15 @@ const FunctionCalling = () => {
                                             >
                                               Rajat
                                             </button>
-
-                                            <div className="flex ">
-                                              <button
-                                                onClick={() =>
-                                                  toggleMembership(index)
-                                                }
-                                              >
-                                                <ThreeDotsButton />
-                                              </button>
-                                            </div>
+                                          </div>
+                                          <div className="px-4 flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[30%] xl:basis-[30%] 2xl:basis-[30%]">
+                                            <button
+                                              onClick={() =>
+                                                toggleMembership(index)
+                                              }
+                                            >
+                                              <ThreeDotsButton />
+                                            </button>
                                           </div>
                                         </div>
 
@@ -1816,14 +2033,14 @@ const FunctionCalling = () => {
                                     )}
                                     {sectionIndex === 1 && (
                                       <div className="relative">
-                                        <div className="flex flex-wrap">
-                                          <div className="px-4 flex gap-4">
+                                        <div className="flex flex-wrap justify-between">
+                                          <div className="px-4 flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[20%] xl:basis-[20%] 2xl:basis-[20%]">
                                             <button
                                               type="button"
                                               onClick={() =>
                                                 handleClick("Vinod1")
                                               }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
+                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4 py-2 mb-4 ${
                                                 selectedItems.includes("Vinod1")
                                                   ? "text-white bg-[#0a854b]"
                                                   : "bg-black"
@@ -1844,8 +2061,9 @@ const FunctionCalling = () => {
                                             >
                                               Rajat
                                             </button>
-
-                                            <div className="flex ">
+                                          </div>
+                                          <div className="px-4 flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[30%] xl:basis-[30%] 2xl:basis-[30%]">
+                                            <div className="">
                                               <button
                                                 onClick={() =>
                                                   toggleMembership(index)
@@ -2559,6 +2777,7 @@ const FunctionCalling = () => {
             setDescription("");
             setSelectedOptions({});
             setSections([{ id: Date.now(), values: {} }]);
+            setMembersBySection([[], []]);
             setDataFields({
               "Opportunity Name": false,
               "Lead Source": false,

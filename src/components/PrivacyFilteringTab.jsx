@@ -564,16 +564,16 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const datas = {
     documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
     documentLocationOptions: [
-      "Document Location",
-      "Another Option",
-      "Another Option",
+      "http://acmecorp.sharepoint.com/sites/operations",
+      "http://acmecorp.sharepoint.com/sites/marketing",
+      "http://acmecorp.sharepoint.com/sites/sales",
     ],
     documentOptions: ["Document1", "Document2", "Document3", "Document4"],
     containsOptions: ["Name", "DOB", "SSN", "Age"],
     withOptions: ["Confidential", "Private", "Public"],
     thenOptions: ["Anonymize", "Tokenize", "Encrypt", "De-identification"],
     roleOptions: ["Finance", "HR", "Operation"],
-    atOptions: ["All times", "One Day", "One Week", "All Month"],
+    atOptions: ["All times", "1 Day", "1 Week", "One Month", "1 Year"],
   };
   return (
     <div ref={topRef}>
@@ -727,36 +727,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
                     style={{ marginLeft: "85px" }}
                   >
-                    Value
-                  </span>
-                  <div className="flex items-baseline">
-                    <span className="text-white mr-2 w-[100px] sm:text-right sm:mb-0 text-left mb-4 text-sm custmTextRight">
-                      With
-                    </span>
-                    <CustomDropdown
-                      options={datas.withOptions || []}
-                      placeholder="Select With"
-                      isOpen={openDropdown === `${section.id}-2`}
-                      onDropdownClick={() =>
-                        handleDropdownClick1(section.id, 2)
-                      }
-                      selectedOption={section.values["withOptions"] || ""}
-                      setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "withOptions", value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap px-4 justify-between">
-              <div className="flex basis-full sm:basis-full md:basis-full lg:basis-[33.333333%] xl:basis-[33.333333%] 2xl:basis-[33.333333%] items-baseline flex-col sm:flex-row ipad-if-prvcy">
-                <div className="flex flex-col w-full">
-                  <span
-                    className="text-customGreen font-poppins font-semibold text-sm mb-4"
-                    style={{ marginLeft: "85px" }}
-                  >
                     Action
                   </span>
                   <div className="flex items-baseline">
@@ -773,6 +743,36 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       selectedOption={section.values["thenOptions"] || ""}
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "thenOptions", value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap px-4 justify-between">
+              <div className="flex basis-full sm:basis-full md:basis-full lg:basis-[33.333333%] xl:basis-[33.333333%] 2xl:basis-[33.333333%] items-baseline flex-col sm:flex-row ipad-if-prvcy">
+                <div className="flex flex-col w-full">
+                  <span
+                    className="text-customGreen font-poppins font-semibold text-sm mb-4"
+                    style={{ marginLeft: "85px" }}
+                  >
+                    Value
+                  </span>
+                  <div className="flex items-baseline">
+                    <span className="text-white mr-2 w-[100px] sm:text-right sm:mb-0 text-left mb-4 text-sm custmTextRight">
+                      With
+                    </span>
+                    <CustomDropdown
+                      options={datas.withOptions || []}
+                      placeholder="Select With"
+                      isOpen={openDropdown === `${section.id}-2`}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 2)
+                      }
+                      selectedOption={section.values["withOptions"] || ""}
+                      setSelectedOption={(value) =>
+                        handleDropdownChange(section.id, "withOptions", value)
                       }
                     />
                   </div>

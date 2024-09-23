@@ -22,6 +22,7 @@ import userIcon from "../assets/usericon.svg";
 import iconsmodel from "../assets/save.svg";
 import { BASE_URL } from "../services/api";
 import CustomDropdown from "./CustomDropdown";
+import CustomDropdwonPermisson from "./CustomDropdwonPermisson";
 
 function PermissionsTab({}) {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -144,7 +145,7 @@ function PermissionsTab({}) {
     },
     // Add other initial sections here...
   ]);
-  console.log(sections, "sections");
+  // console.log(sections, "sections");
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
 
@@ -167,6 +168,14 @@ function PermissionsTab({}) {
 
   const removeSection = (id) => {
     setSections(sections.filter((section) => section.id !== id));
+  };
+
+  const clearSection = (id) => {
+    setSections(
+      sections.map((section) =>
+        section.id === id ? { ...section, values: {}, members: [] } : section
+      )
+    );
   };
 
   const removeMember = (user, sectionIndex) => {
@@ -235,33 +244,33 @@ function PermissionsTab({}) {
     setOpenDropdown(null);
   };
 
-  const fetchPolicyPermission = async () => {
-    try {
-      const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerPermissions`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+  // const fetchPolicyPermission = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPermissions`,
+  //       {
+  //         method: "GET",
+  //         credentials: "include",
+  //       }
+  //     );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch policies");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch policies");
+  //     }
 
-      const data = await response.json();
-      const allUsers = data.data.map((policy) => policy.members).flat();
-      // console.log(allUsers, "allUsers");
-      setAvailableUsers(allUsers);
-      setSavedData(data.data);
-    } catch (error) {
-      console.error("Error fetching policies:", error);
-    }
-  };
+  //     const data = await response.json();
+  //     const allUsers = data.data.map((policy) => policy.members).flat();
+  //     // console.log(allUsers, "allUsers");
+  //     setAvailableUsers(allUsers);
+  //     setSavedData(data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching policies:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchPolicyPermission();
-  }, []);
+  // useEffect(() => {
+  //   fetchPolicyPermission();
+  // }, []);
 
   // console.log(savedData);
 
@@ -389,13 +398,19 @@ function PermissionsTab({}) {
     try {
       const selectedSection = sections[activeSectionIndex]; // Get the active section
 
-      console.log(selectedSection, "selectedSection");
+      // console.log(selectedSection, "selectedSection");
 
       // if (!selectedSection) {
       //   throw new Error("Selected section does not exist.");
       // }
 
-      const members = selectedSection.members.map((member) => member._id); // Get member IDs
+      const originalPermissionsMembers = [
+        "66ed58a0cecc698293bf9680",
+        "66ed586bcecc698293bf967e",
+      ];
+      const revisedPermissionsMembers = selectedSection.members.map(
+        (member) => member._id
+      ); // Get member IDs
 
       // const jsonPayload = {
       //   documentStore: selectedSection.values.documentStore,
@@ -407,11 +422,12 @@ function PermissionsTab({}) {
       const jsonPayload = {
         documentStore: selectedSection.values.documentStore,
         documentLocation: selectedSection.values.documentLocation,
-        documentName: selectedSection.values.documentName, // Adjust as necessary
-        members,
+        documentName: selectedSection.values.documentName,
+        originalPermissionsMembers,
+        revisedPermissionsMembers,
       };
 
-      console.log(jsonPayload, "jsonPayload");
+      // console.log(jsonPayload, "jsonPayload");
 
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPermissions`,
@@ -450,56 +466,56 @@ function PermissionsTab({}) {
       setLoading(false);
     }
   };
-  const handleUpdate = async (policyId) => {
-    try {
-      // Fetch existing members and combine with the newly added members
-      const currentMembers = sections[0].members || [];
-      const memberIds = [
-        ...currentMembers.map((m) => m._id),
-        ...members.map((m) => m._id),
-      ];
+  // const handleUpdate = async (policyId) => {
+  //   try {
+  //     // Fetch existing members and combine with the newly added members
+  //     const currentMembers = sections[0].members || [];
+  //     const memberIds = [
+  //       ...currentMembers.map((m) => m._id),
+  //       ...members.map((m) => m._id),
+  //     ];
 
-      const payloadSection = sections[0];
-      const jsonPayload = {
-        documentStore: payloadSection.values["documentStore"],
-        documentLocation: payloadSection.values["documentLocation"],
-        documentName: payloadSection.values["documentName"],
-        members: memberIds, // Updated list of members
-      };
+  //     const payloadSection = sections[0];
+  //     const jsonPayload = {
+  //       documentStore: payloadSection.values["documentStore"],
+  //       documentLocation: payloadSection.values["documentLocation"],
+  //       documentName: payloadSection.values["documentName"],
+  //       members: memberIds, // Updated list of members
+  //     };
 
-      const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerPermissions/${policyId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(jsonPayload),
-        }
-      );
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPermissions/${policyId}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(jsonPayload),
+  //       }
+  //     );
 
-      if (!response.ok) {
-        throw new Error("Failed to update members");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Failed to update members");
+  //     }
 
-      const data = await response.json();
-      console.log("Successfully updated:", data);
+  //     const data = await response.json();
+  //     console.log("Successfully updated:", data);
 
-      // Refresh policies after update
-      await fetchPolicyPermission();
+  //     // Refresh policies after update
+  //     await fetchPolicyPermission();
 
-      setSuccessMessage("Permissions updated successfully!");
-      setIsSuccessModalOpen(true);
+  //     setSuccessMessage("Permissions updated successfully!");
+  //     setIsSuccessModalOpen(true);
 
-      setTimeout(() => {
-        setIsSuccessModalOpen(false);
-      }, 2000);
-    } catch (error) {
-      console.error("Error updating members:", error);
-      setErrorMessage("Failed to update permissions. Please try again.");
-    }
-  };
+  //     setTimeout(() => {
+  //       setIsSuccessModalOpen(false);
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error updating members:", error);
+  //     setErrorMessage("Failed to update permissions. Please try again.");
+  //   }
+  // };
 
   const toggleMemberships = () => {
     setShowMembership(!showMembership);
@@ -578,11 +594,17 @@ function PermissionsTab({}) {
   const data = {
     documentStore: ["Document Store", "Share Point", "One Drive"],
     documentLocation: [
-      "acmecorp.sharepoint.com/sites/operations",
-      "acmecorp.sharepoint.com/sites/marketing",
-      "acmecorp.sharepoint.com/sites/sales",
+      "http://acmecorp.sharepoint.com/sites/operations",
+      "http://acmecorp.sharepoint.com/sites/marketing",
+      "http://acmecorp.sharepoint.com/sites/sales",
     ],
-    documentName: ["Document1", "Document2", "Document3","Document4","Document5"],
+    documentName: [
+      "Document1",
+      "Document2",
+      "Document3",
+      "Document4",
+      "Document5",
+    ],
   };
 
   return (
@@ -616,11 +638,8 @@ function PermissionsTab({}) {
               <tbody className="bg-customTablebG">
                 {sections.map((section, index) => (
                   <tr key={section.id}>
-                    <td
-                      className="px-4 py-12  border border-customBorderColor text-customWhite bg-black"
-                      width={"220px"}
-                    >
-                      <CustomDropdown
+                    <td className="px-4 py-12 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
+                      <CustomDropdwonPermisson
                         options={data.documentStore || []}
                         placeholder="Select Document Store"
                         isOpen={openDropdown === `${section.id}-0`}
@@ -637,13 +656,10 @@ function PermissionsTab({}) {
                         }
                       />
                     </td>
-                    <td
-                      className="px-4 py-12  border border-customBorderColor text-customWhite bg-black"
-                      width={"700px"}
-                    >
-                      <CustomDropdown
+                    <td className="px-4 py-12 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[750px] md:w-[600px] sm:w-[450px] ">
+                      <CustomDropdwonPermisson
                         options={data.documentLocation || []}
-                        placeholder="Select Document"
+                        placeholder="Select Document Location"
                         isOpen={openDropdown === `${section.id}-1`}
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 1)
@@ -659,10 +675,10 @@ function PermissionsTab({}) {
                       />
                     </td>
                     <td
-                      className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
-                      width={"200px"}
+                      className="px-4 py-12 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[200px] md:w-[180px] sm:w-[150px] "
+                      // width={"200px"}
                     >
-                      <CustomDropdown
+                      <CustomDropdwonPermisson
                         options={data.documentName || []}
                         placeholder="Select Document"
                         isOpen={openDropdown === `${section.id}-2`}

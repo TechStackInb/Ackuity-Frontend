@@ -177,6 +177,17 @@ ul li:hover .dot-circle {
 .btn-icon:hover {
   filter: brightness(0) invert(1);
 }
+
+.dot-circles {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #6a7581;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
 @media (max-width: 1270px) {
   .sales {
     font-size: 13px;

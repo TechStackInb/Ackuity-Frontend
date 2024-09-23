@@ -114,6 +114,8 @@ const Chart2DatabasePage = () => {
     delete: [],
   });
 
+  // console.log(membersBySection, "membersBySectiontext2sql");
+
   const toggleMembership = (index) => {
     setOpenMembershipIndex((prevIndex) => (prevIndex === index ? null : index));
   };
@@ -137,7 +139,7 @@ const Chart2DatabasePage = () => {
   const fetchData = async (page = 1) => {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerChat2Db?page=${page}&limit=6`,
+        `${BASE_URL}/api/data/PolicyManagerText2SQL?page=${page}&limit=6`,
         {
           method: "GET",
           credentials: "include",
@@ -351,7 +353,7 @@ const Chart2DatabasePage = () => {
 
     try {
       const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerChat2Db`,
+        `${BASE_URL}/api/data/PolicyManagerText2SQL`,
         {
           method: "POST",
           headers: {
@@ -593,7 +595,7 @@ const Chart2DatabasePage = () => {
 
     try {
       const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerChat2Db/${policyId}`,
+        `${BASE_URL}/api/data/PolicyManagerText2SQL/${policyId}`,
         {
           method: "PATCH",
           headers: {
@@ -639,7 +641,7 @@ const Chart2DatabasePage = () => {
   const handleDeleteButtonClick = async (id) => {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerChat2Db/${selectedPolicyId}`,
+        `${BASE_URL}/api/data/PolicyManagerText2SQL/${selectedPolicyId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -763,7 +765,7 @@ const Chart2DatabasePage = () => {
           </h2>
           <h2 className="text-sm text-[#2F3A45] font-poppins mb-4">
             Policy Manager
-            <span className="text-customWhite text-sm"> / Chat2Database</span>
+            <span className="text-customWhite text-sm"> / text2SQL</span>
           </h2>
         </div>
       </div>
@@ -1893,7 +1895,7 @@ const Chart2DatabasePage = () => {
             </span> */}
                       <PrivacyCustomDropdown
                         options={data.dataFeildOption || []}
-                        placeholder="Opportunity Name"
+                        placeholder="Select DataField"
                         isOpen={openDropdown === "dataFeildOption"}
                         onDropdownClick={() =>
                           handleDropdownClick("dataFeildOption")
@@ -2174,266 +2176,7 @@ const Chart2DatabasePage = () => {
                         />
                       </div>
                     </div>
-                    <div
-                      className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins ${
-                        isEditMode
-                          ? "hover:bg-customGreen hover:text-white"
-                          : ""
-                      }`}
-                      onClick={
-                        isEditMode ? handleUpdatePolicy : handleSavePolicy
-                      }
-                    >
-                      <span
-                        className="transition-transform duration-300 ease-out"
-                        style={{
-                          display: "inline-block",
-                          letterSpacing: "0.2em",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.letterSpacing = "normal";
-                          e.currentTarget.style.transform = "scale(0.95)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.letterSpacing = "0.2em";
-                          e.currentTarget.style.transform = "scale(1)";
-                        }}
-                      >
-                        {isEditMode ? "UPDATE POLICY" : "SAVE POLICY"}
-                      </span>
-                    </div>
 
-                    {isEditMode && (
-                      <div
-                        className="bg-red-500 text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins"
-                        onClick={() => {
-                          setIsEditMode(false);
-                          setPolicyId(null);
-                          setPolicyName("");
-                          setSelectedOptions({});
-                          setMembersBySection([[], [], [], []]);
-                        }}
-                      >
-                        <span className="transition-transform duration-300 ease-out">
-                          CANCEL EDIT
-                        </span>
-                      </div>
-                    )}
-
-                    {/* {isModalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
-                  <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
-                    Confirm Policy Save
-                  </h2>
-
-                  {isSaveSuccessful ? (
-                    <p className="text-green-500 text-center">
-                      Policy saved successfully!
-                    </p>
-                  ) : (
-                    <>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="policyName"
-                          className="block text-sm font-medium text-white mb-2"
-                        >
-                          Policy Name
-                        </label>
-                        <input
-                          type="text"
-                          id="policyName"
-                          value={policyName}
-                          onChange={handlePolicyNameChange}
-                          className="w-full rounded-md shadow-sm px-4 py-2 border-2 border-gray-400 focus:border-green-500 focus:ring-green-500 bg-[#393C46] text-white transition-all duration-200 ease-in-out"
-                          placeholder="Enter policy name"
-                        />
-                      </div>
-                      <li className="mb-6">
-                        <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
-                          <p className="text-white">
-                            <strong>Document Store:</strong>{" "}
-                            {selectedOptions["dataStoreOptions"]}
-                          </p>
-                          <p className="text-white">
-                            <strong>Table Option:</strong>{" "}
-                            {selectedOptions["tableOptions"]}
-                          </p>
-                          <p className="text-white">
-                            <strong>Data Field:</strong>{" "}
-                            {selectedOptions["dataFeildOption"]}
-                          </p>
-                          <p className="text-white">
-                            <strong>Attribute Option:</strong>{" "}
-                            {selectedOptions["attributeOption"]}
-                          </p>
-                          <p className="text-white">
-                            <strong>Attribute Value:</strong>{" "}
-                            {selectedOptions["attributeValue"]}
-                          </p>
-                          <p className="text-white">
-                            <strong>Attribute Action:</strong>{" "}
-                            {selectedOptions["attributeActionOption"]}
-                          </p>
-                        </div>
-                      </li>
-                      {errorMessage && (
-                        <p className="text-red-500 text-center mb-4">
-                          {errorMessage}
-                        </p>
-                      )}
-
-                      <div className="flex justify-end">
-                        <button
-                          className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mr-2 transition-all duration-200 ease-in-out"
-                          onClick={closeModal}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
-                          onClick={handleConfirm}
-                        >
-                          Confirm
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            )} */}
-                    {isModalOpen && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
-                          <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
-                            Confirm Policy Save
-                          </h2>
-
-                          {isSaveSuccessful ? (
-                            <p className="text-green-500 text-center">
-                              Policy saved successfully!
-                            </p>
-                          ) : (
-                            <>
-                              <div className="mb-4">
-                                <label
-                                  htmlFor="policyName"
-                                  className="block text-sm font-medium text-white mb-2"
-                                >
-                                  Policy Name
-                                </label>
-                                <input
-                                  type="text"
-                                  id="policyName"
-                                  value={policyName}
-                                  onChange={(e) => {
-                                    handlePolicyNameChange(e);
-                                    if (e.target.value.trim() !== "") {
-                                      setErrorMessage(""); // Clear the error if field is filled
-                                    }
-                                  }}
-                                  className="w-full rounded-md shadow-sm px-4 py-2 border-2 border-gray-400 focus:border-green-500 focus:ring-green-500 bg-[#393C46] text-white transition-all duration-200 ease-in-out"
-                                  placeholder="Enter policy name"
-                                />
-                              </div>
-
-                              <li className="mb-6">
-                                <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
-                                  <p className="text-white">
-                                    <strong>Document Store:</strong>{" "}
-                                    {selectedOptions["dataStoreOptions"]}
-                                  </p>
-                                  <p className="text-white">
-                                    <strong>Table Option:</strong>{" "}
-                                    {selectedOptions["tableOptions"]}
-                                  </p>
-                                  <p className="text-white">
-                                    <strong>Data Field:</strong>{" "}
-                                    {selectedOptions["dataFeildOption"]}
-                                  </p>
-                                  {/* <p className="text-white">
-                                    <strong>Privacy Option:</strong>{" "}
-                                    {selectedOptions["privacyValueOption"]}
-                                  </p> */}
-
-                                  <p className="text-white">
-                                    <strong>Privacy Action:</strong>{" "}
-                                    {selectedOptions["privacyActionOption"]}
-                                  </p>
-                                  <p className="text-white">
-                                    <strong>Attribute Option:</strong>{" "}
-                                    {selectedOptions["attributeOption"]}
-                                  </p>
-                                  <p className="text-white">
-                                    <strong>Attribute Value:</strong>{" "}
-                                    {selectedOptions["attributeValue"]}
-                                  </p>
-                                  <p className="text-white">
-                                    <strong>Attribute Action:</strong>{" "}
-                                    {selectedOptions["attributeActionOption"]}
-                                  </p>
-                                  <p className="text-white">
-                                    <strong>Attribute Action:</strong>{" "}
-                                    {selectedOptions["rowLevelFilterinOption"]}
-                                  </p>
-                                </div>
-                              </li>
-
-                              {/* Display error message */}
-                              {errorMessage && (
-                                <p className="text-red-500 text-center mb-4">
-                                  {errorMessage}
-                                </p>
-                              )}
-
-                              <div className="flex justify-end">
-                                <button
-                                  className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mr-2 transition-all duration-200 ease-in-out"
-                                  onClick={closeModal}
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
-                                  onClick={handleConfirm}
-                                >
-                                  Confirm
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {isSuccessModalOpen && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
-                          <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
-                            {successMessage.includes("Failed")
-                              ? "Failed"
-                              : "Success"}
-                          </h2>
-                          <p
-                            className={
-                              successMessage.includes("Failed")
-                                ? "text-red-500 text-center"
-                                : "text-green-500 text-center"
-                            }
-                          >
-                            {successMessage}
-                          </p>
-                          <div className="flex justify-end mt-4">
-                            <button
-                              className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
-                              onClick={() => setIsSuccessModalOpen(false)}
-                            >
-                              OK
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                     {/* <div className="flex justify-end text-end gap-2 px-4 py-4">
           <button
             className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded  hover:bg-black  "
@@ -2499,12 +2242,185 @@ const Chart2DatabasePage = () => {
                       </div>
                     )}
                   </div>
+                  <div className="mb-2"></div>
                 </div>
               ))}
             </div>
-            <div className="mb-2"></div>
           </div>
         ))}
+
+      <div
+        className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins ${
+          isEditMode ? "hover:bg-customGreen hover:text-white" : ""
+        }`}
+        onClick={isEditMode ? handleUpdatePolicy : handleSavePolicy}
+      >
+        <span
+          className="transition-transform duration-300 ease-out"
+          style={{
+            display: "inline-block",
+            letterSpacing: "0.2em",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.letterSpacing = "normal";
+            e.currentTarget.style.transform = "scale(0.95)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.letterSpacing = "0.2em";
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          {isEditMode ? "UPDATE POLICY" : "SAVE POLICY"}
+        </span>
+      </div>
+
+      {isEditMode && (
+        <div
+          className="bg-red-500 text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins"
+          onClick={() => {
+            setIsEditMode(false);
+            setPolicyId(null);
+            setPolicyName("");
+            setSelectedOptions({});
+            setMembersBySection([[], [], [], []]);
+          }}
+        >
+          <span className="transition-transform duration-300 ease-out">
+            CANCEL EDIT
+          </span>
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
+              Confirm Policy Save
+            </h2>
+
+            {isSaveSuccessful ? (
+              <p className="text-green-500 text-center">
+                Policy saved successfully!
+              </p>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <label
+                    htmlFor="policyName"
+                    className="block text-sm font-medium text-white mb-2"
+                  >
+                    Policy Name
+                  </label>
+                  <input
+                    type="text"
+                    id="policyName"
+                    value={policyName}
+                    onChange={(e) => {
+                      handlePolicyNameChange(e);
+                      if (e.target.value.trim() !== "") {
+                        setErrorMessage(""); // Clear the error if field is filled
+                      }
+                    }}
+                    className="w-full rounded-md shadow-sm px-4 py-2 border-2 border-gray-400 focus:border-green-500 focus:ring-green-500 bg-[#393C46] text-white transition-all duration-200 ease-in-out"
+                    placeholder="Enter policy name"
+                  />
+                </div>
+
+                <li className="mb-6">
+                  <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
+                    <p className="text-white">
+                      <strong>Document Store:</strong>{" "}
+                      {selectedOptions["dataStoreOptions"]}
+                    </p>
+                    <p className="text-white">
+                      <strong>Table Option:</strong>{" "}
+                      {selectedOptions["tableOptions"]}
+                    </p>
+                    <p className="text-white">
+                      <strong>Data Field:</strong>{" "}
+                      {selectedOptions["dataFeildOption"]}
+                    </p>
+                    {/* <p className="text-white">
+                                    <strong>Privacy Option:</strong>{" "}
+                                    {selectedOptions["privacyValueOption"]}
+                                  </p> */}
+
+                    <p className="text-white">
+                      <strong>Privacy Action:</strong>{" "}
+                      {selectedOptions["privacyActionOption"]}
+                    </p>
+                    <p className="text-white">
+                      <strong>Attribute Option:</strong>{" "}
+                      {selectedOptions["attributeOption"]}
+                    </p>
+                    <p className="text-white">
+                      <strong>Attribute Value:</strong>{" "}
+                      {selectedOptions["attributeValue"]}
+                    </p>
+                    <p className="text-white">
+                      <strong>Attribute Action:</strong>{" "}
+                      {selectedOptions["attributeActionOption"]}
+                    </p>
+                    <p className="text-white">
+                      <strong>Attribute Action:</strong>{" "}
+                      {selectedOptions["rowLevelFilterinOption"]}
+                    </p>
+                  </div>
+                </li>
+
+                {/* Display error message */}
+                {errorMessage && (
+                  <p className="text-red-500 text-center mb-4">
+                    {errorMessage}
+                  </p>
+                )}
+
+                <div className="flex justify-end">
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mr-2 transition-all duration-200 ease-in-out"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
+                    onClick={handleConfirm}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {isSuccessModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+              {successMessage.includes("Failed") ? "Failed" : "Success"}
+            </h2>
+            <p
+              className={
+                successMessage.includes("Failed")
+                  ? "text-red-500 text-center"
+                  : "text-green-500 text-center"
+              }
+            >
+              {successMessage}
+            </p>
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
+                onClick={() => setIsSuccessModalOpen(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* <div
         className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins  ${
