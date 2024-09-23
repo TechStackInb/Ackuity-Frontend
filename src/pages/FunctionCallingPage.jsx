@@ -91,12 +91,25 @@ const FunctionCalling = () => {
 
   const [showMembership, setShowMembership] = useState(false);
 
+  const [membersBySection, setMembersBySection] = useState([[], []]);
+  const [openMembershipIndex, setOpenMembershipIndex] = useState(null);
+  const [openEditMembershipIndex, setOpeneditMembershipIndex] = useState(null);
+
   const availableUsers = [
     "Rajat Mohanty",
     "Vinod Vasudevan",
     "John Doe",
     "Jane Smith",
   ];
+
+  useEffect(() => {
+    if (policyId) {
+      setIsEditMode(true);
+      handleEditButtonClick(policyId);
+    }
+  }, [policyId]);
+
+  console.log(membersBySection, "membersBySection");
 
   const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
@@ -147,24 +160,43 @@ const FunctionCalling = () => {
     }
   };
 
-  const addMember = (user) => {
-    setMembers([...members, user]);
-    setSearchResults(searchResults.filter((u) => u._id !== user._id));
-    setSearchQuery("");
-  };
+  const addMember = (user, sectionIndex) => {
+    const updatedMembersBySection = [...membersBySection];
 
-  const removeMember = (index) => {
-    const updatedMembers = [...members];
-    updatedMembers.splice(index, 1);
-    setMembers(updatedMembers);
+    // Add member to the correct section's array based on sectionIndex
+    updatedMembersBySection[sectionIndex] = [
+      ...updatedMembersBySection[sectionIndex],
+      user,
+    ];
+
+    setMembersBySection(updatedMembersBySection); // Update state
+    setSearchResults(searchResults.filter((u) => u._id !== user._id)); // Remove from search
+    setSearchQuery(""); // Clear search query
+  };
+  const removeMember = (memberIndex, sectionIndex) => {
+    const updatedMembersBySection = [...membersBySection];
+    updatedMembersBySection[sectionIndex].splice(memberIndex, 1);
+    setMembersBySection(updatedMembersBySection); // Update state
   };
 
   const toggleeditMembership = () => {
     setShowEditMembership(!showEditMembership);
   };
 
-  const toggleMemberships = () => {
-    setShowMembership(!showMembership);
+  const toggleMembership = (index) => {
+    setOpenMembershipIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+
+  const toggleEditMembership = (sectionIndex) => {
+    setOpeneditMembershipIndex(
+      openEditMembershipIndex === sectionIndex ? null : sectionIndex
+    );
+  };
+
+  const toggleMembershipEdit = (index) => {
+    setOpeneditMembershipIndex((prevIndex) =>
+      prevIndex === index ? null : index
+    );
   };
 
   const fetchData = async (page = 1) => {
@@ -202,7 +234,6 @@ const FunctionCalling = () => {
     }
   };
 
-  // console.log(selectedOptions, "selectedOptions");
   // console.log(actionOnDataFieldSelections, "actionOnDataFieldSelections");
 
   // const handleConfirm = async () => {
@@ -475,6 +506,23 @@ const FunctionCalling = () => {
     // If validation passes, clear the error message
     setErrorMessage("");
 
+    const configurePermissionsReadRevised = membersBySection[0].map(
+      (member) => member._id
+    );
+    const configurePermissionsReadWriteRevised = membersBySection[1].map(
+      (member) => member._id
+    );
+
+    const configurePermissionsReadExisting = membersBySection[0].map(
+      (member) => member._id
+    );
+    const configurePermissionsReadWriteExisting = membersBySection[1].map(
+      (member) => member._id
+    );
+
+
+    console.log(configurePermissionsReadRevised,configurePermissionsReadWriteRevised,configurePermissionsReadExisting,configurePermissionsReadWriteExisting)
+
     const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermission: section.values.actionOnPermission || "ReadOrWrite",
@@ -568,7 +616,6 @@ const FunctionCalling = () => {
     }
   };
 
-  // const fetchDataForEdit = (id) => {
   //   topRef.current?.scrollIntoView({ behavior: "smooth" });
 
   //   setIsSaveSuccessful(false);
@@ -847,7 +894,6 @@ const FunctionCalling = () => {
     // setIsEditModalOpen(true);
   };
 
-  // const handleUpdatePolicy = async () => {
   //   const trimmedPolicyName = policyName.trim();
   //   const postData = {
   //     policyName: trimmedPolicyName,
@@ -1540,8 +1586,8 @@ const FunctionCalling = () => {
       </div>
 
       {isSectionVisible &&
-        sections.map((section, sectionIndex) => (
-          <div key={sectionIndex} className=" bg-customBlack  opacity-100 ">
+        sections.map((section, index) => (
+          <div key={index} className=" bg-customBlack  opacity-100 ">
             <div className="page-center">
               <div className=" w-full md:w-[35%]  pt-[1rem] ">
                 <div className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5">
@@ -1580,476 +1626,648 @@ const FunctionCalling = () => {
                               <th className="px-2.5 py-2 border border-customBorderColor bg-[#1b1e26] text-customWhite font-poppins font-semibold">
                                 Permission
                               </th>
-                              <th className="px-2.5 py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibold">
-                                <div className="relative">
-                                  <div className="flex justify-between items-start">
-                                    <div className="flex flex-col">
-                                      <span className="text-customWhite font-poppins font-semibold">
-                                        Existing
-                                      </span>
-                                    </div>
-                                    <div className="flex">
-                                      <button onClick={toggleMemberships}>
-                                        <ThreeDotsButton />
-                                      </button>
-                                    </div>
-                                  </div>
-
-                                  {showMembership && (
-                                    <>
-                                      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-                                      <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
-                                        <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                          <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
-                                            <span className="text-base font-poppins font-semibold">
-                                              Group Membership
-                                            </span>
-                                            <button
-                                              className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
-                                              onClick={toggleMemberships}
-                                              style={{
-                                                width: "29px",
-                                                height: "29px",
-                                                border: "2px solid #31B47663",
-                                              }}
-                                            >
-                                              &times;
-                                            </button>
-                                          </div>
-
-                                          <div className="p-4 space-y-4">
-                                            <div className="flex justify-between items-center mb-4">
-                                              <span className="text-white text-sm font-poppins font-medium">
-                                                Members
-                                              </span>
-                                            </div>
-                                            <div className="space-y-4">
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                  // style={{
-                                                  //   width: "47px",
-                                                  //   height: "47px",
-                                                  //   background: "#FFFFFF",
-                                                  //   opacity: 1,
-                                                  // }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: "47px",
-                                                      height: "47px",
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Vinod Vasudevan
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal text-left">
-                                                    Member{" "}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
-                                              </div>
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                  style={{
-                                                    width: "47px",
-                                                    height: "47px",
-                                                    background: "#FFFFFF",
-                                                    opacity: 1,
-                                                  }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: "47px",
-                                                      height: "47px",
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Rajat Mohanty
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal text-left">
-                                                    Member{" "}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
-                                              </div>
-                                            </div>
-                                            {members.map((member, index) => (
-                                              <div
-                                                key={index}
-                                                className="flex justify-between items-center mb-4"
-                                              >
-                                                <div className="flex items-center">
-                                                  <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
-                                                    <img
-                                                      src={userIcon}
-                                                      alt="icons"
-                                                      style={{
-                                                        width: "47px",
-                                                        height: "47px",
-                                                      }}
-                                                    />
-                                                  </div>
-                                                  <div className="flex flex-col ml-3 text-left">
-                                                    <span className="text-white block text-base font-poppins font-semibold">
-                                                      {member.name}
-                                                    </span>
-                                                    <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                      Member{" "}
-                                                      <FontAwesomeIcon
-                                                        icon={faAngleDown}
-                                                      />
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
+                              <th className="px-2.5 py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibolde">
+                                Existing
                               </th>
                               <th className="px-2.5 py-2 border border-customBorderColor bg-[#6a7581] text-customWhite font-poppins font-semibold">
-                                <div className="relative">
-                                  <div className="flex justify-between items-start">
-                                    <div className="flex flex-col">
-                                      <span className="text-customWhite font-poppins font-semibold">
-                                        Revised
-                                      </span>
-                                    </div>
-                                    <div className="flex">
-                                      <button
-                                        onClick={toggleeditMembership}
-                                        className="bg-customBlack text-[#6A7581] px-2 rounded hover:text-customGreen"
-                                      >
-                                        <FontAwesomeIcon
-                                          icon={faEdit}
-                                          className="transition ease-out duration-300 hover:transform hover:scale-110 "
-                                        />
-                                      </button>
-                                    </div>
-                                  </div>
-
-                                  {showEditMembership && (
-                                    <>
-                                      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-                                      <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
-                                        <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                          <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
-                                            <span className="text-base font-poppins font-semibold">
-                                              Group Membership
-                                            </span>
-                                            <button
-                                              className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
-                                              onClick={toggleeditMembership}
-                                              style={{
-                                                width: "29px",
-                                                height: "29px",
-                                                border: "2px solid #31B47663",
-                                              }}
-                                            >
-                                              &times;
-                                            </button>
-                                          </div>
-
-                                          <div className="p-4 space-y-4">
-                                            {members.map((member, index) => (
-                                              <div
-                                                key={index}
-                                                className="flex justify-between items-center mb-4"
-                                              >
-                                                <div className="flex items-center">
-                                                  <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
-                                                    <img
-                                                      src={userIcon}
-                                                      alt="icons"
-                                                      style={{
-                                                        width: "47px",
-                                                        height: "47px",
-                                                      }}
-                                                    />
-                                                  </div>
-                                                  <div className="flex flex-col ml-3 text-left">
-                                                    <span className="text-white block text-base font-poppins font-semibold">
-                                                      {member.name}
-                                                    </span>
-                                                    <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                      Member{" "}
-                                                      <FontAwesomeIcon
-                                                        icon={faAngleDown}
-                                                      />
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                                <button
-                                                  className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
-                                                  style={{
-                                                    width: "29px",
-                                                    height: "29px",
-                                                    background: "#FFFFFF00",
-                                                    border:
-                                                      "2px solid #31B47663",
-                                                  }}
-                                                  onMouseEnter={() =>
-                                                    setHoveredRemoveIndex(index)
-                                                  }
-                                                  onMouseLeave={() =>
-                                                    setHoveredRemoveIndex(null)
-                                                  }
-                                                  onClick={() =>
-                                                    removeMember(index)
-                                                  }
-                                                >
-                                                  <FontAwesomeIcon
-                                                    icon={
-                                                      hoveredRemoveIndex ===
-                                                      index
-                                                        ? faClose
-                                                        : faMinus
-                                                    }
-                                                    className="transition-transform duration-1000 ease-in-out"
-                                                  />
-                                                </button>
-                                              </div>
-                                            ))}
-
-                                            {/* Divider */}
-                                            <div className="border-t border-gray-600"></div>
-
-                                            <div className="flex items-center justify-between bg-[#1B1E26] border border-[#31B47633] rounded-[5px] p-3">
-                                              <input
-                                                type="text"
-                                                value={searchQuery}
-                                                onChange={handleSearch}
-                                                placeholder="Add new member"
-                                                className="bg-transparent text-white placeholder-gray-400 w-full outline-none"
-                                              />
-                                              <FontAwesomeIcon
-                                                className="text-[#31B476]"
-                                                icon={faSearch}
-                                              />
-                                            </div>
-
-                                            {searchResults.length > 0 && (
-                                              <div>
-                                                {searchResults.map((user) => (
-                                                  <div
-                                                    key={user._id}
-                                                    className="flex items-center justify-between bg-[#1B1E26] border border-[#31B476] rounded-[5px] p-3 mt-2"
-                                                  >
-                                                    <div className="flex items-center">
-                                                      <img
-                                                        src={userIcon}
-                                                        className="text-[#31B476]"
-                                                        style={{
-                                                          width: "29px",
-                                                          height: "29px",
-                                                        }}
-                                                        alt="User Icon"
-                                                      />
-                                                      <span className="ml-3 text-white font-poppins font-semibold text-sm">
-                                                        {user.name}
-                                                      </span>
-                                                    </div>
-                                                    <button
-                                                      className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
-                                                      style={{
-                                                        width: "29px",
-                                                        height: "29px",
-                                                        background: "#FFFFFF00",
-                                                        border:
-                                                          "2px solid #31B47663",
-                                                      }}
-                                                      onClick={() =>
-                                                        addMember(user)
-                                                      }
-                                                      onMouseEnter={() =>
-                                                        setHoveredAddIndex(
-                                                          user._id
-                                                        )
-                                                      }
-                                                      onMouseLeave={() =>
-                                                        setHoveredAddIndex(null)
-                                                      }
-                                                      title="Add Member"
-                                                    >
-                                                      <FontAwesomeIcon
-                                                        icon={faPlus}
-                                                        className={`transition-transform duration-300 ${
-                                                          hoveredAddIndex ===
-                                                          user._id
-                                                            ? "text-green-500"
-                                                            : "text-green-400"
-                                                        }`}
-                                                      />
-                                                    </button>
-                                                  </div>
-                                                ))}
-                                              </div>
-                                            )}
-
-                                            {/* Footer Buttons */}
-                                            <div className="flex justify-end gap-4 mt-4 group">
-                                              <button
-                                                // onClick={handleSave}
-                                                className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
-                                              >
-                                                <img
-                                                  src={iconsmodel}
-                                                  alt="iconsmodel"
-                                                  className="mr-2 btn-icon"
-                                                />
-                                                <span
-                                                  onClick={toggleeditMembership}
-                                                >
-                                                  {" "}
-                                                  Save
-                                                </span>
-                                              </button>
-                                              <button
-                                                onClick={toggleeditMembership}
-                                                className="text-gray-400"
-                                              >
-                                                Cancel
-                                              </button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
+                                Revised
+                              </th>
+                              <th className="px-2.5 py-2 border border-customBorderColor bg-[#6a7581] text-customWhite font-poppins font-semibold">
+                                Action
                               </th>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
-                                Read
-                              </td>
+                            {membersBySection.map(
+                              (sectionMembers, sectionIndex) => (
+                                <tr key={sectionIndex}>
+                                  {/* Section Column */}
+                                  <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                    {sectionIndex === 0 && <span>Read</span>}
+                                    {sectionIndex === 1 && (
+                                      <span>Read + Write</span>
+                                    )}
+                                  </td>
 
-                              <td className="border border-customBorderColor text-customWhite bg-black">
-                                <div className="flex flex-col">
-                                  <span
-                                    onClick={() =>
-                                      handleSpanClick("Vinod Vasudevan")
-                                    }
-                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
-                                      selectedItems.includes("Vinod Vasudevan")
-                                        ? "text-white bg-[#0a854b]"
-                                        : "bg-black"
-                                    }`}
-                                  >
-                                    Vinod Vasudevan
-                                  </span>
-                                  <span
-                                    onClick={() => handleSpanClick("Rajat")}
-                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
-                                      selectedItems.includes("Rajat")
-                                        ? "text-white bg-[#0a854b]"
-                                        : "bg-black"
-                                    }`}
-                                  >
-                                    Rajat
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black">
-                                {/* <div className="flex flex-col">
-                                  {checkboxSelections.map((item) => (
-                                    <label
-                                      key={item.label}
-                                      className="flex items-center space-x-2 mt-2"
-                                    >
-                                      <input
-                                        type="checkbox"
-                                        className="custom-checkbox"
-                                        checked={item.isChecked}
-                                        onChange={() =>
-                                          handleCheckboxSelectionsChange(
-                                            item.label,
-                                            sectionIndex
-                                          )
-                                        }
-                                      />
-                                      <span className="text-[#5d5d5d] font-poppins">
-                                        {item.label}
-                                      </span>
-                                    </label>
-                                  ))}
-                                </div> */}
+                                  <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                    {sectionIndex === 0 && (
+                                      <div className="relative">
+                                        <div className="flex flex-wrap">
+                                          <div className="px-4 flex gap-4">
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                handleClick("Vinod")
+                                              }
+                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
+                                                selectedItems.includes("Vinod")
+                                                  ? "text-white bg-[#0a854b]"
+                                                  : "bg-black"
+                                              }`}
+                                            >
+                                              Vinod
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                handleClick("Rajat")
+                                              }
+                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4 py-2  ${
+                                                selectedItems.includes("Rajat")
+                                                  ? "text-white bg-[#0a854b]"
+                                                  : "bg-black"
+                                              }`}
+                                            >
+                                              Rajat
+                                            </button>
 
-                                {Array.isArray(members) &&
-                                  members.map((member, index) => (
-                                    <div
-                                      key={index}
-                                      className="flex justify-between items-center mb-4"
-                                    >
-                                      <div className="flex items-center">
-                                        <div className="flex flex-col ml-3 text-left">
+                                            <div className="flex ">
+                                              <button
+                                                onClick={() =>
+                                                  toggleMembership(index)
+                                                }
+                                              >
+                                                <ThreeDotsButton />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* Show membership modal only if this row's index is open */}
+                                        {openMembershipIndex === index && (
+                                          <>
+                                            {/* Overlay */}
+                                            <div
+                                              className="fixed inset-0 bg-black opacity-50 z-40"
+                                              onClick={() =>
+                                                toggleMembership(index)
+                                              } // Close when clicking outside
+                                            />
+
+                                            {/* Membership Modal */}
+                                            <div
+                                              className="fixed inset-0 flex items-center justify-center z-50"
+                                              onClick={(e) =>
+                                                e.stopPropagation()
+                                              } // Prevent clicks inside modal from closing it
+                                            >
+                                              <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                                {/* Close button */}
+                                                <button
+                                                  className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
+                                                  onClick={() =>
+                                                    toggleMembership(index)
+                                                  }
+                                                  style={{
+                                                    width: "29px",
+                                                    height: "29px",
+                                                    background: "#FFFFFF",
+                                                    border:
+                                                      "2px solid #31B47663",
+                                                    opacity: 1,
+                                                  }}
+                                                >
+                                                  &times;
+                                                </button>
+
+                                                <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg">
+                                                  <span className="text-base font-poppins font-semibold">
+                                                    Group Membership
+                                                  </span>
+                                                </div>
+                                                <div className="p-4">
+                                                  <div className="flex justify-between items-center mb-4">
+                                                    <span className="text-white text-sm font-poppins font-medium">
+                                                      2 Members
+                                                    </span>
+                                                  </div>
+
+                                                  <div className="space-y-4">
+                                                    <div className="flex ">
+                                                      <div
+                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                        // style={{
+                                                        //   width: "47px",
+                                                        //   height: "47px",
+                                                        //   background: "#FFFFFF",
+                                                        //   opacity: 1,
+                                                        // }}
+                                                      >
+                                                        <img
+                                                          src={userIcon}
+                                                          alt="icons"
+                                                          style={{
+                                                            width: "47px",
+                                                            height: "47px",
+                                                          }}
+                                                        />
+                                                      </div>
+                                                      <div className="flex flex-col ml-3">
+                                                        <span className="text-white block text-base font-poppins font-semibold">
+                                                          Vinod Vasudevan
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                          Member{" "}
+                                                          <FontAwesomeIcon
+                                                            icon={faAngleDown}
+                                                          />
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                    <div className="border-t border-gray-600"></div>
+                                                    <div className="flex ">
+                                                      <div
+                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                        style={{
+                                                          width: "47px",
+                                                          height: "47px",
+                                                          background: "#FFFFFF",
+                                                          opacity: 1,
+                                                        }}
+                                                      >
+                                                        <img
+                                                          src={userIcon}
+                                                          alt="icons"
+                                                          style={{
+                                                            width: "47px",
+                                                            height: "47px",
+                                                          }}
+                                                        />
+                                                      </div>
+                                                      <div className="flex flex-col ml-3">
+                                                        <span className="text-white block text-base font-poppins font-semibold">
+                                                          Rajat Mohanty
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                          Member{" "}
+                                                          <FontAwesomeIcon
+                                                            icon={faAngleDown}
+                                                          />
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </>
+                                        )}
+                                      </div>
+                                    )}
+                                    {sectionIndex === 1 && (
+                                      <div className="relative">
+                                        <div className="flex flex-wrap">
+                                          <div className="px-4 flex gap-4">
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                handleClick("Vinod1")
+                                              }
+                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
+                                                selectedItems.includes("Vinod1")
+                                                  ? "text-white bg-[#0a854b]"
+                                                  : "bg-black"
+                                              }`}
+                                            >
+                                              Vinod
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() =>
+                                                handleClick("Rajat1")
+                                              }
+                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4 py-2  ${
+                                                selectedItems.includes("Rajat1")
+                                                  ? "text-white bg-[#0a854b]"
+                                                  : "bg-black"
+                                              }`}
+                                            >
+                                              Rajat
+                                            </button>
+
+                                            <div className="flex ">
+                                              <button
+                                                onClick={() =>
+                                                  toggleMembership(index)
+                                                }
+                                              >
+                                                <ThreeDotsButton />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* Show membership modal only if this row's index is open */}
+                                        {openMembershipIndex === index && (
+                                          <>
+                                            {/* Overlay */}
+                                            <div
+                                              className="fixed inset-0 bg-black opacity-50 z-40"
+                                              onClick={() =>
+                                                toggleMembership(index)
+                                              } // Close when clicking outside
+                                            />
+
+                                            {/* Membership Modal */}
+                                            <div
+                                              className="fixed inset-0 flex items-center justify-center z-50"
+                                              onClick={(e) =>
+                                                e.stopPropagation()
+                                              } // Prevent clicks inside modal from closing it
+                                            >
+                                              <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                                {/* Close button */}
+                                                <button
+                                                  className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
+                                                  onClick={() =>
+                                                    toggleMembership(index)
+                                                  }
+                                                  style={{
+                                                    width: "29px",
+                                                    height: "29px",
+                                                    background: "#FFFFFF",
+                                                    border:
+                                                      "2px solid #31B47663",
+                                                    opacity: 1,
+                                                  }}
+                                                >
+                                                  &times;
+                                                </button>
+
+                                                <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg">
+                                                  <span className="text-base font-poppins font-semibold">
+                                                    Group Membership
+                                                  </span>
+                                                </div>
+                                                <div className="p-4">
+                                                  <div className="flex justify-between items-center mb-4">
+                                                    <span className="text-white text-sm font-poppins font-medium">
+                                                      2 Members
+                                                    </span>
+                                                  </div>
+
+                                                  <div className="space-y-4">
+                                                    <div className="flex ">
+                                                      <div
+                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                        // style={{
+                                                        //   width: "47px",
+                                                        //   height: "47px",
+                                                        //   background: "#FFFFFF",
+                                                        //   opacity: 1,
+                                                        // }}
+                                                      >
+                                                        <img
+                                                          src={userIcon}
+                                                          alt="icons"
+                                                          style={{
+                                                            width: "47px",
+                                                            height: "47px",
+                                                          }}
+                                                        />
+                                                      </div>
+                                                      <div className="flex flex-col ml-3">
+                                                        <span className="text-white block text-base font-poppins font-semibold">
+                                                          Vinod Vasudevan
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                          Member{" "}
+                                                          <FontAwesomeIcon
+                                                            icon={faAngleDown}
+                                                          />
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                    <div className="border-t border-gray-600"></div>
+                                                    <div className="flex ">
+                                                      <div
+                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                        style={{
+                                                          width: "47px",
+                                                          height: "47px",
+                                                          background: "#FFFFFF",
+                                                          opacity: 1,
+                                                        }}
+                                                      >
+                                                        <img
+                                                          src={userIcon}
+                                                          alt="icons"
+                                                          style={{
+                                                            width: "47px",
+                                                            height: "47px",
+                                                          }}
+                                                        />
+                                                      </div>
+                                                      <div className="flex flex-col ml-3">
+                                                        <span className="text-white block text-base font-poppins font-semibold">
+                                                          Rajat Mohanty
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                          Member{" "}
+                                                          <FontAwesomeIcon
+                                                            icon={faAngleDown}
+                                                          />
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </>
+                                        )}
+                                      </div>
+                                    )}
+                                  </td>
+
+                                  <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                    {/* Display section-specific members */}
+                                    {sectionMembers.length > 0 ? (
+                                      sectionMembers.map(
+                                        (member, memberIndex) => (
+                                          <div
+                                            key={memberIndex}
+                                            className="flex justify-between items-center mb-2"
+                                          >
+                                            <span className="text-white block text-base font-poppins font-semibold">
+                                              {member.name}
+                                            </span>
+                                            <button
+                                              className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
+                                              style={{
+                                                width: "29px",
+                                                height: "29px",
+                                                background: "#FFFFFF00",
+                                                border: "2px solid #31B47663",
+                                              }}
+                                              onMouseEnter={() =>
+                                                setHoveredRemoveIndex(index)
+                                              }
+                                              onMouseLeave={() =>
+                                                setHoveredRemoveIndex(null)
+                                              }
+                                              onClick={() =>
+                                                removeMember(
+                                                  memberIndex,
+                                                  sectionIndex
+                                                )
+                                              }
+                                            >
+                                              <FontAwesomeIcon
+                                                icon={
+                                                  hoveredRemoveIndex === index
+                                                    ? faClose
+                                                    : faClose
+                                                }
+                                                className="transition-transform duration-1000 ease-in-out"
+                                              />
+                                            </button>
+                                          </div>
+                                        )
+                                      )
+                                    ) : (
+                                      <span></span>
+                                    )}
+
+                                    {members.length > 0 ? (
+                                      members.map((member, memberIndex) => (
+                                        <div
+                                          key={member._id} // Assuming _id is unique for each member
+                                          className="flex justify-between items-center mb-2"
+                                        >
                                           <span className="text-white block text-base font-poppins font-semibold">
                                             {member.name}
                                           </span>
-                                          <span className="text-gray-400 text-sm font-poppins font-normal">
-                                            Member{" "}
+                                          <button
+                                            className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
+                                            style={{
+                                              width: "29px",
+                                              height: "29px",
+                                              background: "#FFFFFF00",
+                                              border: "2px solid #31B47663",
+                                            }}
+                                            onMouseEnter={() =>
+                                              setHoveredRemoveIndex(index)
+                                            }
+                                            onMouseLeave={() =>
+                                              setHoveredRemoveIndex(null)
+                                            }
+                                            onClick={() =>
+                                              removeMember(
+                                                memberIndex,
+                                                sectionIndex
+                                              )
+                                            }
+                                          >
                                             <FontAwesomeIcon
-                                              icon={faAngleDown}
+                                              icon={
+                                                hoveredRemoveIndex === index
+                                                  ? faClose
+                                                  : faClose
+                                              }
+                                              className="transition-transform duration-1000 ease-in-out"
                                             />
-                                          </span>
+                                          </button>
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <span></span>
+                                    )}
+                                  </td>
+                                  <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                    <button
+                                      onClick={() =>
+                                        toggleMembershipEdit(sectionIndex)
+                                      }
+                                      className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                                    >
+                                      <FontAwesomeIcon
+                                        icon={faEdit}
+                                        className="transition ease-out duration-300 hover:transform hover:scale-110 "
+                                      />
+                                    </button>
+
+                                    {/* Modal for editing section members */}
+                                    {openEditMembershipIndex ===
+                                      sectionIndex && (
+                                      <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
+                                        <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                                          <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                            <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
+                                              <span className="text-base font-poppins font-semibold">
+                                                Group Membership
+                                              </span>
+                                              <button
+                                                className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
+                                                onClick={() =>
+                                                  toggleMembershipEdit(
+                                                    sectionIndex
+                                                  )
+                                                }
+                                                style={{
+                                                  width: "29px",
+                                                  height: "29px",
+                                                  border: "2px solid #31B47663",
+                                                }}
+                                              >
+                                                &times;
+                                              </button>
+                                            </div>
+
+                                            <div className="p-4 space-y-4">
+                                              {/* Display section-specific members inside modal */}
+                                              {membersBySection[
+                                                sectionIndex
+                                              ].map((member, memberIndex) => (
+                                                <div
+                                                  key={memberIndex}
+                                                  className="flex justify-between items-center mb-4"
+                                                >
+                                                  <div className="flex items-center">
+                                                    <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                                      <img
+                                                        src={userIcon}
+                                                        alt="icons"
+                                                        style={{
+                                                          width: "47px",
+                                                          height: "47px",
+                                                        }}
+                                                      />
+                                                    </div>
+                                                    <div className="flex flex-col ml-3">
+                                                      <span className="text-white block text-base font-poppins font-semibold">
+                                                        {member.name}
+                                                      </span>
+                                                      <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                        Member{" "}
+                                                        <FontAwesomeIcon
+                                                          icon={faAngleDown}
+                                                        />
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                  <button
+                                                    className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
+                                                    onClick={() =>
+                                                      removeMember(
+                                                        memberIndex,
+                                                        sectionIndex
+                                                      )
+                                                    }
+                                                    style={{
+                                                      width: "29px",
+                                                      height: "29px",
+                                                      background: "#FFFFFF00",
+                                                      border:
+                                                        "2px solid #31B47663",
+                                                    }}
+                                                  >
+                                                    <FontAwesomeIcon
+                                                      icon={faMinus}
+                                                    />
+                                                  </button>
+                                                </div>
+                                              ))}
+
+                                              {/* Add new member input */}
+                                              <div className="flex items-center justify-between bg-[#1B1E26] border border-[#31B47633] rounded-[5px] p-3">
+                                                <input
+                                                  type="text"
+                                                  value={searchQuery}
+                                                  onChange={handleSearch}
+                                                  placeholder="Add new member"
+                                                  className="bg-transparent text-white placeholder-gray-400 w-full outline-none"
+                                                />
+                                                <FontAwesomeIcon
+                                                  className="text-[#31B476]"
+                                                  icon={faSearch}
+                                                />
+                                              </div>
+
+                                              {/* Display search results */}
+                                              {searchResults.length > 0 && (
+                                                <div>
+                                                  {searchResults.map((user) => (
+                                                    <div
+                                                      key={user._id}
+                                                      className="flex items-center justify-between bg-[#1B1E26] border border-[#31B476] rounded-[5px] p-3 mt-2"
+                                                    >
+                                                      <div className="flex items-center">
+                                                        <img
+                                                          src={userIcon}
+                                                          style={{
+                                                            width: "29px",
+                                                            height: "29px",
+                                                          }}
+                                                          alt="User Icon"
+                                                        />
+                                                        <span className="ml-3 text-white font-poppins font-semibold text-sm">
+                                                          {user.name}
+                                                        </span>
+                                                      </div>
+                                                      <button
+                                                        className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
+                                                        onClick={() =>
+                                                          addMember(
+                                                            user,
+                                                            sectionIndex
+                                                          )
+                                                        } // Add member to correct section
+                                                        style={{
+                                                          width: "29px",
+                                                          height: "29px",
+                                                          background:
+                                                            "#FFFFFF00",
+                                                          border:
+                                                            "2px solid #31B47663",
+                                                        }}
+                                                      >
+                                                        <FontAwesomeIcon
+                                                          icon={faPlus}
+                                                        />
+                                                      </button>
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              )}
+
+                                              <div className="flex justify-end gap-4 mt-4 group">
+                                                <button
+                                                  onClick={() =>
+                                                    toggleMembershipEdit(
+                                                      sectionIndex
+                                                    )
+                                                  }
+                                                  // onClick={handleSave}
+                                                  className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
+                                                >
+                                                  <img
+                                                    src={iconsmodel}
+                                                    alt="iconsmodel"
+                                                    className="mr-2 btn-icon"
+                                                  />
+                                                  <span> Save</span>
+                                                </button>
+                                                <button
+                                                  onClick={() =>
+                                                    toggleMembershipEdit(
+                                                      sectionIndex
+                                                    )
+                                                  }
+                                                  className="text-gray-400"
+                                                >
+                                                  Cancel
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
-                                Read + Write
-                              </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
-                                <div className="flex flex-col">
-                                  <span
-                                    onClick={() =>
-                                      handleSpanClick("Vinod Vasudevan1")
-                                    }
-                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
-                                      selectedItems.includes("Vinod Vasudevan1")
-                                        ? "text-white bg-[#0a854b]"
-                                        : "bg-black"
-                                    }`}
-                                  >
-                                    Vinod Vasudevan
-                                  </span>
-                                  <span
-                                    onClick={() => handleSpanClick("Rajat1")}
-                                    className={`p-2 cursor-pointer border border-customBorderColor font-poppins ${
-                                      selectedItems.includes("Rajat1")
-                                        ? "text-white bg-[#0a854b]"
-                                        : "bg-black"
-                                    }`}
-                                  >
-                                    Rajat
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                            </tr>
+                                    )}
+                                  </td>
+                                </tr>
+                              )
+                            )}
                           </tbody>
                         </table>
                       </div>

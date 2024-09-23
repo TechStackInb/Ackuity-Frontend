@@ -137,8 +137,8 @@ function PermissionsTab({}) {
       id: Date.now(),
       values: {
         documentStore: "",
-        documentRepository: "",
         documentLocation: "",
+        documentName: "",
       },
       members: [],
     },
@@ -156,8 +156,8 @@ function PermissionsTab({}) {
         id: Date.now() + sections.length + 1, // Unique ID
         values: {
           documentStore: "",
-          documentRepository: "",
           documentLocation: "",
+          documentName: "",
         },
         members: [],
       };
@@ -406,9 +406,8 @@ function PermissionsTab({}) {
 
       const jsonPayload = {
         documentStore: selectedSection.values.documentStore,
-        documentRepository: selectedSection.values.documentRepository,
-        documentName: "Document1",
-        documentLocation: selectedSection.values.documentLocation, // Adjust as necessary
+        documentLocation: selectedSection.values.documentLocation,
+        documentName: selectedSection.values.documentName, // Adjust as necessary
         members,
       };
 
@@ -463,8 +462,8 @@ function PermissionsTab({}) {
       const payloadSection = sections[0];
       const jsonPayload = {
         documentStore: payloadSection.values["documentStore"],
-        documentRepository: payloadSection.values["documentRepository"],
         documentLocation: payloadSection.values["documentLocation"],
+        documentName: payloadSection.values["documentName"],
         members: memberIds, // Updated list of members
       };
 
@@ -578,8 +577,12 @@ function PermissionsTab({}) {
 
   const data = {
     documentStore: ["Document Store", "Share Point", "One Drive"],
-    documentRepository: ["item2", "item3", "item4", "item5"],
-    documentLocation: ["Document Location", "Another Option", "Another Option"],
+    documentLocation: [
+      "acmecorp.sharepoint.com/sites/operations",
+      "acmecorp.sharepoint.com/sites/marketing",
+      "acmecorp.sharepoint.com/sites/sales",
+    ],
+    documentName: ["Document1", "Document2", "Document3","Document4","Document5"],
   };
 
   return (
@@ -594,10 +597,10 @@ function PermissionsTab({}) {
                     Document Store
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-[#000000] text-[#31E48F] font-poppins font-semibold">
-                    Document Repository
+                    Document location
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-[#000000] text-[#31E48F] font-poppins font-semibold">
-                    Document Location
+                    Document Name
                   </th>
                   <th className="px-4 py-2 border border-customBorderColor bg-[#000000] text-[#31E48F] font-poppins font-semibold">
                     Original Permissions
@@ -615,11 +618,11 @@ function PermissionsTab({}) {
                   <tr key={section.id}>
                     <td
                       className="px-4 py-12  border border-customBorderColor text-customWhite bg-black"
-                      width={"250px"}
+                      width={"220px"}
                     >
                       <CustomDropdown
                         options={data.documentStore || []}
-                        placeholder="Select store"
+                        placeholder="Select Document Store"
                         isOpen={openDropdown === `${section.id}-0`}
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 0)
@@ -636,35 +639,14 @@ function PermissionsTab({}) {
                     </td>
                     <td
                       className="px-4 py-12  border border-customBorderColor text-customWhite bg-black"
-                      width={"250px"}
-                    >
-                      <CustomDropdown
-                        options={data.documentRepository || []}
-                        placeholder="Select Document"
-                        isOpen={openDropdown === `${section.id}-1`}
-                        onDropdownClick={() =>
-                          handleDropdownClick1(section.id, 1)
-                        }
-                        selectedOption={section.values.documentRepository || ""}
-                        setSelectedOption={(value) =>
-                          handleDropdownChange(
-                            section.id,
-                            "documentRepository",
-                            value
-                          )
-                        }
-                      />
-                    </td>
-                    <td
-                      className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
-                      width={"200px"}
+                      width={"700px"}
                     >
                       <CustomDropdown
                         options={data.documentLocation || []}
                         placeholder="Select Document"
-                        isOpen={openDropdown === `${section.id}-2`}
+                        isOpen={openDropdown === `${section.id}-1`}
                         onDropdownClick={() =>
-                          handleDropdownClick1(section.id, 2)
+                          handleDropdownClick1(section.id, 1)
                         }
                         selectedOption={section.values.documentLocation || ""}
                         setSelectedOption={(value) =>
@@ -676,9 +658,30 @@ function PermissionsTab({}) {
                         }
                       />
                     </td>
+                    <td
+                      className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
+                      width={"200px"}
+                    >
+                      <CustomDropdown
+                        options={data.documentName || []}
+                        placeholder="Select Document"
+                        isOpen={openDropdown === `${section.id}-2`}
+                        onDropdownClick={() =>
+                          handleDropdownClick1(section.id, 2)
+                        }
+                        selectedOption={section.values.documentName || ""}
+                        setSelectedOption={(value) =>
+                          handleDropdownChange(
+                            section.id,
+                            "documentName",
+                            value
+                          )
+                        }
+                      />
+                    </td>
                     <td className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]">
                       <div className="relative">
-                        <div className="flex justify-between items-start">
+                        <div className="flex  flex-col items-start">
                           <div className="flex flex-col">
                             <span className="font-poppins text-base">
                               Everyone System
