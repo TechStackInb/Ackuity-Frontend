@@ -1287,7 +1287,7 @@ const FunctionCalling = () => {
         Created_Date: false,
       });
       setMembersBySection([[], []]);
-
+      setPolicyId(null);
       await fetchData();
 
       setTimeout(() => {
@@ -1807,7 +1807,7 @@ const FunctionCalling = () => {
         sections.map((section, index) => (
           <div key={index} className=" bg-customBlack  opacity-100 ">
             <div className="page-center">
-              <div className=" w-full md:w-[35%]  pt-[1rem] ">
+              <div className=" w-full md:w-[40%]  pt-[1rem] ">
                 <div className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5">
                   <span className="text-[#31B476]  mr-2 font-poppins  font-semibold">
                     DataField

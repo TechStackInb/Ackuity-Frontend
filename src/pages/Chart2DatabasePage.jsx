@@ -763,7 +763,7 @@ const Chart2DatabasePage = () => {
           <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
             Policy Manager
           </h2>
-          <h2 className="text-sm text-[#2F3A45] font-poppins mb-4">
+          <h2 className="text-sm text-[#2F3A45] font-poppins ">
             Policy Manager
             <span className="text-customWhite text-sm"> / text2SQL</span>
           </h2>
@@ -2013,134 +2013,123 @@ const Chart2DatabasePage = () => {
                         </div>
 
                         <div className="flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[70%] xl:basis-[70%] 2xl:basis-[70%] p-2 overflow-x-auto overflow-y-hidden basis-ipad">
-                          <div className="flex flex-col basis-full sm:basis-full md:basis-full lg:basis-[100%] xl:basis-[100%] 2xl:basis-[100%] p-2 overflow-x-auto overflow-y-hidden ">
-                            <h2 className="p-2 text-[#f7fbf9] bg-[#0a854b] text-center font-poppins font-semibold text-lg">
-                              Attribute Filtering
-                            </h2>
-                            <div className="overflow-x-auto overflow-y-hidden">
-                              <table className="bg-customBlack border border-gray-200 w-full">
-                                <thead>
-                                  <tr>
-                                    <th className="pl-4 py-2 border border-customBorderColor bg-[#1b1e26] text-customWhite font-poppins font-semibold">
-                                      Attribute
-                                    </th>
-                                    <th className="pl-4  py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibold">
-                                      Value
-                                    </th>
-                                    <th className="pl-4  py-2 border border-customBorderColor bg-[#6a7581] text-customWhite font-poppins font-semibold">
-                                      Action
-                                    </th>
-                                    <th className="pl-4  py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibold">
-                                      Transformation Value
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                                      <PrivacyCustomDropdown
-                                        options={data.attributeOption || []}
-                                        placeholder="Select Option"
-                                        isOpen={
-                                          openDropdown === "attributeOption"
+                          <h2 className="p-2 text-[#f7fbf9] bg-[#0a854b] text-center font-poppins font-semibold text-lg">
+                            Attribute Filtering
+                          </h2>
+                          <div className="overflow-x-auto overflow-y-hidden">
+                            <table className="bg-customBlack border border-gray-200 w-full">
+                              <thead>
+                                <tr>
+                                  <th className="pl-4 py-2 border border-customBorderColor bg-[#1b1e26] text-customWhite font-poppins font-semibold">
+                                    Attribute
+                                  </th>
+                                  <th className="pl-4  py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibold">
+                                    Value
+                                  </th>
+                                  <th className="pl-4  py-2 border border-customBorderColor bg-[#6a7581] text-customWhite font-poppins font-semibold">
+                                    Action
+                                  </th>
+                                  <th className="pl-4  py-2 border border-customBorderColor bg-[#2f3a45] text-customWhite font-poppins font-semibold">
+                                    Transformation Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
+                                    <PrivacyCustomDropdown
+                                      options={data.attributeOption || []}
+                                      placeholder="Select Option"
+                                      isOpen={
+                                        openDropdown === "attributeOption"
+                                      }
+                                      width={"194px"}
+                                      onDropdownClick={() =>
+                                        handleDropdownClick("attributeOption")
+                                      }
+                                      selectedOption={
+                                        selectedOptions["attributeOption"]
+                                      }
+                                      onOptionClick={(option) => {
+                                        handleOptionClick(
+                                          "attributeOption",
+                                          option
+                                        );
+                                        if (option) {
+                                          setErrorMessage(""); // Clear error message if a valid option is selected
                                         }
-                                        width={"194px"}
-                                        onDropdownClick={() =>
-                                          handleDropdownClick("attributeOption")
+                                        setOpenDropdown(null); // Close the dropdown after selecting an option
+                                      }}
+                                    />
+                                  </td>
+                                  <td className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black">
+                                    <PrivacyCustomDropdown
+                                      options={data.attributeValueOption || []}
+                                      placeholder="Select Option"
+                                      width={"194px"}
+                                      isOpen={openDropdown === "attributeValue"}
+                                      onDropdownClick={() =>
+                                        handleDropdownClick("attributeValue")
+                                      }
+                                      selectedOption={
+                                        selectedOptions["attributeValue"]
+                                      }
+                                      onOptionClick={(option) => {
+                                        handleOptionClick(
+                                          "attributeValue",
+                                          option
+                                        );
+                                        if (option) {
+                                          setErrorMessage(""); // Clear error message if a valid option is selected
                                         }
-                                        selectedOption={
-                                          selectedOptions["attributeOption"]
-                                        }
-                                        onOptionClick={(option) => {
-                                          handleOptionClick(
-                                            "attributeOption",
-                                            option
-                                          );
-                                          if (option) {
-                                            setErrorMessage(""); // Clear error message if a valid option is selected
-                                          }
-                                          setOpenDropdown(null); // Close the dropdown after selecting an option
-                                        }}
-                                      />
-                                    </td>
-                                    <td className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black">
-                                      <PrivacyCustomDropdown
-                                        options={
-                                          data.attributeValueOption || []
-                                        }
-                                        placeholder="Select Option"
-                                        width={"194px"}
-                                        isOpen={
-                                          openDropdown === "attributeValue"
-                                        }
-                                        onDropdownClick={() =>
-                                          handleDropdownClick("attributeValue")
-                                        }
-                                        selectedOption={
-                                          selectedOptions["attributeValue"]
-                                        }
-                                        onOptionClick={(option) => {
-                                          handleOptionClick(
-                                            "attributeValue",
-                                            option
-                                          );
-                                          if (option) {
-                                            setErrorMessage(""); // Clear error message if a valid option is selected
-                                          }
-                                          setOpenDropdown(null); // Close the dropdown after selecting an option
-                                        }}
-                                      />
-                                    </td>
-                                    <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                                      <PrivacyCustomDropdown
-                                        options={
-                                          data.attributeActionOption || []
-                                        }
-                                        placeholder="Select Option"
-                                        width={"194px"}
-                                        isOpen={
-                                          openDropdown ===
+                                        setOpenDropdown(null); // Close the dropdown after selecting an option
+                                      }}
+                                    />
+                                  </td>
+                                  <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
+                                    <PrivacyCustomDropdown
+                                      options={data.attributeActionOption || []}
+                                      placeholder="Select Option"
+                                      width={"194px"}
+                                      isOpen={
+                                        openDropdown === "attributeActionOption"
+                                      }
+                                      onDropdownClick={() =>
+                                        handleDropdownClick(
                                           "attributeActionOption"
+                                        )
+                                      }
+                                      selectedOption={
+                                        selectedOptions["attributeActionOption"]
+                                      }
+                                      onOptionClick={(option) => {
+                                        handleOptionClick(
+                                          "attributeActionOption",
+                                          option
+                                        );
+                                        if (option) {
+                                          setErrorMessage(""); // Clear error message if a valid option is selected
                                         }
-                                        onDropdownClick={() =>
-                                          handleDropdownClick(
-                                            "attributeActionOption"
-                                          )
-                                        }
-                                        selectedOption={
-                                          selectedOptions[
-                                            "attributeActionOption"
-                                          ]
-                                        }
-                                        onOptionClick={(option) => {
-                                          handleOptionClick(
-                                            "attributeActionOption",
-                                            option
-                                          );
-                                          if (option) {
-                                            setErrorMessage(""); // Clear error message if a valid option is selected
-                                          }
-                                          setOpenDropdown(null); // Close the dropdown after selecting an option
-                                        }}
-                                      />
-                                    </td>
-                                    <td className="pl-4  py-6 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                  </tr>
-                                  <tr>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                  </tr>
-                                  <tr>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                    <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
+                                        setOpenDropdown(null); // Close the dropdown after selecting an option
+                                      }}
+                                    />
+                                  </td>
+                                  <td className="pl-4  py-6 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                </tr>
+                                <tr>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                </tr>
+                                <tr>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>

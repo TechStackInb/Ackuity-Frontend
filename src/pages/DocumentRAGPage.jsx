@@ -39,14 +39,17 @@ const DocumentRAG = () => {
   return (
     <div className="page-center p-4">
       {/* Tabs */}
-      <div className="p-4 bg-[#30b375] bg-bubble-pattern rounded-md mb-4">
-        <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
-          Policy Manager
-        </h2>
-        <h2 className="text-sm text-[#2F3A45] font-poppins mb-4">
-          Policy Manager
-          <span className="text-customWhite text-sm"> / Document</span>
-        </h2>
+
+      <div className="p-4 bg-[#30b375] bg-bubble-pattern  rounded-md  mb-4 ">
+        <div className="page-center">
+          <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
+            Policy Manager
+          </h2>
+          <h2 className="text-sm text-[#2F3A45] font-poppins ">
+            Policy Manager
+            <span className="text-customWhite text-sm"> / Document</span>
+          </h2>
+        </div>
       </div>
       <div className="flex justify-around mb-4">
         {["Permissions", "Privacy Filtering", "Attribute Filtering"].map(

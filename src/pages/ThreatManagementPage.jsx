@@ -206,18 +206,16 @@ const ThreatManagement = () => {
     <>
       <div className="p-4 bg-[#30b375] bg-bubble-pattern  rounded-md  mb-4 ">
         <div className="page-center">
-          <div className="page-center">
-            <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
-              Threat Management
-            </h2>
-            <h2 className="text-sm text-[#eff2f6] font-poppins mb-4">
-              Threat Management
-              {/* <span className="text-customWhite text-sm">
+          <h2 className="text-3xl font-poppins font-semibold mb-4 text-customWhite">
+            Threat Management
+          </h2>
+          <h2 className="text-sm text-[#eff2f6] font-poppins mb-4">
+            Threat Management
+            {/* <span className="text-customWhite text-sm">
               {" "}
               / Function Calling
             </span> */}
-            </h2>
-          </div>
+          </h2>
         </div>
       </div>
 
@@ -422,8 +420,8 @@ const ThreatManagement = () => {
                       selectedOption={selectedOptions["userOption"]}
                       onOptionClick={(option) => {
                         handleOptionClickDrop("userOption", option);
-      
-                        setOpenDropdown(null); 
+
+                        setOpenDropdown(null);
                       }}
                     />
                   </td>
