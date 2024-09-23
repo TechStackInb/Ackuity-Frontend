@@ -384,7 +384,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
     withOptions: ["Confidential", "Private", "Public"],
     thenOptions: ["Anonymize", "Tokenize", "Encrypt", "De-identification"],
     roleOptions: ["Role1", "Role2", "Role3", "Role4"],
-    atOptions: ["All times", "1 Day", "1 Week", "One Month", "1 Year"],
+    atOptions: ["All Times", "1 Day", "1 Week", "One Month", "1 Year"],
   };
 
   const openModal = () => {
