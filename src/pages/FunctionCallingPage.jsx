@@ -1475,7 +1475,7 @@ const FunctionCalling = () => {
     attributeOption: ["Department", "Location"],
     attributeValueOption: ["Asia", "North America"],
     attributeActionOption: ["Allow", "Redact"],
-    actionOnDataField: ["Opportunity name", "Account Name", "Amount", "Age"],
+    actionOnDataField: ["Opportunity Name", "Account Name", "Amount", "Age"],
     selectApiName: ["Sales Opportunities", "API2", "API3", "API4"],
   };
 
