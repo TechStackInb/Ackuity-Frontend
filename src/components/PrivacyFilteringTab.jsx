@@ -117,69 +117,69 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     }
   };
 
-  const handleUpdatePolicy = async () => {
-    const trimmedPolicyName = policyName.trim();
+  // const handleUpdatePolicy = async () => {
+  //   const trimmedPolicyName = policyName.trim();
 
-    // Map each section into the multipleSectionData array
-    const multipleSectionData = sections.map((section) => ({
-      documentNameIf: section.values["documentOptions"] || "",
-      classifierContains: section.values["containsOptions"] || "",
-      valueWith: section.values["withOptions"] || "",
-      documentNameThen: section.values["thenOptions"] || "",
-      classifierRole: section.values["roleOptions"] || "",
-      valueAt: section.values["atOptions"] || "",
-    }));
+  //   // Map each section into the multipleSectionData array
+  //   const multipleSectionData = sections.map((section) => ({
+  //     documentNameIf: section.values["documentOptions"] || "",
+  //     classifierContains: section.values["containsOptions"] || "",
+  //     valueWith: section.values["withOptions"] || "",
+  //     documentNameThen: section.values["thenOptions"] || "",
+  //     classifierRole: section.values["roleOptions"] || "",
+  //     valueAt: section.values["atOptions"] || "",
+  //   }));
 
-    const policyData = {
-      policyName: trimmedPolicyName,
-      documentStoreOptions: selectedOptions["documentStore"] || "",
-      documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
-      multipleSectionData, // Use the multipleSectionData array here
-    };
+  //   const policyData = {
+  //     policyName: trimmedPolicyName,
+  //     documentStoreOptions: selectedOptions["documentStore"] || "",
+  //     documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
+  //     multipleSectionData, // Use the multipleSectionData array here
+  //   };
 
-    try {
-      const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerPrivacy/${editingPolicyId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(policyData),
-          credentials: "include",
-        }
-      );
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPrivacy/${editingPolicyId}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(policyData),
+  //         credentials: "include",
+  //       }
+  //     );
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
 
-      const result = await response.json();
-      console.log("Policy updated successfully:", result);
+  //     const result = await response.json();
+  //     console.log("Policy updated successfully:", result);
 
-      // Open success modal
-      setSuccessMessage("Policy updated successfully!");
-      setIsSuccessModalOpen(true);
+  //     // Open success modal
+  //     setSuccessMessage("Policy updated successfully!");
+  //     setIsSuccessModalOpen(true);
 
-      // Fetch updated policies after successful update
-      await fetchPolicies(currentPage);
+  //     // Fetch updated policies after successful update
+  //     await fetchPolicies(currentPage);
 
-      // Reset modal fields
-      setSections([{ id: Date.now(), values: {} }]);
-      setSelectedOptions({});
-      setPolicyName("");
+  //     // Reset modal fields
+  //     setSections([{ id: Date.now(), values: {} }]);
+  //     setSelectedOptions({});
+  //     setPolicyName("");
 
-      // Close the success modal after 2 seconds
-      setTimeout(() => {
-        setIsSuccessModalOpen(false);
-        closeModal(); // Close the main modal if open
-      }, 2000);
-    } catch (error) {
-      console.error("Error updating policy:", error);
-      setSuccessMessage("Failed to update policy.");
-      setIsSuccessModalOpen(true);
-    }
-  };
+  //     // Close the success modal after 2 seconds
+  //     setTimeout(() => {
+  //       setIsSuccessModalOpen(false);
+  //       closeModal(); // Close the main modal if open
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error updating policy:", error);
+  //     setSuccessMessage("Failed to update policy.");
+  //     setIsSuccessModalOpen(true);
+  //   }
+  // };
 
   // const openEditModal = (policyId) => {
   //   topRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -280,6 +280,85 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   //     console.error("Error updating policy:", error);
   //   }
   // };
+
+  const handleUpdatePolicy = async () => {
+    const trimmedPolicyName = policyName.trim();
+
+    // Map each section into the multipleSectionData array and filter out empty values
+    const multipleSectionData = sections.map((section) => {
+      const sectionData = {
+        documentNameIf: section.values["documentOptions"] || "",
+        classifierContains: section.values["containsOptions"] || "",
+        valueWith: section.values["withOptions"] || "",
+        documentNameThen: section.values["thenOptions"] || "",
+        classifierRole: section.values["roleOptions"] || "",
+        valueAt: section.values["atOptions"] || "",
+      };
+
+      // Remove keys with empty values
+      Object.keys(sectionData).forEach(
+        (key) => sectionData[key] === "" && delete sectionData[key]
+      );
+
+      return sectionData;
+    });
+
+    // Build the complete policy data object and remove empty values
+    const policyData = {
+      policyName: trimmedPolicyName,
+      documentStoreOptions: selectedOptions["documentStore"] || "",
+      documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
+      multipleSectionData, // Use the filtered multipleSectionData array here
+    };
+
+    // Remove keys with empty values from policyData
+    Object.keys(policyData).forEach(
+      (key) => policyData[key] === "" && delete policyData[key]
+    );
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/data/policyManagerPrivacy/${editingPolicyId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(policyData),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const result = await response.json();
+      console.log("Policy updated successfully:", result);
+
+      // Open success modal
+      setSuccessMessage("Policy updated successfully!");
+      setIsSuccessModalOpen(true);
+
+      // Fetch updated policies after successful update
+      await fetchPolicies(currentPage);
+
+      // Reset modal fields
+      setSections([{ id: Date.now(), values: {} }]);
+      setSelectedOptions({});
+      setPolicyName("");
+
+      // Close the success modal after 2 seconds
+      setTimeout(() => {
+        setIsSuccessModalOpen(false);
+        closeModal(); // Close the main modal if open
+      }, 2000);
+    } catch (error) {
+      console.error("Error updating policy:", error);
+      setSuccessMessage("Failed to update policy.");
+      setIsSuccessModalOpen(true);
+    }
+  };
 
   const handleDeletePolicy = async (policyId) => {
     if (window.confirm("Are you sure you want to delete this policy?")) {
@@ -445,44 +524,90 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   //   }
   // };
 
+  // const confirmSavePolicy = async () => {
+  //   try {
+  //     const trimmedPolicyName = policyName.trim();
+
+  //     // Create a list to store all sections data
+  //     const multipleSectionData = sections.map((section) => ({
+  //       documentNameIf: section.values["documentOptions"] || "",
+  //       classifierContains: section.values["containsOptions"] || "",
+  //       valueWith: section.values["withOptions"] || "",
+  //       documentNameThen: section.values["thenOptions"] || "",
+  //       classifierRole: section.values["roleOptions"] || "",
+  //       valueAt: section.values["atOptions"] || "",
+  //     }));
+
+  //     // Build the complete policy data object
+  //     const policyData = {
+  //       policyName: trimmedPolicyName,
+  //       documentStoreOptions: selectedOptions["documentStore"] || "",
+  //       documentLocationOptions:
+  //         selectedOptions["documentLocationOptions"] || "",
+  //       multipleSectionData, // Add section data here
+  //     };
+
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPrivacy`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(policyData),
+  //         credentials: "include",
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Policy saved successfully:", result);
+
+  //     setIsSaveSuccessful(true);
+
+  //     // Clear all dropdown selections and sections
+  //     setSections([{ id: Date.now(), values: {} }]);
+  //     setSelectedOptions({});
+  //     setPolicyName("");
+
+  //     // Fetch updated policies after successful save
+  //     await fetchPolicies();
+
+  //     // Automatically close modal after 2 seconds
+  //     setTimeout(() => {
+  //       setIsSaveSuccessful(false);
+  //       closeModal();
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error saving policies:", error);
+  //   }
+  // };
+
   const confirmSavePolicy = async () => {
-    // Clear previous error message
-    setErrorMessage("");
-
-    // Validate the policy name and sections
-    if (!policyName.trim()) {
-      setErrorMessage("Policy Name is required.");
-      return;
-    }
-
-    for (const section of sections) {
-      if (
-        !selectedOptions["documentStore"] ||
-        !selectedOptions["documentLocationOptions"] ||
-        !section.values["documentOptions"] ||
-        !section.values["containsOptions"] ||
-        !section.values["withOptions"] ||
-        !section.values["thenOptions"] ||
-        !section.values["roleOptions"] ||
-        !section.values["atOptions"]
-      ) {
-        setErrorMessage("Please fill out all the fields in each section.");
-        return;
-      }
-    }
-
     try {
       const trimmedPolicyName = policyName.trim();
 
-      // Create a list to store all sections data
-      const multipleSectionData = sections.map((section) => ({
-        documentNameIf: section.values["documentOptions"] || "",
-        classifierContains: section.values["containsOptions"] || "",
-        valueWith: section.values["withOptions"] || "",
-        documentNameThen: section.values["thenOptions"] || "",
-        classifierRole: section.values["roleOptions"] || "",
-        valueAt: section.values["atOptions"] || "",
-      }));
+      // Create a list to store all sections data, but remove empty values
+      const multipleSectionData = sections.map((section) => {
+        const sectionData = {
+          documentNameIf: section.values["documentOptions"] || "",
+          classifierContains: section.values["containsOptions"] || "",
+          valueWith: section.values["withOptions"] || "",
+          documentNameThen: section.values["thenOptions"] || "",
+          classifierRole: section.values["roleOptions"] || "",
+          valueAt: section.values["atOptions"] || "",
+        };
+
+        // Remove keys with empty values
+        Object.keys(sectionData).forEach(
+          (key) => sectionData[key] === "" && delete sectionData[key]
+        );
+
+        return sectionData;
+      });
 
       // Build the complete policy data object
       const policyData = {
@@ -490,8 +615,13 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         documentStoreOptions: selectedOptions["documentStore"] || "",
         documentLocationOptions:
           selectedOptions["documentLocationOptions"] || "",
-        multipleSectionData, // Add section data here
+        multipleSectionData, // Add filtered section data here
       };
+
+      // Remove keys with empty values from policyData
+      Object.keys(policyData).forEach(
+        (key) => policyData[key] === "" && delete policyData[key]
+      );
 
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPrivacy`,
