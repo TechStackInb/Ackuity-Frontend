@@ -223,51 +223,45 @@ const Chart2DatabasePage = () => {
   const handleConfirm = async () => {
     const trimmedPolicyName = policyName.trim();
 
-    // Validation for top-level fields
-    if (!trimmedPolicyName) {
-      setErrorMessage("Policy Name is required.");
-      return;
-    }
-
-    // Validate selected options
-    if (!selectedOptions["dataStoreOptions"]) {
-      setErrorMessage("Data store option is required.");
-      return;
-    }
-    if (!selectedOptions["tableOptions"]) {
-      setErrorMessage("Table view option is required.");
-      return;
-    }
-    if (!selectedOptions["dataFeildOption"]) {
-      setErrorMessage("Data field option is required.");
-      return;
-    }
-    if (!selectedOptions["attributeOption"]) {
-      setErrorMessage("Attribute option is required.");
-      return;
-    }
-    if (!selectedOptions["attributeValue"]) {
-      setErrorMessage("Attribute value is required.");
-      return;
-    }
-    if (!selectedOptions["attributeActionOption"]) {
-      setErrorMessage("Attribute action is required.");
-      return;
-    }
-    // if (!selectedOptions["privacyValueOption"]) {
-    //   setErrorMessage("Privacy value is required.");
+    // if (!trimmedPolicyName) {
+    //   setErrorMessage("Policy Name is required.");
     //   return;
     // }
-    if (!selectedOptions["privacyActionOption"]) {
-      setErrorMessage("Privacy action is required.");
-      return;
-    }
-    if (!selectedOptions["rowLevelFilterinOption"]) {
-      setErrorMessage("Row level filtering is required.");
-      return;
-    }
 
-    // Prepare member IDs for each section
+    // if (!selectedOptions["dataStoreOptions"]) {
+    //   setErrorMessage("Data store option is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["tableOptions"]) {
+    //   setErrorMessage("Table view option is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["dataFeildOption"]) {
+    //   setErrorMessage("Data field option is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["attributeOption"]) {
+    //   setErrorMessage("Attribute option is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["attributeValue"]) {
+    //   setErrorMessage("Attribute value is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["attributeActionOption"]) {
+    //   setErrorMessage("Attribute action is required.");
+    //   return;
+    // }
+
+    // if (!selectedOptions["privacyActionOption"]) {
+    //   setErrorMessage("Privacy action is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["rowLevelFilterinOption"]) {
+    //   setErrorMessage("Row level filtering is required.");
+    //   return;
+    // }
+
     const configurePermissionsSelectRevised = membersBySection[0].map(
       (member) => member._id
     );
@@ -508,48 +502,42 @@ const Chart2DatabasePage = () => {
       return;
     }
 
-    // Validate selected options
-    if (!selectedOptions["dataStoreOptions"]) {
-      setErrorMessage("Data store option is required.");
-      return;
-    }
-    if (!selectedOptions["tableOptions"]) {
-      setErrorMessage("Table view option is required.");
-      return;
-    }
-    if (!selectedOptions["dataFeildOption"]) {
-      setErrorMessage("Data field option is required.");
-      return;
-    }
-    if (!selectedOptions["attributeOption"]) {
-      setErrorMessage("Attribute option is required.");
-      return;
-    }
-    if (!selectedOptions["attributeValue"]) {
-      setErrorMessage("Attribute value is required.");
-      return;
-    }
-    if (!selectedOptions["attributeActionOption"]) {
-      setErrorMessage("Attribute action is required.");
-      return;
-    }
-
-    // if (!selectedOptions["privacyValueOption"]) {
-    //   setErrorMessage("Privacy Value is required.");
+    // if (!selectedOptions["dataStoreOptions"]) {
+    //   setErrorMessage("Data store option is required.");
     //   return;
     // }
-    if (!selectedOptions["privacyActionOption"]) {
-      setErrorMessage("Privacy Action is required.");
-      return;
-    }
+    // if (!selectedOptions["tableOptions"]) {
+    //   setErrorMessage("Table view option is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["dataFeildOption"]) {
+    //   setErrorMessage("Data field option is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["attributeOption"]) {
+    //   setErrorMessage("Attribute option is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["attributeValue"]) {
+    //   setErrorMessage("Attribute value is required.");
+    //   return;
+    // }
+    // if (!selectedOptions["attributeActionOption"]) {
+    //   setErrorMessage("Attribute action is required.");
+    //   return;
+    // }
 
-    if (!selectedOptions["rowLevelFilterinOption"]) {
-      setErrorMessage("Row level Filtering is required.");
-      return;
-    }
+    // if (!selectedOptions["privacyActionOption"]) {
+    //   setErrorMessage("Privacy Action is required.");
+    //   return;
+    // }
 
-    // Clear the error message if validation passes
-    setErrorMessage("");
+    // if (!selectedOptions["rowLevelFilterinOption"]) {
+    //   setErrorMessage("Row level Filtering is required.");
+    //   return;
+    // }
+
+    // setErrorMessage("");
 
     // Map member IDs for each section
     const configurePermissionsSelectRevised = membersBySection[0].map(
