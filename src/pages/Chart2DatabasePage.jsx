@@ -759,7 +759,7 @@ const Chart2DatabasePage = () => {
               Configure Permissions
             </h2>
             <button
-              className="bg-[#2F3A45] text-[#000000] px-2 py-2 rounded hover:text-customGreen"
+              className="bg-[#2F3A45] text-[#000000] px-2  rounded hover:text-customGreen"
               onClick={() => setSectionVisible(!isSectionVisible)}
             >
               <FontAwesomeIcon

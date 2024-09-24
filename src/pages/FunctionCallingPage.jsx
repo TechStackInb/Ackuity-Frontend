@@ -148,7 +148,6 @@ const FunctionCalling = () => {
 
         setSearchResults(uniqueFilteredUsers);
 
-        // Set total pages based on response (if included in API response)
         if (data.totalPages) {
           setTotalPages(data.totalPages);
         }
@@ -163,20 +162,21 @@ const FunctionCalling = () => {
   const addMember = (user, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
 
-    // Add member to the correct section's array based on sectionIndex
     updatedMembersBySection[sectionIndex] = [
       ...updatedMembersBySection[sectionIndex],
       user,
     ];
 
-    setMembersBySection(updatedMembersBySection); // Update state
-    setSearchResults(searchResults.filter((u) => u._id !== user._id)); // Remove from search
-    setSearchQuery(""); // Clear search query
+    setMembersBySection(updatedMembersBySection);
+    setSearchResults(searchResults.filter((u) => u._id !== user._id)); 
+    setSearchQuery(""); 
   };
+
+
   const removeMember = (memberIndex, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
     updatedMembersBySection[sectionIndex].splice(memberIndex, 1);
-    setMembersBySection(updatedMembersBySection); // Update state
+    setMembersBySection(updatedMembersBySection); 
   };
 
   const toggleeditMembership = () => {
@@ -202,7 +202,7 @@ const FunctionCalling = () => {
   const fetchData = async (page = 1) => {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerFunctionCalling?page=${page}&limit=10`,
+        `${BASE_URL}/api/data/policyManagerFunctionCalling?page=${page}&limit=5`,
         {
           method: "GET",
           credentials: "include",
@@ -467,12 +467,6 @@ const FunctionCalling = () => {
         return;
       }
 
-      // if (!section.values["privacyValueOption"]) {
-      //   setErrorMessage(
-      //     `Privacy Filtering Category is required for section ${i + 1}.`
-      //   );
-      //   return;
-      // }
 
       if (!section.values["privacyActionOption"]) {
         setErrorMessage(
@@ -982,7 +976,6 @@ const FunctionCalling = () => {
         console.log("No members found in the permission fields.");
       }
 
-      // Populate sections data for editing
       const sectionsData = policyToEdit.functionCallingPlusData.map(
         (section, index) => ({
           id: Date.now() + index,
@@ -1008,200 +1001,7 @@ const FunctionCalling = () => {
     }
   };
 
-  // const handleEditButtonClick = (id) => {
-  //   setIsEditMode(true);
-  //   fetchDataForEdit(id);
-  // };
 
-  //   const trimmedPolicyName = policyName.trim();
-  //   const postData = {
-  //     policyName: trimmedPolicyName,
-  //     query: selectedOptions["netSales"],
-  //     targetApplication: selectedOptions["targetLocation"],
-  //     genAiApp: selectedOptions["genAiApp"],
-  //     selectApiName: selectedOptions["genAiApp"],
-  //     selectApiDescription: description,
-  //     selectApiDataFields: Object.keys(dataFields).map((key) => ({
-  //       label: key,
-  //       isChecked: dataFields[key],
-  //     })),
-  //     actionOnDataField: actionOnDataField,
-  //     actionOnPermission: actionOnPermission,
-  //     actionOnPermissionExisting: actionOnPermissionExisting,
-  //     actionOnPermissionRevised: checkboxSelections,
-  //     actionOnPrivacyFilteringCategory: selectedOptions["privacyValue"] || "",
-  //     actionOnPrivacyFilteringAction: selectedOptions["privacyAction"] || "",
-  //     actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
-  //     actionOnAttributeFilteringAttribute:
-  //       selectedOptions["attributeOption"] || "",
-  //     actionOnAttributeFilteringValue: selectedOptions["attributeValue"] || "",
-  //     actionOnAttributeFilteringAction:
-  //       selectedOptions["attributeActionOption"] || "",
-  //     actionOnAttributeFilteringTransformValue:
-  //       "Transformation Attribute" || "",
-  //   };
-
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerFunctionCalling/${policyId}`,
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         credentials: "include",
-  //         body: JSON.stringify(postData),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     const result = await response.json();
-  //     console.log("Policy updated successfully:", result);
-
-  //     setSuccessMessage("Policy updated successfully!");
-  //     setIsSuccessModalOpen(true);
-
-  //     setSections([{ id: Date.now(), values: {} }]);
-  //     setPolicyName("");
-  //     setSelectedOptions({});
-  //     setDataFields({
-  //       "Opportunity Name": false,
-  //       "Lead Source": false,
-  //       Close_Date: false,
-  //       "Account Name": false,
-  //       Amount: false,
-  //       Age: false,
-  //       Type: false,
-  //       Probability: false,
-  //       Created_Date: false,
-  //     });
-  //     setCheckboxSelections([
-  //       { label: "Sales NA", isChecked: false },
-  //       { label: "Management", isChecked: false },
-  //     ]);
-  //     setDescription("");
-  //     setActionOnDataField("Account");
-  //     setActionOnPermission("ReadOrWrite");
-  //     setActionOnPermissionExisting("Management");
-
-  //     // Call fetchData to update table data
-  //     await fetchData();
-
-  //     setTimeout(() => {
-  //       setIsSaveSuccessful(false);
-  //       closeModal();
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error("Error updating policy:", error);
-  //     // setIsSaveSuccessful(false);
-  //   }
-  // };
-  // const handleUpdatePolicy = async () => {
-  //   const trimmedPolicyName = policyName.trim();
-
-  //   const actionOnPermissionReadRevisedMember = membersBySection[0].map(
-  //     (member) => member._id
-  //   );
-  //   const actionOnPermissionReadorWriteRevisedMember = membersBySection[1].map(
-  //     (member) => member._id
-  //   );
-  //   // Map through sections to build the functionCallingPlusData array
-  //   const functionCallingPlusData = sections.map((section) => ({
-  //     actionOnDataField: section.values["actionOnDataField"] || "",
-  //     actionOnPermissionReadRevisedMember,
-  //     actionOnPermissionReadorWriteRevisedMember,
-  //     actionOnPrivacyFilteringAction:
-  //       section.values["privacyActionOption"] || "",
-  //     actionOnPrivacyFilteringTransformValue:
-  //       section.values.actionOnPrivacyFilteringTransformValue ||
-  //       "Transformation privacy",
-  //     actionOnAttributeFilteringAttribute:
-  //       section.values["attributeOption"] || "",
-  //     actionOnAttributeFilteringValue:
-  //       section.values["attributeValueOption"] || "",
-  //     actionOnAttributeFilteringAction:
-  //       section.values["attributeActionOption"] || "",
-  //     actionOnAttributeFilteringTransformValue:
-  //       section.values.actionOnAttributeFilteringTransformValue ||
-  //       "Transformation Attribute",
-  //   }));
-
-  //   const postData = {
-  //     policyName: trimmedPolicyName,
-  //     query: selectedOptions["netSales"],
-  //     targetApplication: selectedOptions["targetLocation"],
-  //     genAiApp: selectedOptions["genAiApp"],
-  //     selectApiName: selectedOptions["selectApiName"],
-  //     selectApiDescription: description,
-  //     selectApiDataFields: Object.keys(dataFields).map((key) => ({
-  //       label: key,
-  //       isChecked: dataFields[key],
-  //     })),
-  //     functionCallingPlusData,
-  //   };
-
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerFunctionCalling/${policyId}`,
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         credentials: "include",
-  //         body: JSON.stringify(postData),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     const result = await response.json();
-  //     console.log("Policy updated successfully:", result);
-
-  //     setSuccessMessage("Policy updated successfully!");
-  //     setIsSuccessModalOpen(true);
-
-  //     // Reset form fields
-  //     setSections([{ id: Date.now(), values: {} }]);
-  //     setPolicyName("");
-  //     setSelectedOptions({});
-  //     setDataFields({
-  //       "Opportunity Name": false,
-  //       "Lead Source": false,
-  //       Close_Date: false,
-  //       "Account Name": false,
-  //       Amount: false,
-  //       Age: false,
-  //       Type: false,
-  //       Probability: false,
-  //       Created_Date: false,
-  //     });
-  //     setCheckboxSelections([
-  //       { label: "Sales NA", isChecked: false },
-  //       { label: "Management", isChecked: false },
-  //     ]);
-  //     setDescription("");
-  //     setActionOnDataField("Account");
-  //     setActionOnPermission("ReadOrWrite");
-  //     setActionOnPermissionExisting("Management");
-  //     setMembersBySection([[], []]);
-
-  //     await fetchData();
-
-  //     setTimeout(() => {
-  //       setIsSaveSuccessful(false);
-  //       closeModal();
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error("Error updating policy:", error);
-  //     setIsSaveSuccessful(false);
-  //   }
-  // };
 
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();

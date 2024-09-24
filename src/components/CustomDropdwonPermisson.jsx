@@ -18,7 +18,7 @@ const CustomDropdwonPermisson = ({
   return (
     <div className="relative inline-block text-left w-full mb-2 md:mb-2">
       <div
-        className={`custom-select px-4 py-3 cursor-pointer font-poppins text-[#FFFFFF] ${
+        className={`custom-select-permission px-4 py-3 cursor-pointer font-poppins text-[#FFFFFF] ${
           isOpen ? "open" : ""
         }`}
         onClick={onDropdownClick}

@@ -48,7 +48,13 @@ const DocumentRAG = () => {
           />
         );
       case "Attribute Filtering":
-        return <AttributeFilteringTab sections={sections} setSections={setSections}  handleSavePolicy={handleSavePolicy} />;
+        return (
+          <AttributeFilteringTab
+            sections={sections}
+            setSections={setSections}
+            handleSavePolicy={handleSavePolicy}
+          />
+        );
       default:
         return null;
     }
@@ -65,7 +71,7 @@ const DocumentRAG = () => {
           </h2>
           <h2 className="text-sm text-[#2F3A45] font-poppins ">
             Policy Manager
-            <span className="text-customWhite text-sm"> / Document</span>
+            <span className="text-customWhite text-sm"> / Document RAG</span>
           </h2>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PrivacyCustomDropdown from "./PrivacyCustomDropdown";
 import ThreeDotsButton from "./ThreeDotsButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,8 +23,9 @@ import iconsmodel from "../assets/save.svg";
 import { BASE_URL } from "../services/api";
 import CustomDropdown from "./CustomDropdown";
 import CustomDropdwonPermisson from "./CustomDropdwonPermisson";
+import { PolicyContext } from "../contexts/PolicyProvider";
 
-function PermissionsTab({ sections, setSections }) {
+function PermissionsTab() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isGroupMembershipOpen, setGroupMembershipOpen] = useState(false);
@@ -63,6 +64,8 @@ function PermissionsTab({ sections, setSections }) {
   // const [sections, setSections] = useState([{ id: Date.now(), values: {} }]);
 
   const [loading, setLoading] = useState(false);
+
+  const { sections, setSections } = useContext(PolicyContext);
 
   // const [sections, setSections] = useState([
   //   {
@@ -176,6 +179,8 @@ function PermissionsTab({ sections, setSections }) {
       )
     );
   };
+
+  console.log(sections, "sections");
 
   const removeMember = (user, sectionIndex) => {
     console.log("User object received:", user); // Log the user object
@@ -395,8 +400,7 @@ function PermissionsTab({ sections, setSections }) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const selectedSection = sections[activeSectionIndex]; 
-
+      const selectedSection = sections[activeSectionIndex];
 
       const originalPermissionsMembers = [
         "66ed58a0cecc698293bf9680",
@@ -625,7 +629,10 @@ function PermissionsTab({ sections, setSections }) {
               <tbody className="bg-customTablebG">
                 {sections.map((section, index) => (
                   <tr key={section.id}>
-                    <td className="px-4 py-12 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
+                    <td
+                      className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] "
+                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                    >
                       <CustomDropdwonPermisson
                         options={data.documentStore || []}
                         placeholder="Select Document Store"
@@ -643,7 +650,10 @@ function PermissionsTab({ sections, setSections }) {
                         }
                       />
                     </td>
-                    <td className="px-4 py-12 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[750px] md:w-[600px] sm:w-[450px] ">
+                    <td
+                      className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[750px] md:w-[600px] sm:w-[450px] "
+                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                    >
                       <CustomDropdwonPermisson
                         options={data.documentLocation || []}
                         placeholder="Select Document Location"
@@ -662,8 +672,9 @@ function PermissionsTab({ sections, setSections }) {
                       />
                     </td>
                     <td
-                      className="px-4 py-12 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[200px] md:w-[180px] sm:w-[150px] "
+                      className="px-4  border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[200px] md:w-[180px] sm:w-[150px]"
                       // width={"200px"}
+                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
                     >
                       <CustomDropdwonPermisson
                         options={data.documentName || []}
@@ -682,7 +693,10 @@ function PermissionsTab({ sections, setSections }) {
                         }
                       />
                     </td>
-                    <td className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]">
+                    <td
+                      className="px-4  border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
+                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                    >
                       <div className="relative">
                         <div className="flex  flex-col items-start">
                           <div className="flex flex-col">
@@ -799,7 +813,10 @@ function PermissionsTab({ sections, setSections }) {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-12 border border-customBorderColor text-customWhite font-poppins bg-[#000000]">
+                    <td
+                      className="px-4  border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
+                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                    >
                       <div className="relative">
                         <div>
                           <div className="flex justify-between items-start">

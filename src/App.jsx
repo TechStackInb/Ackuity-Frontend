@@ -13,40 +13,43 @@ import Header from "./components/Header/Header";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { ChartProvider } from "./contexts/ChartContext";
 import PrivateRoute from "./PrivateRoute";
+import { PolicyProvider } from "./contexts/PolicyProvider";
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <ChartProvider>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <div className="flex h-screen overflow-hidden bg-customGray">
-                <Sidebar
-                  isSidebarOpen={isSidebarOpen}
-                  setIsSidebarOpen={setIsSidebarOpen}
-                />
-                <div className="flex-1 flex flex-col overflow-hidden">
-                  <Header
+      <PolicyProvider>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <div className="flex h-screen overflow-hidden bg-customGray">
+                  <Sidebar
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
                   />
-                  <div className="flex-1 overflow-y-auto p-4">
-                    <ChartSection />
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <Header
+                      isSidebarOpen={isSidebarOpen}
+                      setIsSidebarOpen={setIsSidebarOpen}
+                    />
+                    <div className="flex-1 overflow-y-auto p-4">
+                      <ChartSection />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </PrivateRoute>
-          }
-        />
+              </PrivateRoute>
+            }
+          />
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </PolicyProvider>
     </ChartProvider>
   );
 };
