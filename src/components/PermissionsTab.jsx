@@ -17,6 +17,7 @@ import {
   faUserLarge,
   faEraser,
   faSpinner,
+  faDeleteLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import userIcon from "../assets/usericon.svg";
 import iconsmodel from "../assets/save.svg";
@@ -67,88 +68,6 @@ function PermissionsTab() {
 
   const { sections, setSections } = useContext(PolicyContext);
 
-  // const [sections, setSections] = useState([
-  //   {
-  //     id: 1,
-  //     values: {
-  //       documentStore: "",
-  //       documentRepository: "",
-  //       documentLocation: "",
-  //     },
-  //     members: [],
-  //   },
-
-  //   {
-  //     id: 2,
-  //     values: {
-  //       documentStore: "",
-  //       documentRepository: "",
-  //       documentLocation: "",
-  //     },
-  //     members: [],
-  //   },
-  //   {
-  //     id: 3,
-  //     values: {
-  //       documentStore: "",
-  //       documentRepository: "",
-  //       documentLocation: "",
-  //     },
-  //     members: [],
-  //   },
-  //   {
-  //     id: 4,
-  //     values: {
-  //       documentStore: "",
-  //       documentRepository: "",
-  //       documentLocation: "",
-  //     },
-  //     members: [],
-  //   },
-  //   {
-  //     id: 5,
-  //     values: {
-  //       documentStore: "",
-  //       documentRepository: "",
-  //       documentLocation: "",
-  //     },
-  //     members: [],
-  //   },
-  //   {
-  //     id: 6,
-  //     values: {
-  //       documentStore: "",
-  //       documentRepository: "",
-  //       documentLocation: "",
-  //     },
-  //     members: [],
-  //   },
-  //   {
-  //     id: 7,
-  //     values: {
-  //       documentStore: "",
-  //       documentRepository: "",
-  //       documentLocation: "",
-  //     },
-  //     members: [],
-  //   },
-
-  //   // Add more sections as needed
-  // ]);
-
-  // const [sections, setSections] = useState([
-  //   {
-  //     id: Date.now(),
-  //     values: {
-  //       documentStore: "",
-  //       documentLocation: "",
-  //       documentName: "",
-  //     },
-  //     members: [],
-  //   },
-  // ]);
-  // console.log(sections, "sections");
-
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
 
   const [visibleSections, setVisibleSections] = useState(2);
@@ -156,7 +75,7 @@ function PermissionsTab() {
   const addSection = () => {
     if (sections.length < 10) {
       const newSection = {
-        id: Date.now() + sections.length + 1, // Unique ID
+        id: Date.now() + sections.length + 1,
         values: {
           documentStore: "",
           documentLocation: "",
@@ -164,7 +83,7 @@ function PermissionsTab() {
         },
         members: [],
       };
-      setSections([...sections, newSection]); // Add new section to state
+      setSections([...sections, newSection]);
     }
   };
 
@@ -247,38 +166,6 @@ function PermissionsTab() {
     setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
     setOpenDropdown(null);
   };
-
-  // const fetchPolicyPermission = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerPermissions`,
-  //       {
-  //         method: "GET",
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch policies");
-  //     }
-
-  //     const data = await response.json();
-  //     const allUsers = data.data.map((policy) => policy.members).flat();
-  //     // console.log(allUsers, "allUsers");
-  //     setAvailableUsers(allUsers);
-  //     setSavedData(data.data);
-  //   } catch (error) {
-  //     console.error("Error fetching policies:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchPolicyPermission();
-  // }, []);
-
-  // console.log(savedData);
-
-  // console.log(Allusers, "Allusers");
 
   const availableUserss = [
     "Rajat Mohanty",
@@ -397,6 +284,32 @@ function PermissionsTab() {
   //   }
   // };
 
+  const fetchPolicies = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/data/policyManagerPermissions`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch policies");
+      }
+
+      const data = await response.json();
+      console.log(data, "data");
+      setSavedData(data.data);
+    } catch (error) {
+      console.error("Error fetching policies:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPolicies();
+  }, []);
+
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -445,6 +358,8 @@ function PermissionsTab() {
       setShowEditMembership(false);
       setErrorMessage("");
 
+      await fetchPolicies();
+
       setTimeout(() => {
         setIsSuccessModalOpen(false);
       }, 2000);
@@ -455,6 +370,27 @@ function PermissionsTab() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deletePolicy = async (id) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/data/policyManagerPermissions/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the policy");
+      }
+
+      // Optionally, you can fetch the policies again to update the state
+      fetchPolicies(); // Re-fetch policies after deletion
+    } catch (error) {
+      console.error("Error deleting policy:", error);
     }
   };
   // const handleUpdate = async (policyId) => {
@@ -1053,45 +989,6 @@ function PermissionsTab() {
                         className="absolute bottom-0 right-0 flex justify-end gap-2 min-w-[100px] ifmarginleft"
                         style={{ marginRight: "17px" }}
                       >
-                        {/* {sections.length < 10 && (
-                          <div className="flex gap-2">
-                    
-                            <button
-                              className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
-                              onClick={addSection}
-                            >
-                              <FontAwesomeIcon
-                                className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
-                                icon={faPlus}
-                              />
-                            </button>
-
-                
-                            {sections.length === 1 ? (
-                        
-                              <button
-                                className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
-                                onClick={() => clearSection(section.id)}
-                              >
-                                <FontAwesomeIcon
-                                  className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
-                                  icon={faEraser}
-                                />
-                              </button>
-                            ) : (
-                       
-                              <button
-                                className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
-                                onClick={() => removeSection(section.id)}
-                              >
-                                <FontAwesomeIcon
-                                  className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
-                                  icon={faTrash}
-                                />
-                              </button>
-                            )}
-                          </div>
-                        )} */}
                         <div className="flex gap-2">
                           {sections.length === 1 ? (
                             <button
@@ -1128,6 +1025,188 @@ function PermissionsTab() {
                               </button>
                             </div>
                           )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {savedData.map((policy) => (
+                  <tr key={policy._id} className="hover:bg-gray-100">
+                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
+                      {policy.documentStore}
+                    </td>
+                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
+                      {policy.documentLocation}
+                    </td>
+                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
+                      {policy.documentName}
+                    </td>
+
+                    <td
+                      className="px-4  border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
+                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                    >
+                      <div className="relative">
+                        <div className="flex  flex-col items-start">
+                          <div className="flex flex-col">
+                            {/* <span className="font-poppins text-base">
+                              Everyone System
+                            </span> */}
+                            <span className="text-white block text-base font-poppins font-semibold">
+                              Vinod@mail.com
+                            </span>
+                            <span className="text-white block text-base font-poppins font-semibold">
+                              Rajat@gmail.com
+                            </span>
+                          </div>
+                          <div className="flex">
+                            <button onClick={toggleMemberships}>
+                              <ThreeDotsButton />
+                            </button>
+                          </div>
+                        </div>
+
+                        {showMembership && (
+                          <>
+                            <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+                            <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                              <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
+                                  <span className="text-base font-poppins font-semibold">
+                                    Group Membership
+                                  </span>
+                                  <button
+                                    className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
+                                    onClick={toggleMemberships}
+                                    style={{
+                                      width: "29px",
+                                      height: "29px",
+                                      border: "2px solid #31B47663",
+                                    }}
+                                  >
+                                    &times;
+                                  </button>
+                                </div>
+
+                                <div className="p-4 space-y-4">
+                                  <div className="flex justify-between items-center mb-4">
+                                    <span className="text-white text-sm font-poppins font-medium">
+                                      2 Members
+                                    </span>
+                                  </div>
+                                  <div className="space-y-4">
+                                    <div className="flex ">
+                                      <div
+                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                        // style={{
+                                        //   width: "47px",
+                                        //   height: "47px",
+                                        //   background: "#FFFFFF",
+                                        //   opacity: 1,
+                                        // }}
+                                      >
+                                        <img
+                                          src={userIcon}
+                                          alt="icons"
+                                          style={{
+                                            width: "47px",
+                                            height: "47px",
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="flex flex-col ml-3">
+                                        <span className="text-white block text-base font-poppins font-semibold">
+                                          Vinod Vasudevan
+                                        </span>
+                                        <span className="text-gray-400 text-sm font-poppins font-normal">
+                                          Member{" "}
+                                          <FontAwesomeIcon icon={faAngleDown} />
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="border-t border-gray-600"></div>
+                                    <div className="flex ">
+                                      <div
+                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                        style={{
+                                          width: "47px",
+                                          height: "47px",
+                                          background: "#FFFFFF",
+                                          opacity: 1,
+                                        }}
+                                      >
+                                        <img
+                                          src={userIcon}
+                                          alt="icons"
+                                          style={{
+                                            width: "47px",
+                                            height: "47px",
+                                          }}
+                                        />
+                                      </div>
+                                      <div className="flex flex-col ml-3">
+                                        <span className="text-white block text-base font-poppins font-semibold">
+                                          Rajat Mohanty
+                                        </span>
+                                        <span className="text-gray-400 text-sm font-poppins font-normal">
+                                          Member{" "}
+                                          <FontAwesomeIcon icon={faAngleDown} />
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px]">
+                      {policy.revisedPermissionsMembers.length > 0 ? (
+                        policy.revisedPermissionsMembers.map((member) => (
+                          <div key={member._id}>
+                            {member.name} ({member.email})
+                          </div>
+                        ))
+                      ) : (
+                        <span>No revised members</span>
+                      )}
+                      {/* 
+                      <button
+                        onClick={() => deletePolicy(policy._id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Delete
+                      </button> */}
+
+                      {/* <button
+                        className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black "
+                        onClick={() => deletePolicy(policy._id)}
+                      >
+                        <FontAwesomeIcon
+                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
+                          icon={faTrash}
+                        />
+                      </button> */}
+                    </td>
+
+                    <td className="relative">
+                      <div
+                        className="absolute bottom-0 right-0 flex justify-end gap-2 min-w-[100px] ifmarginleft"
+                        style={{ marginRight: "17px" }}
+                      >
+                        <div className="flex gap-2">
+                          <button
+                            className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
+                            onClick={() => deletePolicy(policy._id)}
+                          >
+                            <FontAwesomeIcon
+                              className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
+                              icon={faTrash}
+                            />
+                          </button>
                         </div>
                       </div>
                     </td>
