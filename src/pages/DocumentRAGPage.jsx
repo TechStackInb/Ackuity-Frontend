@@ -10,6 +10,18 @@ const DocumentRAG = () => {
   const [activeTab, setActiveTab] = useState("Permissions");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [sections, setSections] = useState([
+    {
+      id: Date.now(),
+      values: {
+        documentStore: "",
+        documentLocation: "",
+        documentName: "",
+      },
+      members: [],
+    },
+  ]);
+
   const handleSavePolicy = () => {
     setIsModalOpen(true);
   };
@@ -26,11 +38,17 @@ const DocumentRAG = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "Permissions":
-        return <PermissionsTab />;
+        return <PermissionsTab sections={sections} setSections={setSections} />;
       case "Privacy Filtering":
-        return <PrivacyFilteringTab handleSavePolicy={handleSavePolicy} />;
+        return (
+          <PrivacyFilteringTab
+            sections={sections}
+            setSections={setSections}
+            handleSavePolicy={handleSavePolicy}
+          />
+        );
       case "Attribute Filtering":
-        return <AttributeFilteringTab handleSavePolicy={handleSavePolicy} />;
+        return <AttributeFilteringTab sections={sections} setSections={setSections}  handleSavePolicy={handleSavePolicy} />;
       default:
         return null;
     }

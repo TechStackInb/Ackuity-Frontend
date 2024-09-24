@@ -60,6 +60,12 @@ const Chart2DatabasePage = () => {
     { id: Date.now(), values: {} },
   ]);
 
+  const handleDropdownClick1 = (sectionId, index) => {
+    setOpenDropdown(
+      openDropdown === `${sectionId}-${index}` ? null : `${sectionId}-${index}`
+    );
+  };
+
   const toggleeditMembershipPermission = () => {
     setShowEditMembershipPermission(!showEditMembershipPermission);
   };
@@ -116,6 +122,8 @@ const Chart2DatabasePage = () => {
 
   // console.log(membersBySection, "membersBySectiontext2sql");
 
+  console.log(sectionsPlus, "sectionsPlus");
+
   const toggleMembership = (index) => {
     setOpenMembershipIndex((prevIndex) => (prevIndex === index ? null : index));
   };
@@ -151,8 +159,7 @@ const Chart2DatabasePage = () => {
       }
 
       const result = await response.json();
-      // console.log(result);
-      setTableData(result.data);
+      setTableData(result.data); // Ensure you correctly set the fetched data
       setCurrentPage(result.currentPage);
       setTotalPages(result.totalPages);
     } catch (error) {
@@ -220,47 +227,23 @@ const Chart2DatabasePage = () => {
     }
   };
 
+  const handleDropdownChange = (sectionId, dropdownType, value) => {
+    setSectionsPlus(
+      sectionsPlus.map((section) =>
+        section.id === sectionId
+          ? { ...section, values: { ...section.values, [dropdownType]: value } }
+          : section
+      )
+    );
+    setOpenDropdown(null); // Optional: If you want to close the dropdown after selection
+
+    if (errorMessage) {
+      setErrorMessage("");
+    }
+  };
+
   const handleConfirm = async () => {
     const trimmedPolicyName = policyName.trim();
-
-    // if (!trimmedPolicyName) {
-    //   setErrorMessage("Policy Name is required.");
-    //   return;
-    // }
-
-    // if (!selectedOptions["dataStoreOptions"]) {
-    //   setErrorMessage("Data store option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["tableOptions"]) {
-    //   setErrorMessage("Table view option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["dataFeildOption"]) {
-    //   setErrorMessage("Data field option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["attributeOption"]) {
-    //   setErrorMessage("Attribute option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["attributeValue"]) {
-    //   setErrorMessage("Attribute value is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["attributeActionOption"]) {
-    //   setErrorMessage("Attribute action is required.");
-    //   return;
-    // }
-
-    // if (!selectedOptions["privacyActionOption"]) {
-    //   setErrorMessage("Privacy action is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["rowLevelFilterinOption"]) {
-    //   setErrorMessage("Row level filtering is required.");
-    //   return;
-    // }
 
     const configurePermissionsSelectRevised = membersBySection[0].map(
       (member) => member._id
@@ -314,6 +297,18 @@ const Chart2DatabasePage = () => {
       (member) => member._id
     );
 
+    const plusData = sectionsPlus.map((section) => ({
+      ONname: section.values["dataFeildOption"] || "",
+      ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
+      ONprivacyFilteringTransformValue: "transformation value",
+      ONattributeFilteringAttribute: section.values["attributeOption"] || "",
+      ONattributeFilteringValue: section.values["attributeValueOption"],
+      ONattributeFilteringAction: section.values["attributeActionOption"] || "",
+      ONattributeFilteringTransformationValue: "transformation value",
+      rowLevelFilteringBasedonValue:
+        section.values["rowLevelFilterinOption"] || "",
+    }));
+
     const postData = {
       policyName: trimmedPolicyName,
       configurePermissionsSelectExisting,
@@ -326,24 +321,10 @@ const Chart2DatabasePage = () => {
       configurePermissionsDeleteRevised,
       ONdataStore: selectedOptions["dataStoreOptions"],
       ONtableView: selectedOptions["tableOptions"],
-      ONname: selectedOptions["dataFeildOption"],
-      // ONpermissionsSelectExisting,
-      // ONpermissionsSelectRevised,
-      // ONpermissionsInsertExisting,
-      // ONpermissionsInsertRevised,
-      // ONpermissionsUpdateExisting,
-      // ONpermissionsUpdateRevised,
-      // ONpermissionsDeleteExisting,
-      // ONpermissionsDeleteRevised,
-      // ONprivacyFilteringCategory: selectedOptions["privacyValueOption"],
-      ONprivacyFilteringAction: selectedOptions["privacyActionOption"],
-      ONprivacyFilteringTransformValue: "transformation value",
-      ONattributeFilteringAttribute: selectedOptions["attributeOption"],
-      ONattributeFilteringValue: selectedOptions["attributeValue"],
-      ONattributeFilteringAction: selectedOptions["attributeActionOption"],
-      ONattributeFilteringTransformationValue: "transformation value",
-      rowLevelFilteringBasedonValue: selectedOptions["rowLevelFilterinOption"],
+      plusData,
     };
+
+    console.log(postData);
 
     try {
       const response = await fetch(
@@ -369,6 +350,7 @@ const Chart2DatabasePage = () => {
       setSelectedOptions({});
       setPolicyName("");
       setMembersBySection([[], [], [], []]);
+      setSectionsPlus([{ id: Date.now(), values: {} }]);
 
       setTimeout(() => {
         setIsSaveSuccessful(false);
@@ -422,21 +404,14 @@ const Chart2DatabasePage = () => {
       const policyToEdit = tableData.find((policy) => policy._id === policyId);
 
       if (policyToEdit) {
+        // Set policy-related fields
         setPolicyName(policyToEdit.policyName);
-
         setSelectedOptions({
           dataStoreOptions: policyToEdit.ONdataStore,
           tableOptions: policyToEdit.ONtableView,
-          dataFeildOption: policyToEdit.ONname,
-          // privacyValueOption: policyToEdit.ONprivacyFilteringCategory,
-          privacyActionOption: policyToEdit.ONprivacyFilteringAction,
-          attributeOption: policyToEdit.ONattributeFilteringAttribute,
-          attributeValue: policyToEdit.ONattributeFilteringValue,
-          attributeActionOption: policyToEdit.ONattributeFilteringAction,
-          rowLevelFilterinOption: policyToEdit.rowLevelFilteringBasedonValue,
         });
 
-        // Extract all permission-related member IDs
+        // Fetch member IDs from policy
         const memberIds = [
           ...policyToEdit.configurePermissionsSelectRevised,
           ...policyToEdit.configurePermissionsInsertRevised,
@@ -444,20 +419,17 @@ const Chart2DatabasePage = () => {
           ...policyToEdit.configurePermissionsDeleteRevised,
         ];
 
+        // Fetch members if there are any
         if (memberIds.length > 0) {
-          // Construct the query parameters
           const queryParams = new URLSearchParams({
             ids: memberIds.join(","),
           }).toString();
 
-          // Fetch members based on the constructed query
           const response = await fetch(
             `${BASE_URL}/api/data/members?${queryParams}`,
             {
               method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               credentials: "include",
             }
           );
@@ -475,7 +447,23 @@ const Chart2DatabasePage = () => {
             memberData.data.filter((member) => section.includes(member._id))
           );
 
-          // Set the organized members to state for display
+          // Map `plusData` to sections
+          const sectionsData = policyToEdit.plusData.map((section, index) => ({
+            id: Date.now() + index,
+            values: {
+              dataFeildOption: section.ONname,
+              privacyActionOption: section.ONprivacyFilteringAction,
+              attributeOption: section.ONattributeFilteringAttribute,
+              attributeValueOption: section.ONattributeFilteringValue,
+              attributeActionOption: section.ONattributeFilteringAction,
+              rowLevelFilterinOption: section.rowLevelFilteringBasedonValue,
+            },
+          }));
+          console.log(sectionsData, "sectionsData");
+
+          // Set sections and members by section in state
+          setSectionsPlus(sectionsData);
+
           setMembersBySection(organizedMembers);
           setPolicyId(policyId);
         } else {
@@ -502,43 +490,6 @@ const Chart2DatabasePage = () => {
       return;
     }
 
-    // if (!selectedOptions["dataStoreOptions"]) {
-    //   setErrorMessage("Data store option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["tableOptions"]) {
-    //   setErrorMessage("Table view option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["dataFeildOption"]) {
-    //   setErrorMessage("Data field option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["attributeOption"]) {
-    //   setErrorMessage("Attribute option is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["attributeValue"]) {
-    //   setErrorMessage("Attribute value is required.");
-    //   return;
-    // }
-    // if (!selectedOptions["attributeActionOption"]) {
-    //   setErrorMessage("Attribute action is required.");
-    //   return;
-    // }
-
-    // if (!selectedOptions["privacyActionOption"]) {
-    //   setErrorMessage("Privacy Action is required.");
-    //   return;
-    // }
-
-    // if (!selectedOptions["rowLevelFilterinOption"]) {
-    //   setErrorMessage("Row level Filtering is required.");
-    //   return;
-    // }
-
-    // setErrorMessage("");
-
     // Map member IDs for each section
     const configurePermissionsSelectRevised = membersBySection[0].map(
       (member) => member._id
@@ -553,6 +504,28 @@ const Chart2DatabasePage = () => {
       (member) => member._id
     );
 
+    // const plusData = sectionsPlus.map((section) => ({
+    //   ONname: section.values["dataFeildOption"] || "",
+    //   ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
+    //   ONprivacyFilteringTransformValue: "transformation value",
+    //   ONattributeFilteringAttribute: section.values["attributeOption"] || "",
+    //   ONattributeFilteringValue: section.values["attributeValueOption"],
+    //   ONattributeFilteringAction: section.values["attributeActionOption"] || "",
+    //   ONattributeFilteringTransformationValue: "transformation value",
+    //   rowLevelFilteringBasedonValue:
+    //     section.values["rowLevelFilterinOption"] || "",
+    // }));
+
+    const plusData = sectionsPlus.map((section) => ({
+      ONname: section.values["dataFeildOption"] || "",
+      ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
+      ONattributeFilteringAttribute: section.values["attributeOption"] || "",
+      ONattributeFilteringValue: section.values["attributeValueOption"],
+      ONattributeFilteringAction: section.values["attributeActionOption"] || "",
+      rowLevelFilteringBasedonValue:
+        section.values["rowLevelFilterinOption"] || "",
+    }));
+
     // Prepare the updated policy data
     const updatedPolicy = {
       policyName: trimmedPolicyName,
@@ -562,14 +535,7 @@ const Chart2DatabasePage = () => {
       configurePermissionsDeleteRevised,
       ONdataStore: selectedOptions["dataStoreOptions"],
       ONtableView: selectedOptions["tableOptions"],
-      ONname: selectedOptions["dataFeildOption"],
-      // ONprivacyFilteringCategory: selectedOptions["privacyValueOption"],
-      ONprivacyFilteringAction: selectedOptions["privacyActionOption"],
-      ONprivacyFilteringTransformValue: "transformation value",
-      ONattributeFilteringAttribute: selectedOptions["attributeOption"],
-      ONattributeFilteringValue: selectedOptions["attributeValue"],
-      ONattributeFilteringAction: selectedOptions["attributeActionOption"],
-      rowLevelFilteringBasedonValue: selectedOptions["rowLevelFilterinOption"],
+      plusData,
     };
 
     // Log the policy ID to ensure correctness
@@ -607,6 +573,7 @@ const Chart2DatabasePage = () => {
       setPolicyName("");
       setMembersBySection([[], [], [], []]);
       setPolicyId(null); // Reset the policy ID after updating
+      setSectionsPlus([{ id: Date.now(), values: {} }]);
 
       // Fetch the updated data to reflect the changes in the UI
       await fetchData();
@@ -1875,28 +1842,27 @@ const Chart2DatabasePage = () => {
               </div>
 
               {sectionsPlus.map((section, index) => (
-                <div className="with_the_following_action">
+                <div key={index} className="with_the_following_action">
                   <div className="pt-[1rem] ">
-                    <div className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5">
-                      {/* <span className="text-[#31B476]  mr-2 font-poppins  font-semibold">
-              DataField
-            </span> */}
-                      <PrivacyCustomDropdown
+                    <div
+                      className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5"
+                      style={{ width: "350px" }}
+                    >
+                      <CustomDropdown
                         options={data.dataFeildOption || []}
                         placeholder="Select DataField"
-                        isOpen={openDropdown === "dataFeildOption"}
+                        isOpen={openDropdown === `${section.id}-0`}
                         onDropdownClick={() =>
-                          handleDropdownClick("dataFeildOption")
+                          handleDropdownClick1(section.id, 0)
                         }
-                        selectedOption={selectedOptions["dataFeildOption"]}
-                        width={"250px"}
-                        onOptionClick={(option) => {
-                          handleOptionClick("dataFeildOption", option);
-                          if (option) {
-                            setErrorMessage(""); // Clear error message if a valid option is selected
-                          }
-                          setOpenDropdown(null); // Close the dropdown after selecting an option
-                        }}
+                        selectedOption={section.values["dataFeildOption"] || ""}
+                        setSelectedOption={(value) =>
+                          handleDropdownChange(
+                            section.id,
+                            "dataFeildOption",
+                            value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1953,8 +1919,11 @@ const Chart2DatabasePage = () => {
                                       }}
                                     />
                                   </td> */}
-                                  <td className=" py-2 border border-customBorderColor text-customWhite bg-black">
-                                    <PrivacyCustomDropdown
+                                  <td
+                                    className=" py-2 border border-customBorderColor text-customWhite bg-black"
+                                    style={{ width: "200px" }}
+                                  >
+                                    {/* <PrivacyCustomDropdown
                                       options={data.privacyActionOption || []}
                                       placeholder="None"
                                       width={"162px"}
@@ -1979,6 +1948,28 @@ const Chart2DatabasePage = () => {
                                         }
                                         setOpenDropdown(null);
                                       }}
+                                    /> */}
+
+                                    <CustomDropdown
+                                      options={data.privacyActionOption || []}
+                                      placeholder="None"
+                                      isOpen={
+                                        openDropdown === `${section.id}-1`
+                                      }
+                                      onDropdownClick={() =>
+                                        handleDropdownClick1(section.id, 1)
+                                      }
+                                      selectedOption={
+                                        section.values["privacyActionOption"] ||
+                                        ""
+                                      }
+                                      setSelectedOption={(value) =>
+                                        handleDropdownChange(
+                                          section.id,
+                                          "privacyActionOption",
+                                          value
+                                        )
+                                      }
                                     />
                                   </td>
                                   <td className=" py-2 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
@@ -2024,8 +2015,11 @@ const Chart2DatabasePage = () => {
                               </thead>
                               <tbody>
                                 <tr>
-                                  <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                                    <PrivacyCustomDropdown
+                                  <td
+                                    className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
+                                    style={{ width: "200px" }}
+                                  >
+                                    {/* <PrivacyCustomDropdown
                                       options={data.attributeOption || []}
                                       placeholder="Select Option"
                                       isOpen={
@@ -2048,10 +2042,34 @@ const Chart2DatabasePage = () => {
                                         }
                                         setOpenDropdown(null); // Close the dropdown after selecting an option
                                       }}
+                                    /> */}
+
+                                    <CustomDropdown
+                                      options={data.attributeOption || []}
+                                      placeholder="Select Option"
+                                      isOpen={
+                                        openDropdown === `${section.id}-2`
+                                      }
+                                      onDropdownClick={() =>
+                                        handleDropdownClick1(section.id, 2)
+                                      }
+                                      selectedOption={
+                                        section.values["attributeOption"] || ""
+                                      }
+                                      setSelectedOption={(value) =>
+                                        handleDropdownChange(
+                                          section.id,
+                                          "attributeOption",
+                                          value
+                                        )
+                                      }
                                     />
                                   </td>
-                                  <td className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black">
-                                    <PrivacyCustomDropdown
+                                  <td
+                                    className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
+                                    style={{ width: "200px" }}
+                                  >
+                                    {/* <PrivacyCustomDropdown
                                       options={data.attributeValueOption || []}
                                       placeholder="Select Option"
                                       width={"194px"}
@@ -2072,10 +2090,36 @@ const Chart2DatabasePage = () => {
                                         }
                                         setOpenDropdown(null); // Close the dropdown after selecting an option
                                       }}
+                                    /> */}
+
+                                    <CustomDropdown
+                                      options={data.attributeValueOption || []}
+                                      placeholder="Select Option"
+                                      isOpen={
+                                        openDropdown === `${section.id}-3`
+                                      }
+                                      onDropdownClick={() =>
+                                        handleDropdownClick1(section.id, 3)
+                                      }
+                                      selectedOption={
+                                        section.values[
+                                          "attributeValueOption"
+                                        ] || ""
+                                      }
+                                      setSelectedOption={(value) =>
+                                        handleDropdownChange(
+                                          section.id,
+                                          "attributeValueOption",
+                                          value
+                                        )
+                                      }
                                     />
                                   </td>
-                                  <td className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black">
-                                    <PrivacyCustomDropdown
+                                  <td
+                                    className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
+                                    style={{ width: "200px" }}
+                                  >
+                                    {/* <PrivacyCustomDropdown
                                       options={data.attributeActionOption || []}
                                       placeholder="Select Option"
                                       width={"194px"}
@@ -2100,6 +2144,29 @@ const Chart2DatabasePage = () => {
                                         }
                                         setOpenDropdown(null); // Close the dropdown after selecting an option
                                       }}
+                                    /> */}
+
+                                    <CustomDropdown
+                                      options={data.attributeActionOption || []}
+                                      placeholder="Select Option"
+                                      isOpen={
+                                        openDropdown === `${section.id}-4`
+                                      }
+                                      onDropdownClick={() =>
+                                        handleDropdownClick1(section.id, 4)
+                                      }
+                                      selectedOption={
+                                        section.values[
+                                          "attributeActionOption"
+                                        ] || ""
+                                      }
+                                      setSelectedOption={(value) =>
+                                        handleDropdownChange(
+                                          section.id,
+                                          "attributeActionOption",
+                                          value
+                                        )
+                                      }
                                     />
                                   </td>
                                   <td className="pl-4  py-6 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
@@ -2126,11 +2193,14 @@ const Chart2DatabasePage = () => {
                     </div>
 
                     <div className="pt-[1rem] ">
-                      <div className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5">
+                      <div
+                        className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5"
+                        style={{ width: "500px" }}
+                      >
                         <span className="text-[#31B476]  mr-2 font-poppins  font-semibold">
                           Row Level Filtering Based on Value
                         </span>
-                        <PrivacyCustomDropdown
+                        {/* <PrivacyCustomDropdown
                           options={data.rowLevelFilterinOption || []}
                           placeholder="XYZ Corp"
                           isOpen={openDropdown === "rowLevelFilterinOption"}
@@ -2143,13 +2213,31 @@ const Chart2DatabasePage = () => {
                           onOptionClick={(option) => {
                             handleOptionClick("rowLevelFilterinOption", option);
                             if (option) {
-                              setErrorMessage(""); // Clear error message if a valid option is selected
+                              setErrorMessage(""); 
                             }
-                            setOpenDropdown(null); // Close the dropdown after selecting an option
+                            setOpenDropdown(null); 
                           }}
                           width={"250px"}
-                          // paddingLeft={"1rem"}
-                          // paddingRight={"1rem"}
+       
+                        /> */}
+
+                        <CustomDropdown
+                          options={data.rowLevelFilterinOption || []}
+                          placeholder="Select Option"
+                          isOpen={openDropdown === `${section.id}-5`}
+                          onDropdownClick={() =>
+                            handleDropdownClick1(section.id, 5)
+                          }
+                          selectedOption={
+                            section.values["rowLevelFilterinOption"] || ""
+                          }
+                          setSelectedOption={(value) =>
+                            handleDropdownChange(
+                              section.id,
+                              "rowLevelFilterinOption",
+                              value
+                            )
+                          }
                         />
                       </div>
                     </div>
@@ -2260,6 +2348,7 @@ const Chart2DatabasePage = () => {
             setPolicyName("");
             setSelectedOptions({});
             setMembersBySection([[], [], [], []]);
+            setSectionsPlus([{ id: Date.now(), values: {} }]);
           }}
         >
           <span className="transition-transform duration-300 ease-out">
@@ -2313,35 +2402,47 @@ const Chart2DatabasePage = () => {
                       <strong>Table Option:</strong>{" "}
                       {selectedOptions["tableOptions"]}
                     </p>
-                    <p className="text-white">
-                      <strong>Data Field:</strong>{" "}
-                      {selectedOptions["dataFeildOption"]}
-                    </p>
-                    {/* <p className="text-white">
-                                    <strong>Privacy Option:</strong>{" "}
-                                    {selectedOptions["privacyValueOption"]}
-                                  </p> */}
 
-                    <p className="text-white">
-                      <strong>Privacy Action:</strong>{" "}
-                      {selectedOptions["privacyActionOption"]}
-                    </p>
-                    <p className="text-white">
-                      <strong>Attribute Option:</strong>{" "}
-                      {selectedOptions["attributeOption"]}
-                    </p>
-                    <p className="text-white">
-                      <strong>Attribute Value:</strong>{" "}
-                      {selectedOptions["attributeValue"]}
-                    </p>
-                    <p className="text-white">
-                      <strong>Attribute Action:</strong>{" "}
-                      {selectedOptions["attributeActionOption"]}
-                    </p>
-                    <p className="text-white">
-                      <strong>Attribute Action:</strong>{" "}
-                      {selectedOptions["rowLevelFilterinOption"]}
-                    </p>
+                    {sectionsPlus.map((section) => (
+                      <li key={section.id} className="mb-6">
+                        <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
+                          <div className="mb-2">
+                            <h3 className="font-semibold text-lg text-white">
+                              {/* Section {section.id} */}
+                            </h3>
+                          </div>
+                          {/* <div className="text-[#c4c9d0]">
+                            <strong>Privacy Category:</strong>{" "}
+                            {section.values["privacyValueOption"]}
+                          </div> */}
+                          <div className="text-[#c4c9d0]">
+                            <strong>Data Field:</strong>{" "}
+                            {section.values["dataFeildOption"]}
+                          </div>
+
+                          <div className="text-[#c4c9d0]">
+                            <strong>Privacy Action:</strong>{" "}
+                            {section.values["privacyActionOption"]}
+                          </div>
+                          <div className="text-[#c4c9d0]">
+                            <strong>Attribute Option:</strong>{" "}
+                            {section.values["attributeOption"]}
+                          </div>
+                          <div className="text-[#c4c9d0]">
+                            <strong>Attribute Value:</strong>{" "}
+                            {section.values["attributeValueOption"]}
+                          </div>
+                          <div className="text-[#c4c9d0]">
+                            <strong>Attribute Action:</strong>{" "}
+                            {section.values["attributeActionOption"]}
+                          </div>
+                          <div className="text-[#c4c9d0]">
+                            <strong>Row Level Filter:</strong>{" "}
+                            {section.values["rowLevelFilterinOption"]}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
                   </div>
                 </li>
 
@@ -2461,60 +2562,62 @@ const Chart2DatabasePage = () => {
                 </tr>
               </thead>
               <tbody className="bg-customTablebG">
-                {tableData.map((item) => (
-                  <tr key={item._id}>
-                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {/* {item.query} */}
-                      {item.policyName}
-                    </td>
-                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {item.ONdataStore}
-                    </td>
-                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {item.ONtableView}
-                    </td>
-                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {item.ONname}
-                    </td>
-                    <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                      {item.rowLevelFilteringBasedonValue}
-                    </td>
+                {tableData.map((item) =>
+                  // Loop through plusData array to show each row of data
+                  item.plusData.map((plusItem) => (
+                    <tr key={plusItem._id}>
+                      <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                        {item.policyName || "N/A"}
+                      </td>
+                      <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                        {plusItem.ONname}
+                      </td>
+                      <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                        {plusItem.ONattributeFilteringAttribute}
+                      </td>
+                      <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                        {plusItem.ONattributeFilteringValue}
+                      </td>
+                      <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                        {plusItem.rowLevelFilteringBasedonValue}
+                      </td>
 
-                    <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
-                      <div className="flex items-center justify-between spaceGaps">
-                        <button
-                          className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
-                          onClick={() => handleEditButtonClick(item._id)}
-                        >
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
-                          />
-                        </button>
+                      <td className="px-4 py-2 border border-customBorderColor bg-customTablebG">
+                        <div className="flex items-center justify-between spaceGaps">
+                          <button
+                            className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                            onClick={() => handleEditButtonClick(item._id)}
+                          >
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                            />
+                          </button>
 
-                        <button
-                          className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
-                          onClick={() => handleDownloadButtonClick(item._id)}
-                        >
-                          <FontAwesomeIcon
-                            icon={faDownload}
-                            className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
-                          />
-                        </button>
+                          <button
+                            className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                            onClick={() => handleDownloadButtonClick(item._id)}
+                          >
+                            <FontAwesomeIcon
+                              icon={faDownload}
+                              className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                            />
+                          </button>
 
-                        <button
-                          className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
-                          onClick={() => openDeleteModal(item._id)}
-                        >
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                            className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
-                          />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <button
+                            className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                            onClick={() => openDeleteModal(item._id)}
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                            />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

@@ -24,7 +24,7 @@ import { BASE_URL } from "../services/api";
 import CustomDropdown from "./CustomDropdown";
 import CustomDropdwonPermisson from "./CustomDropdwonPermisson";
 
-function PermissionsTab({}) {
+function PermissionsTab({ sections, setSections }) {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [isGroupMembershipOpen, setGroupMembershipOpen] = useState(false);
@@ -133,18 +133,17 @@ function PermissionsTab({}) {
   //   // Add more sections as needed
   // ]);
 
-  const [sections, setSections] = useState([
-    {
-      id: Date.now(),
-      values: {
-        documentStore: "",
-        documentLocation: "",
-        documentName: "",
-      },
-      members: [],
-    },
-    // Add other initial sections here...
-  ]);
+  // const [sections, setSections] = useState([
+  //   {
+  //     id: Date.now(),
+  //     values: {
+  //       documentStore: "",
+  //       documentLocation: "",
+  //       documentName: "",
+  //     },
+  //     members: [],
+  //   },
+  // ]);
   // console.log(sections, "sections");
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
@@ -396,13 +395,8 @@ function PermissionsTab({}) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const selectedSection = sections[activeSectionIndex]; // Get the active section
+      const selectedSection = sections[activeSectionIndex]; 
 
-      // console.log(selectedSection, "selectedSection");
-
-      // if (!selectedSection) {
-      //   throw new Error("Selected section does not exist.");
-      // }
 
       const originalPermissionsMembers = [
         "66ed58a0cecc698293bf9680",
@@ -411,13 +405,6 @@ function PermissionsTab({}) {
       const revisedPermissionsMembers = selectedSection.members.map(
         (member) => member._id
       ); // Get member IDs
-
-      // const jsonPayload = {
-      //   documentStore: selectedSection.values.documentStore,
-      //   documentRepository: selectedSection.values.documentRepository,
-      //   documentLocation: selectedSection.values.documentLocation, // Adjust as necessary
-      //   members,
-      // };
 
       const jsonPayload = {
         documentStore: selectedSection.values.documentStore,
@@ -699,9 +686,9 @@ function PermissionsTab({}) {
                       <div className="relative">
                         <div className="flex  flex-col items-start">
                           <div className="flex flex-col">
-                            <span className="font-poppins text-base">
+                            {/* <span className="font-poppins text-base">
                               Everyone System
-                            </span>
+                            </span> */}
                             <span className="text-white block text-base font-poppins font-semibold">
                               Vinod@mail.com
                             </span>
@@ -817,9 +804,9 @@ function PermissionsTab({}) {
                         <div>
                           <div className="flex justify-between items-start">
                             <div className="flex flex-col">
-                              <span className="font-poppins text-base">
+                              {/* <span className="font-poppins text-base">
                                 Everyone System
-                              </span>
+                              </span> */}
                               {(section.members || []).map(
                                 (member, memberIndex) => (
                                   <div

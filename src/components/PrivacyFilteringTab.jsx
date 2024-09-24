@@ -22,6 +22,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const [policies, setPolicies] = useState([]);
   const [isSaveSuccessful, setIsSaveSuccessful] = useState(false);
   const [policyName, setPolicyName] = useState("");
+  const [valueWith, setValueWith] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -67,6 +68,20 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
   const handlePolicyNameChange = (event) => {
     setPolicyName(event.target.value);
+  };
+
+  // const handleValueWithChange = (event) => {
+  //   setValueWith(event.target.value);
+  // };
+
+  const handleInputChange = (sectionId, key, value) => {
+    setSections((prevSections) =>
+      prevSections.map((section) =>
+        section.id === sectionId
+          ? { ...section, values: { ...section.values, [key]: value } }
+          : section
+      )
+    );
   };
 
   const openEditModal = (policyId) => {
@@ -736,9 +751,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     <CustomDropdown
                       options={datas.thenOptions || []}
                       placeholder="Select Then"
-                      isOpen={openDropdown === `${section.id}-3`}
+                      isOpen={openDropdown === `${section.id}-2`}
                       onDropdownClick={() =>
-                        handleDropdownClick1(section.id, 3)
+                        handleDropdownClick1(section.id, 2)
                       }
                       selectedOption={section.values["thenOptions"] || ""}
                       setSelectedOption={(value) =>
@@ -763,7 +778,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     <span className="text-white mr-2 w-[100px] sm:text-right sm:mb-0 text-left mb-4 text-sm custmTextRight">
                       With
                     </span>
-                    <CustomDropdown
+                    {/* <CustomDropdown
                       options={datas.withOptions || []}
                       placeholder="Select With"
                       isOpen={openDropdown === `${section.id}-2`}
@@ -774,6 +789,21 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       setSelectedOption={(value) =>
                         handleDropdownChange(section.id, "withOptions", value)
                       }
+                    /> */}
+
+                    <input
+                      type="text"
+                      id={`withOptions-${section.id}`}
+                      value={section.values["withOptions"] || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          section.id,
+                          "withOptions",
+                          e.target.value
+                        )
+                      }
+                      className="w-full shadow-sm rounded-[3px] px-4 py-3 border-2 border-black focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-black text-white font-semibold placeholder-gray-500"
+                      placeholder="Enter Value"
                     />
                   </div>
                 </div>
@@ -793,9 +823,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     <CustomDropdown
                       options={datas.roleOptions || []}
                       placeholder="Select Role"
-                      isOpen={openDropdown === `${section.id}-4`}
+                      isOpen={openDropdown === `${section.id}-3`}
                       onDropdownClick={() =>
-                        handleDropdownClick1(section.id, 4)
+                        handleDropdownClick1(section.id, 3)
                       }
                       selectedOption={section.values["roleOptions"] || ""}
                       setSelectedOption={(value) =>
@@ -820,9 +850,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     <CustomDropdown
                       options={datas.atOptions || []}
                       placeholder="Select At"
-                      isOpen={openDropdown === `${section.id}-5`}
+                      isOpen={openDropdown === `${section.id}-4`}
                       onDropdownClick={() =>
-                        handleDropdownClick1(section.id, 5)
+                        handleDropdownClick1(section.id, 4)
                       }
                       selectedOption={section.values["atOptions"] || ""}
                       setSelectedOption={(value) =>
