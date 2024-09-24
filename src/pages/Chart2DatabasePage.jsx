@@ -298,15 +298,19 @@ const Chart2DatabasePage = () => {
     );
 
     const plusData = sectionsPlus.map((section) => ({
-      ONname: section.values["dataFeildOption"] || "",
-      ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
+      ONname: section.values["dataFeildOption"] || "Account Name",
+      ONprivacyFilteringAction:
+        section.values["privacyActionOption"] || "Tokenize",
       ONprivacyFilteringTransformValue: "transformation value",
-      ONattributeFilteringAttribute: section.values["attributeOption"] || "",
-      ONattributeFilteringValue: section.values["attributeValueOption"],
-      ONattributeFilteringAction: section.values["attributeActionOption"] || "",
+      ONattributeFilteringAttribute:
+        section.values["attributeOption"] || "Department",
+      ONattributeFilteringValue:
+        section.values["attributeValueOption"] || "North America",
+      ONattributeFilteringAction:
+        section.values["attributeActionOption"] || "Redact",
       ONattributeFilteringTransformationValue: "transformation value",
       rowLevelFilteringBasedonValue:
-        section.values["rowLevelFilterinOption"] || "",
+        section.values["rowLevelFilterinOption"] || "MNO Corp",
     }));
 
     const postData = {
