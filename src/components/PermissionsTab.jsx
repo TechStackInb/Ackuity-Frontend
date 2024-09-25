@@ -29,36 +29,15 @@ import { PolicyContext } from "../contexts/PolicyProvider";
 function PermissionsTab() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
-  const [isGroupMembershipOpen, setGroupMembershipOpen] = useState(false);
-  const [isEditPermissionsOpen, setEditPermissionsOpen] = useState(false);
   const [showMembership, setShowMembership] = useState(false);
   const [showEditMembership, setShowEditMembership] = useState(false);
-
-  const [hoveredRemoveIndex, setHoveredRemoveIndex] = useState(null);
   const [hoveredAddIndex, setHoveredAddIndex] = useState(null);
-
-  const [members, setMembers] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const [availableUsers, setAvailableUsers] = useState([]);
-
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-
-  const [Allusers, setUsers] = useState([]);
-
   const [savedData, setSavedData] = useState([]);
-  const [Members, setAllMembers] = useState([]);
-
   const [errorMessage, setErrorMessage] = useState("");
-
-  const [openMembershipIndex, setOpenMembershipIndex] = useState(null);
-
-  const [openEditMembershipIndex, setOpeneditMembershipIndex] = useState(null);
-
-  const [currentEditData, setCurrentEditData] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -70,7 +49,6 @@ function PermissionsTab() {
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
 
-  const [visibleSections, setVisibleSections] = useState(2);
 
   const addSection = () => {
     if (sections.length < 10) {
@@ -102,10 +80,10 @@ function PermissionsTab() {
   console.log(sections, "sections");
 
   const removeMember = (user, sectionIndex) => {
-    console.log("User object received:", user); // Log the user object
+    console.log("User object received:", user); 
     if (!user || !user.id) {
       console.error("Invalid user object:", user);
-      return; // Exit if user is invalid
+      return; 
     }
 
     setSections((prevSections) => {
@@ -117,21 +95,6 @@ function PermissionsTab() {
     });
   };
 
-  // console.log(sections, "sections");
-
-  // const removeSection = (id) => {
-  //   setSections(sections.filter((section) => section.id !== id));
-  // };
-
-  // const removeSection = (id) => {
-  //   const updatedSections = sections.filter((section) => section.id !== id);
-
-  //   setSections(updatedSections);
-
-  //   if (visibleSections > updatedSections.length) {
-  //     setVisibleSections(updatedSections.length);
-  //   }
-  // };
 
   const handleDropdownChange = (sectionId, fieldName, value) => {
     setErrorMessage("");
@@ -152,9 +115,7 @@ function PermissionsTab() {
     setSections(updatedSections);
   };
 
-  const handleDropdownClick = (dropdownId) => {
-    setOpenDropdown(openDropdown === dropdownId ? null : dropdownId);
-  };
+
 
   const handleDropdownClick1 = (sectionId, index) => {
     setOpenDropdown(
@@ -162,17 +123,8 @@ function PermissionsTab() {
     );
   };
 
-  const handleOptionClick = (dropdownId, option) => {
-    setSelectedOptions({ ...selectedOptions, [dropdownId]: option });
-    setOpenDropdown(null);
-  };
 
-  const availableUserss = [
-    "Rajat Mohanty",
-    "Vinod Vasudevan",
-    "John Doe",
-    "Jane Smith",
-  ];
+
 
   const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
@@ -211,7 +163,7 @@ function PermissionsTab() {
 
         setSearchResults(uniqueFilteredUsers);
 
-        // Set total pages based on response (if included in API response)
+ 
         if (data.totalPages) {
           setTotalPages(data.totalPages);
         }
@@ -228,61 +180,21 @@ function PermissionsTab() {
       const updatedSections = [...prevSections];
       const sectionMembers = updatedSections[sectionIndex].members;
 
-      // Check if the member already exists in the current section
       const memberExists = sectionMembers.some(
         (member) => member._id === user._id
       );
 
-      // If the member does not exist, add them to the section
       if (!memberExists) {
-        const newUser = { ...user, id: user._id || Date.now() }; // Ensure the user has an id
+        const newUser = { ...user, id: user._id || Date.now() }; 
         updatedSections[sectionIndex].members.push(newUser);
       }
 
       return updatedSections;
     });
 
-    setSearchQuery(""); // Clear the search query after adding a member
+    setSearchQuery(""); 
   };
 
-  //   const memberIds = members.map((member) => member._id);
-  //   const jsonPayload = {
-  //     documentRepository: selectedOptions["attributeOption"],
-  //     documentName: selectedOptions["documentOption"],
-  //     members: memberIds,
-  //   };
-
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerPermissions`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         credentials: "include",
-  //         body: JSON.stringify(jsonPayload),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to save members");
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("Successfully saved:", data);
-
-  //     setSuccessMessage("Permissions saved successfully!");
-  //     setIsSuccessModalOpen(true);
-
-  //     setTimeout(() => {
-  //       setIsSuccessModalOpen(false);
-  //       setShowEditMembership(false);
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error("Error saving members:", error);
-  //   }
-  // };
 
   const fetchPolicies = async () => {
     try {
@@ -321,7 +233,7 @@ function PermissionsTab() {
       ];
       const revisedPermissionsMembers = selectedSection.members.map(
         (member) => member._id
-      ); // Get member IDs
+      );
 
       const jsonPayload = {
         documentStore: selectedSection.values.documentStore,
@@ -387,136 +299,28 @@ function PermissionsTab() {
         throw new Error("Failed to delete the policy");
       }
 
-      // Optionally, you can fetch the policies again to update the state
-      fetchPolicies(); // Re-fetch policies after deletion
+
+      fetchPolicies(); 
     } catch (error) {
       console.error("Error deleting policy:", error);
     }
   };
-  // const handleUpdate = async (policyId) => {
-  //   try {
-  //     // Fetch existing members and combine with the newly added members
-  //     const currentMembers = sections[0].members || [];
-  //     const memberIds = [
-  //       ...currentMembers.map((m) => m._id),
-  //       ...members.map((m) => m._id),
-  //     ];
-
-  //     const payloadSection = sections[0];
-  //     const jsonPayload = {
-  //       documentStore: payloadSection.values["documentStore"],
-  //       documentLocation: payloadSection.values["documentLocation"],
-  //       documentName: payloadSection.values["documentName"],
-  //       members: memberIds, // Updated list of members
-  //     };
-
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerPermissions/${policyId}`,
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         credentials: "include",
-  //         body: JSON.stringify(jsonPayload),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to update members");
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("Successfully updated:", data);
-
-  //     // Refresh policies after update
-  //     await fetchPolicyPermission();
-
-  //     setSuccessMessage("Permissions updated successfully!");
-  //     setIsSuccessModalOpen(true);
-
-  //     setTimeout(() => {
-  //       setIsSuccessModalOpen(false);
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error("Error updating members:", error);
-  //     setErrorMessage("Failed to update permissions. Please try again.");
-  //   }
-  // };
-
+  
   const toggleMemberships = () => {
     setShowMembership(!showMembership);
   };
 
-  const toggleMembership = (index) => {
-    setOpenMembershipIndex((prevIndex) => (prevIndex === index ? null : index));
-  };
 
-  // const handleUpdate = async () => {
-  //   const selectedItemId = savedData[openeditMembershipIndex]?._id; // Get the ID of the item to update
-
-  //   const memberIds = members.map((member) => member._id);
-  //   const jsonPayload = {
-  //     documentRepository: selectedOptions["attributeOption"],
-  //     documentName: selectedOptions["documentOption"],
-  //     members: memberIds,
-  //   };
-
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerPermissions/${selectedItemId}`, // Patch request to update by ID
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         credentials: "include",
-  //         body: JSON.stringify(jsonPayload),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to update members");
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("Successfully updated:", data);
-
-  //     await fetchPolicyPermission(); // Refresh data after successful update
-
-  //     setSuccessMessage("Permissions updated successfully!");
-  //     setIsSuccessModalOpen(true);
-
-  //     setTimeout(() => {
-  //       setIsSuccessModalOpen(false);
-  //       setOpeneditMembershipIndex(null); // Close the modal after update
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error("Error updating members:", error);
-  //     setErrorMessage("Failed to update permissions. Please try again.");
-  //   }
-  // };
-
-  const toggleMembershipEdit = (index) => {
-    setOpeneditMembershipIndex((prevIndex) =>
-      prevIndex === index ? null : index
-    );
-  };
   const toggleEditMembership = (index) => {
     if (activeSectionIndex === index) {
-      setShowEditMembership(!showEditMembership); // Toggle if the same section is clicked
+      setShowEditMembership(!showEditMembership); 
     } else {
       setActiveSectionIndex(index);
-      setShowEditMembership(true); // Open the modal for the clicked section
+      setShowEditMembership(true); 
     }
   };
-  const handleGroupMembershipOpen = () => {
-    setGroupMembershipOpen(true);
-  };
 
-  const handleEditPermissionsOpen = () => {
-    setEditPermissionsOpen(true);
-  };
+
 
   const data = {
     documentStore: ["Document Store", "Share Point", "One Drive"],
@@ -927,7 +731,7 @@ function PermissionsTab() {
                                         <button
                                           onClick={handleSave}
                                           className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
-                                          disabled={loading} // Disable button while loading
+                                          disabled={loading} 
                                         >
                                           {loading ? (
                                             <FontAwesomeIcon
