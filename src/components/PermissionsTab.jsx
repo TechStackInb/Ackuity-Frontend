@@ -41,11 +41,23 @@ function PermissionsTab() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [sections, setSections] = useState([
+    {
+      id: Date.now(),
+      values: {
+        documentStore: "",
+        documentLocation: "",
+        documentName: "",
+      },
+      members: [],
+    },
+  ]);
+
   // const [sections, setSections] = useState([{ id: Date.now(), values: {} }]);
 
   const [loading, setLoading] = useState(false);
 
-  const { sections, setSections } = useContext(PolicyContext);
+  // const { sections, setSections } = useContext(PolicyContext);
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
 
@@ -202,31 +214,6 @@ function PermissionsTab() {
     setSearchQuery("");
   };
 
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerPermissions`,
-  //       {
-  //         method: "GET",
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch policies");
-  //     }
-
-  //     const data = await response.json();
-  //     console.log(data, "data");
-  //     setSavedData(data.data);
-  //   } catch (error) {
-  //     console.error("Error fetching policies:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchPolicies();
-  // }, []);
-
   const fetchPolicies = async () => {
     try {
       const response = await fetch(
@@ -244,7 +231,6 @@ function PermissionsTab() {
       const data = await response.json();
       console.log(data, "data");
 
-      // Update sections with fetched data
       const fetchedSections = data.data.map((policy, index) => ({
         id: policy._id,
         values: {
@@ -382,7 +368,7 @@ function PermissionsTab() {
 
       setSuccessMessage(
         isUpdate
-          ? "Permissions updated successfully!"
+          ? "Permissions saved successfully!"
           : "Permissions saved successfully!"
       );
       setIsSuccessModalOpen(true);
@@ -626,10 +612,10 @@ function PermissionsTab() {
                               Everyone System
                             </span> */}
                             <span className="text-white block text-base font-poppins font-semibold">
-                              Vinod@mail.com
+                              vinod@ackuity.com
                             </span>
                             <span className="text-white block text-base font-poppins font-semibold">
-                              Rajat@gmail.com
+                              rajat@ackuity.com
                             </span>
                           </div>
                           <div className="flex">

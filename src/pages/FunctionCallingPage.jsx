@@ -168,15 +168,14 @@ const FunctionCalling = () => {
     ];
 
     setMembersBySection(updatedMembersBySection);
-    setSearchResults(searchResults.filter((u) => u._id !== user._id)); 
-    setSearchQuery(""); 
+    setSearchResults(searchResults.filter((u) => u._id !== user._id));
+    setSearchQuery("");
   };
-
 
   const removeMember = (memberIndex, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
     updatedMembersBySection[sectionIndex].splice(memberIndex, 1);
-    setMembersBySection(updatedMembersBySection); 
+    setMembersBySection(updatedMembersBySection);
   };
 
   const toggleeditMembership = () => {
@@ -223,7 +222,6 @@ const FunctionCalling = () => {
     }
   };
 
-  // Fetch data from API on component mount
   useEffect(() => {
     fetchData(currentPage);
   }, [currentPage]);
@@ -233,8 +231,6 @@ const FunctionCalling = () => {
       setCurrentPage(newPage);
     }
   };
-
-  // console.log(actionOnDataFieldSelections, "actionOnDataFieldSelections");
 
   // const handleConfirm = async () => {
   //   const trimmedPolicyName = policyName.trim();
@@ -425,7 +421,6 @@ const FunctionCalling = () => {
 
     const memberIds = members.map((member) => member._id);
 
-    // Validation for top-level fields
     if (!trimmedPolicyName) {
       setErrorMessage("Policy Name is required.");
       return;
@@ -456,7 +451,6 @@ const FunctionCalling = () => {
       return;
     }
 
-    // Validation for fields inside functionCallingPlusData
     for (let i = 0; i < sections.length; i++) {
       const section = sections[i];
 
@@ -466,7 +460,6 @@ const FunctionCalling = () => {
         );
         return;
       }
-
 
       if (!section.values["privacyActionOption"]) {
         setErrorMessage(
@@ -497,7 +490,6 @@ const FunctionCalling = () => {
       }
     }
 
-    // If validation passes, clear the error message
     setErrorMessage("");
 
     const actionOnPermissionReadRevisedMember = membersBySection[0].map(
@@ -574,7 +566,6 @@ const FunctionCalling = () => {
       console.log("Policy saved successfully:", result);
       setIsSaveSuccessful(true);
 
-      // Clear all dropdown selections and section data
       setSelectedOptions({});
       setDataFields({
         "Opportunity Name": false,
@@ -598,7 +589,6 @@ const FunctionCalling = () => {
       setPolicyName("");
       setMembersBySection([[], []]);
 
-      // Call fetchData to update table data
       await fetchData();
 
       setTimeout(() => {
@@ -610,293 +600,6 @@ const FunctionCalling = () => {
       setIsSaveSuccessful(false);
     }
   };
-
-  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
-
-  //   setIsSaveSuccessful(false);
-  //   const policyToEdit = tableData.find((policy) => policy._id === id);
-  //   if (policyToEdit) {
-  //     setPolicyName(policyToEdit.policyName);
-  //     setSelectedOptions({
-  //       netSales: policyToEdit.query,
-  //       targetLocation: policyToEdit.targetApplication,
-  //       genAiApp: policyToEdit.genAiApp,
-  //       privacyValue: policyToEdit.actionOnPrivacyFilteringCategory,
-  //       privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
-  //       attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
-  //       attributeValue: policyToEdit.actionOnAttributeFilteringValue,
-  //       attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
-  //     });
-  //     setDescription(policyToEdit.selectApiDescription);
-  //     setDataFields(
-  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
-  //         acc[field.label] = field.isChecked;
-  //         return acc;
-  //       }, {})
-  //     );
-  //     setCheckboxSelections(policyToEdit.actionOnPermissionRevised);
-  //     setPolicyId(id);
-  //   } else {
-  //     console.error("Policy not found with ID:", id);
-  //   }
-  // };
-
-  // const fetchDataForEdit = (id) => {
-  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
-
-  //   setIsSaveSuccessful(false);
-  //   const policyToEdit = tableData.find((policy) => policy._id === id);
-
-  //   if (policyToEdit) {
-  //     setPolicyName(policyToEdit.policyName);
-  //     setSelectedOptions({
-  //       netSales: policyToEdit.query,
-  //       targetLocation: policyToEdit.targetApplication,
-  //       genAiApp: policyToEdit.genAiApp,
-  //       privacyValueOption: policyToEdit.actionOnPrivacyFilteringCategory,
-  //       privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
-  //       attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
-  //       attributeValue: policyToEdit.actionOnAttributeFilteringValue,
-  //       attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
-  //     });
-  //     setDescription(policyToEdit.selectApiDescription);
-  //     setDataFields(
-  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
-  //         acc[field.label] = field.isChecked;
-  //         return acc;
-  //       }, {})
-  //     );
-
-  //     // Ensure actionOnPermissionRevised is an array
-  //     const actionOnPermissionRevised =
-  //       policyToEdit.actionOnPermissionRevised || [];
-
-  //     // Map the fetched data to the checkboxSelections state
-  //     setCheckboxSelections([
-  //       {
-  //         label: "Sales NA",
-  //         isChecked: actionOnPermissionRevised.some(
-  //           (p) => p.label === "Sales NA" && p.isChecked
-  //         ),
-  //       },
-  //       {
-  //         label: "Management",
-  //         isChecked: actionOnPermissionRevised.some(
-  //           (p) => p.label === "Management" && p.isChecked
-  //         ),
-  //       },
-  //     ]);
-
-  //     // Map through multiple sections (functionCallingPlusData) to populate them in the form
-  //     const sectionsData = policyToEdit.functionCallingPlusData.map(
-  //       (section, index) => ({
-  //         id: Date.now() + index, // Ensure unique id
-  //         values: {
-  //           actionOnDataField: section.actionOnDataField,
-  //           actionOnPermission: section.actionOnPermission,
-  //           actionOnPermissionExisting: section.actionOnPermissionExisting,
-  //           actionOnPermissionRevised: actionOnPermissionRevised,
-  //           privacyValueOption: section.actionOnPrivacyFilteringCategory,
-  //           privacyActionOption: section.actionOnPrivacyFilteringAction,
-  //           actionOnPrivacyFilteringTransformValue:
-  //             section.actionOnPrivacyFilteringTransformValue,
-  //           attributeOption: section.actionOnAttributeFilteringAttribute,
-  //           attributeValueOption: section.actionOnAttributeFilteringValue,
-  //           attributeActionOption: section.actionOnAttributeFilteringAction,
-  //           actionOnAttributeFilteringTransformValue:
-  //             section.actionOnAttributeFilteringTransformValue,
-  //         },
-  //       })
-  //     );
-
-  //     setSections(sectionsData); // Set the sections with the mapped data
-  //     setPolicyId(id);
-  //   } else {
-  //     console.error("Policy not found with ID:", id);
-  //   }
-  // };
-
-  // const fetchDataForEdit = (id) => {
-  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
-
-  //   setIsSaveSuccessful(false);
-  //   const policyToEdit = tableData.find((policy) => policy._id === id);
-  //   // console.log(policyToEdit.selectApiName, "selectApiName");
-
-  //   if (policyToEdit) {
-  //     setPolicyName(policyToEdit.policyName);
-
-  //     setSelectedOptions({
-  //       netSales: policyToEdit.query,
-  //       targetLocation: policyToEdit.targetApplication,
-  //       genAiApp: policyToEdit.genAiApp,
-  //       selectApiName: policyToEdit.selectApiName,
-  //       privacyValueOption: policyToEdit.actionOnPrivacyFilteringCategory,
-  //       privacyAction: policyToEdit.actionOnPrivacyFilteringAction,
-  //       attributeOption: policyToEdit.actionOnAttributeFilteringAttribute,
-  //       attributeValue: policyToEdit.actionOnAttributeFilteringValue,
-  //       attributeActionOption: policyToEdit.actionOnAttributeFilteringAction,
-  //     });
-  //     // setSelectedApiName(policyToEdit.selectedApiName);
-  //     setDescription(policyToEdit.selectApiDescription);
-  //     setDataFields(
-  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
-  //         acc[field.label] = field.isChecked;
-  //         return acc;
-  //       }, {})
-  //     );
-
-  //     // Initialize checkboxSelections based on actionOnPermissionRevised
-  //     const checkboxSelectionsMap = (label) => {
-  //       return policyToEdit.functionCallingPlusData.some((section) =>
-  //         section.actionOnPermissionRevised.some(
-  //           (perm) => perm.label === label && perm.isChecked
-  //         )
-  //       );
-  //     };
-
-  //     setCheckboxSelections([
-  //       { label: "Sales NA", isChecked: checkboxSelectionsMap("Sales NA") },
-  //       { label: "Management", isChecked: checkboxSelectionsMap("Management") },
-  //     ]);
-
-  //     const memberIds = members.map((member) => member._id);
-
-  //     const sectionsData = policyToEdit.functionCallingPlusData.map(
-  //       (section, index) => ({
-  //         id: Date.now() + index,
-  //         values: {
-  //           actionOnDataField: section.actionOnDataField,
-  //           actionOnPermission: section.actionOnPermission,
-  //           actionOnPermissionExisting: memberIds,
-  //           actionOnPermissionRevised: memberIds,
-  //           privacyValueOption: section.actionOnPrivacyFilteringCategory,
-  //           privacyActionOption: section.actionOnPrivacyFilteringAction,
-  //           actionOnPrivacyFilteringTransformValue:
-  //             section.actionOnPrivacyFilteringTransformValue,
-  //           attributeOption: section.actionOnAttributeFilteringAttribute,
-  //           attributeValueOption: section.actionOnAttributeFilteringValue,
-  //           attributeActionOption: section.actionOnAttributeFilteringAction,
-  //           actionOnAttributeFilteringTransformValue:
-  //             section.actionOnAttributeFilteringTransformValue,
-  //         },
-  //       })
-  //     );
-
-  //     setSections(sectionsData);
-  //     setPolicyId(id);
-  //   } else {
-  //     console.error("Policy not found with ID:", id);
-  //   }
-  // };
-
-  // const handleEditButtonClick = async (policyId) => {
-  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   setIsSaveSuccessful(false);
-
-  //   const policyToEdit = tableData.find((policy) => policy._id === policyId);
-  //   if (policyToEdit) {
-  //     // Set policy data
-  //     setPolicyName(policyToEdit.policyName);
-  //     setSelectedOptions({
-  //       netSales: policyToEdit.query,
-  //       targetLocation: policyToEdit.targetApplication,
-  //       genAiApp: policyToEdit.genAiApp,
-  //       selectApiName: policyToEdit.selectApiName,
-  //     });
-  //     setDescription(policyToEdit.selectApiDescription);
-
-  //     // Set the data fields with isChecked status
-  //     setDataFields(
-  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
-  //         acc[field.label] = field.isChecked;
-  //         return acc;
-  //       }, {})
-  //     );
-
-  //     // Fetch members based on actionOnPermissionRevisedMember and actionOnPermissionReadorWriteRevisedMember IDs
-  //     const memberIds = [
-  //       ...new Set(
-  //         policyToEdit.functionCallingPlusData.flatMap((section) => [
-  //           ...section.actionOnPermissionReadRevisedMember,
-  //           ...section.actionOnPermissionReadorWriteRevisedMember,
-  //         ])
-  //       ),
-  //     ];
-
-  //     if (memberIds.length > 0) {
-  //       // Fetch members based on the constructed query
-  //       const queryParams = new URLSearchParams({
-  //         ids: memberIds.join(","),
-  //       }).toString();
-
-  //       try {
-  //         const response = await fetch(
-  //           `${BASE_URL}/api/data/members?${queryParams}`,
-  //           {
-  //             method: "GET",
-  //             headers: {
-  //               "Content-Type": "application/json",
-  //             },
-  //             credentials: "include",
-  //           }
-  //         );
-
-  //         const memberData = await response.json();
-
-  //         // Organize members into sections
-  //         // const organizedMembers = policyToEdit.functionCallingPlusData.map(
-  //         //   (section) => ({
-  //         //     memberData.data.filter((member) => section.includes(member._id))
-  //         //   })
-  //         // );
-
-  //         const sections = [
-  //           ...new Set(
-  //             policyToEdit.functionCallingPlusData.flatMap((section) => [
-  //               ...section.actionOnPermissionReadRevisedMember,
-  //               ...section.actionOnPermissionReadorWriteRevisedMember,
-  //             ])
-  //           ),
-  //         ];
-
-  //         const organizedMembers = sections.map(
-  //           (section) =>
-  //             memberData.data.filter((member) => section.includes(member._id))
-  //         );
-
-  //         setMembersBySection(organizedMembers);
-  //       } catch (error) {
-  //         console.error("Error fetching members:", error);
-  //       }
-  //     } else {
-  //       console.log("No members found in the permission fields.");
-  //     }
-
-  //     // Populate sections data for editing
-  //     const sectionsData = policyToEdit.functionCallingPlusData.map(
-  //       (section, index) => ({
-  //         id: Date.now() + index,
-  //         values: {
-  //           actionOnDataField: section.actionOnDataField,
-  //           privacyActionOption: section.actionOnPrivacyFilteringAction,
-  //           actionOnPrivacyFilteringTransformValue:
-  //             section.actionOnPrivacyFilteringTransformValue,
-  //           attributeOption: section.actionOnAttributeFilteringAttribute,
-  //           attributeValueOption: section.actionOnAttributeFilteringValue,
-  //           attributeActionOption: section.actionOnAttributeFilteringAction,
-  //           actionOnAttributeFilteringTransformValue:
-  //             section.actionOnAttributeFilteringTransformValue,
-  //         },
-  //       })
-  //     );
-
-  //     setSections(sectionsData);
-  //     setPolicyId(policyId);
-  //   } else {
-  //     console.error("Policy not found with ID:", policyId);
-  //   }
-  // };
 
   const handleEditButtonClick = async (policyId) => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -914,7 +617,6 @@ const FunctionCalling = () => {
       });
       setDescription(policyToEdit.selectApiDescription);
 
-      // Set the data fields with isChecked status
       setDataFields(
         policyToEdit.selectApiDataFields.reduce((acc, field) => {
           acc[field.label] = field.isChecked;
@@ -922,7 +624,6 @@ const FunctionCalling = () => {
         }, {})
       );
 
-      // Fetch members based on actionOnPermissionRevisedMember and actionOnPermissionReadorWriteRevisedMember IDs
       const memberIds = [
         ...new Set(
           policyToEdit.functionCallingPlusData.flatMap((section) => [
@@ -933,7 +634,6 @@ const FunctionCalling = () => {
       ];
 
       if (memberIds.length > 0) {
-        // Fetch members based on the constructed query
         const queryParams = new URLSearchParams({
           ids: memberIds.join(","),
         }).toString();
@@ -952,7 +652,6 @@ const FunctionCalling = () => {
 
           const memberData = await response.json();
 
-          // Organize members into two sections based on the actionOnPermission* fields
           const readMembers = memberData.data.filter((member) =>
             policyToEdit.functionCallingPlusData.some((section) =>
               section.actionOnPermissionReadRevisedMember.includes(member._id)
@@ -967,7 +666,6 @@ const FunctionCalling = () => {
             )
           );
 
-          // Set the members into the state
           setMembersBySection([readMembers, readWriteMembers]);
         } catch (error) {
           console.error("Error fetching members:", error);
@@ -989,7 +687,6 @@ const FunctionCalling = () => {
             attributeActionOption: section.actionOnAttributeFilteringAction,
             actionOnAttributeFilteringTransformValue:
               section.actionOnAttributeFilteringTransformValue,
-              
           },
         })
       );
@@ -1001,12 +698,9 @@ const FunctionCalling = () => {
     }
   };
 
-
-
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();
 
-    // Map the members from the sections
     const actionOnPermissionReadRevisedMember = membersBySection[0].map(
       (member) => member._id
     );
@@ -1014,7 +708,6 @@ const FunctionCalling = () => {
       (member) => member._id
     );
 
-    // Map through sections to build the functionCallingPlusData array
     const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermissionReadRevisedMember,
@@ -1117,7 +810,6 @@ const FunctionCalling = () => {
 
       console.log("Policy deleted successfully");
 
-      // Call fetchData to update table data after deletion
       await fetchData();
       setDeleteModel(false);
     } catch (error) {
@@ -1247,7 +939,6 @@ const FunctionCalling = () => {
       )
     );
 
-    // Update the sections with the new checkbox state
     setSections((prevSections) =>
       prevSections.map((section, index) =>
         index === sectionIndex
@@ -1451,17 +1142,6 @@ const FunctionCalling = () => {
                       Select API Data
                     </label>
                     <div>
-                      {/* <Dropdown
-                        items={Sales}
-                        iconColor="text-customIconColor"
-                        backgroundColor="bg-black"
-                        textColor="text-white"
-                        selectedItem={selectedApiName}
-                        onItemClick={(subItemName) => {
-                          console.log("Selected:", subItemName);
-                          setSelectedApiName(subItemName);
-                        }}
-                      /> */}
                       <PrivacyCustomDropdown
                         options={data.selectApiName || []}
                         placeholder="Select API"
@@ -1485,74 +1165,11 @@ const FunctionCalling = () => {
                       type="text"
                       placeholder="Enter Description"
                       className="bg-black pb-[96px] pt-[10px] pl-[15px] pr-[9px] text-customWhite text-base font-poppins text-sizess"
-                      value={description} // Controlled input value
-                      onChange={handleDescriptionChange} // Handle input change
+                      value={description}
+                      onChange={handleDescriptionChange}
                     />
                   </div>
 
-                  {/* <div className="flex flex-col w-full sm:w-full  md:w-full lg:w-[56%] xl:w-[56%] 2xl:w-[56%] ipad-width">
-                    <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
-                      Data Fields
-                    </label>
-                    <div className="bg-black pt-[22px] pb-[20px] pl-[30px]">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 ">
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-sizess">
-                            Opportunity Name
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Lead Source
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Close_Date
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Account Name
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Amount
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Age
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Type
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Probability
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="checkbox" className="custom-checkbox" />
-                          <span className="text-customWhite font-poppins text-base text-sizess">
-                            Created_Date
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </div> */}
                   <div className="flex flex-col w-full sm:w-full md:w-full lg:w-[56%] xl:w-[56%] 2xl:w-[56%] ipad-width">
                     <label className="py-3.5 text-[#31E48F] text-lg font-poppins font-semibold">
                       Data Fields
@@ -1660,7 +1277,6 @@ const FunctionCalling = () => {
                             {membersBySection.map(
                               (sectionMembers, sectionIndex) => (
                                 <tr key={sectionIndex}>
-                                  {/* Section Column */}
                                   <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                     {sectionIndex === 0 && <span>Read</span>}
                                     {sectionIndex === 1 && (
@@ -1711,26 +1327,22 @@ const FunctionCalling = () => {
                                           </div>
                                         </div>
 
-                                        {/* Show membership modal only if this row's index is open */}
                                         {openMembershipIndex === index && (
                                           <>
-                                            {/* Overlay */}
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } // Close when clicking outside
+                                              }
                                             />
 
-                                            {/* Membership Modal */}
                                             <div
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } // Prevent clicks inside modal from closing it
+                                              }
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                                {/* Close button */}
                                                 <button
                                                   className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                                   onClick={() =>
@@ -1762,15 +1374,7 @@ const FunctionCalling = () => {
 
                                                   <div className="space-y-4">
                                                     <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        // style={{
-                                                        //   width: "47px",
-                                                        //   height: "47px",
-                                                        //   background: "#FFFFFF",
-                                                        //   opacity: 1,
-                                                        // }}
-                                                      >
+                                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                                         <img
                                                           src={userIcon}
                                                           alt="icons"
@@ -1876,26 +1480,22 @@ const FunctionCalling = () => {
                                           </div>
                                         </div>
 
-                                        {/* Show membership modal only if this row's index is open */}
                                         {openMembershipIndex === index && (
                                           <>
-                                            {/* Overlay */}
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } // Close when clicking outside
+                                              }
                                             />
 
-                                            {/* Membership Modal */}
                                             <div
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } // Prevent clicks inside modal from closing it
+                                              }
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                                {/* Close button */}
                                                 <button
                                                   className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                                   onClick={() =>
@@ -1927,15 +1527,7 @@ const FunctionCalling = () => {
 
                                                   <div className="space-y-4">
                                                     <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        // style={{
-                                                        //   width: "47px",
-                                                        //   height: "47px",
-                                                        //   background: "#FFFFFF",
-                                                        //   opacity: 1,
-                                                        // }}
-                                                      >
+                                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                                         <img
                                                           src={userIcon}
                                                           alt="icons"
@@ -2051,7 +1643,7 @@ const FunctionCalling = () => {
                                     {members.length > 0 ? (
                                       members.map((member, memberIndex) => (
                                         <div
-                                          key={member._id} // Assuming _id is unique for each member
+                                          key={member._id}
                                           className="flex justify-between items-center mb-2"
                                         >
                                           <span className="text-white block text-base font-poppins font-semibold">
@@ -2134,7 +1726,6 @@ const FunctionCalling = () => {
                                             </div>
 
                                             <div className="p-4 space-y-4">
-                                              {/* Display section-specific members inside modal */}
                                               {membersBySection[
                                                 sectionIndex
                                               ].map((member, memberIndex) => (
@@ -2203,7 +1794,6 @@ const FunctionCalling = () => {
                                                 />
                                               </div>
 
-                                              {/* Display search results */}
                                               {searchResults.length > 0 && (
                                                 <div>
                                                   {searchResults.map((user) => (
@@ -2231,7 +1821,7 @@ const FunctionCalling = () => {
                                                             user,
                                                             sectionIndex
                                                           )
-                                                        } // Add member to correct section
+                                                        }
                                                         style={{
                                                           width: "29px",
                                                           height: "29px",
@@ -2257,7 +1847,6 @@ const FunctionCalling = () => {
                                                       sectionIndex
                                                     )
                                                   }
-                                                  // onClick={handleSave}
                                                   className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
                                                 >
                                                   <img
@@ -2602,31 +2191,6 @@ const FunctionCalling = () => {
         </div>
       )}
 
-      {/* <div
-        className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins  ${
-          isClickedAdd ? "hover:bg-customGreen hover:text-white" : ""
-        }`}
-        onClick={handleSavePolicy}
-      >
-        <span
-          className="transition-transform duration-300 ease-out"
-          style={{
-            display: "inline-block",
-            letterSpacing: "0.2em",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.letterSpacing = "normal";
-            e.currentTarget.style.transform = "scale(0.95)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.letterSpacing = "0.2em";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          SAVE POLICY
-        </span>
-      </div> */}
-
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
@@ -2878,8 +2442,8 @@ const FunctionCalling = () => {
       </div>
       <ConfirmationModal
         isOpen={isDeleteModel}
-        onClose={closeModal} // Close modal handler
-        onConfirm={handleDeleteButtonClick} // Confirm deletion handler
+        onClose={closeModal}
+        onConfirm={handleDeleteButtonClick}
       />
 
       <div className="flex justify-end items-center mt-4 space-x-2">

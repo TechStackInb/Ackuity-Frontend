@@ -508,17 +508,6 @@ const Chart2DatabasePage = () => {
       (member) => member._id
     );
 
-    // const plusData = sectionsPlus.map((section) => ({
-    //   ONname: section.values["dataFeildOption"] || "",
-    //   ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
-    //   ONprivacyFilteringTransformValue: "transformation value",
-    //   ONattributeFilteringAttribute: section.values["attributeOption"] || "",
-    //   ONattributeFilteringValue: section.values["attributeValueOption"],
-    //   ONattributeFilteringAction: section.values["attributeActionOption"] || "",
-    //   ONattributeFilteringTransformationValue: "transformation value",
-    //   rowLevelFilteringBasedonValue:
-    //     section.values["rowLevelFilterinOption"] || "",
-    // }));
 
     const plusData = sectionsPlus.map((section) => ({
       ONname: section.values["dataFeildOption"] || "",

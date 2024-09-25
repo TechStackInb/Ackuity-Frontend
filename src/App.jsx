@@ -13,14 +13,12 @@ import Header from "./components/Header/Header";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { ChartProvider } from "./contexts/ChartContext";
 import PrivateRoute from "./PrivateRoute";
-import { PolicyProvider } from "./contexts/PolicyProvider";
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <ChartProvider>
-      <PolicyProvider>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -49,7 +47,6 @@ const App = () => {
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </PolicyProvider>
     </ChartProvider>
   );
 };

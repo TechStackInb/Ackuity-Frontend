@@ -1,6 +1,5 @@
 import React, { createContext, useState } from "react";
 
-// Create a context to store the sections
 export const PolicyContext = createContext();
 
 export const PolicyProvider = ({ children }) => {
