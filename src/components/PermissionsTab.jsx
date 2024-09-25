@@ -49,7 +49,6 @@ function PermissionsTab() {
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(null);
 
-
   const addSection = () => {
     if (sections.length < 10) {
       const newSection = {
@@ -65,8 +64,14 @@ function PermissionsTab() {
     }
   };
 
+  // const removeSection = (id) => {
+  //   setSections(sections.filter((section) => section.id !== id));
+  // };
+
   const removeSection = (id) => {
-    setSections(sections.filter((section) => section.id !== id));
+    setSections((prevSections) =>
+      prevSections.filter((section) => section.id !== id)
+    );
   };
 
   const clearSection = (id) => {
@@ -80,51 +85,54 @@ function PermissionsTab() {
   console.log(sections, "sections");
 
   const removeMember = (user, sectionIndex) => {
-    console.log("User object received:", user); 
-    if (!user || !user.id) {
+    console.log("User object received:", user);
+    if (!user || !user._id) {
       console.error("Invalid user object:", user);
-      return; 
+      return;
     }
 
     setSections((prevSections) => {
       const updatedSections = [...prevSections];
       updatedSections[sectionIndex].members = updatedSections[
         sectionIndex
-      ].members.filter((member) => member.id !== user.id);
+      ].members.filter((member) => member._id !== user._id);
       return updatedSections;
     });
   };
 
+  //   setErrorMessage("");
 
-  const handleDropdownChange = (sectionId, fieldName, value) => {
-    setErrorMessage("");
+  //   const updatedSections = sections.map((section) => {
+  //     if (section.id === sectionId) {
+  //       return {
+  //         ...section,
+  //         values: {
+  //           ...section.values,
+  //           [fieldName]: value,
+  //         },
+  //       };
+  //     }
+  //     return section;
+  //   });
 
-    const updatedSections = sections.map((section) => {
-      if (section.id === sectionId) {
-        return {
-          ...section,
-          values: {
-            ...section.values,
-            [fieldName]: value,
-          },
-        };
-      }
-      return section;
-    });
+  //   setSections(updatedSections);
+  // };
 
-    setSections(updatedSections);
+  const handleDropdownChange = (sectionId, field, value) => {
+    setSections((prevSections) =>
+      prevSections.map((section) =>
+        section.id === sectionId
+          ? { ...section, values: { ...section.values, [field]: value } }
+          : section
+      )
+    );
   };
-
-
 
   const handleDropdownClick1 = (sectionId, index) => {
     setOpenDropdown(
       openDropdown === `${sectionId}-${index}` ? null : `${sectionId}-${index}`
     );
   };
-
-
-
 
   const handleSearch = async (event) => {
     const query = event.target.value.toLowerCase();
@@ -163,7 +171,6 @@ function PermissionsTab() {
 
         setSearchResults(uniqueFilteredUsers);
 
- 
         if (data.totalPages) {
           setTotalPages(data.totalPages);
         }
@@ -185,16 +192,40 @@ function PermissionsTab() {
       );
 
       if (!memberExists) {
-        const newUser = { ...user, id: user._id || Date.now() }; 
+        const newUser = { ...user, id: user._id || Date.now() };
         updatedSections[sectionIndex].members.push(newUser);
       }
 
       return updatedSections;
     });
 
-    setSearchQuery(""); 
+    setSearchQuery("");
   };
 
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPermissions`,
+  //       {
+  //         method: "GET",
+  //         credentials: "include",
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch policies");
+  //     }
+
+  //     const data = await response.json();
+  //     console.log(data, "data");
+  //     setSavedData(data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching policies:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchPolicies();
+  // }, []);
 
   const fetchPolicies = async () => {
     try {
@@ -212,7 +243,19 @@ function PermissionsTab() {
 
       const data = await response.json();
       console.log(data, "data");
-      setSavedData(data.data);
+
+      // Update sections with fetched data
+      const fetchedSections = data.data.map((policy, index) => ({
+        id: policy._id,
+        values: {
+          documentStore: policy.documentStore,
+          documentLocation: policy.documentLocation,
+          documentName: policy.documentName,
+        },
+        members: policy.revisedPermissionsMembers || [],
+      }));
+
+      setSections(fetchedSections);
     } catch (error) {
       console.error("Error fetching policies:", error);
     }
@@ -222,14 +265,82 @@ function PermissionsTab() {
     fetchPolicies();
   }, []);
 
+  // const handleSave = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const selectedSection = sections[activeSectionIndex];
+
+  //     const originalPermissionsMembers = [
+  //       "66ed58a0cecc698293bf9680",
+  //       "66ed586bcecc698293bf967e",
+  //     ];
+  //     const revisedPermissionsMembers = selectedSection.members.map(
+  //       (member) => member._id
+  //     );
+
+  //     const jsonPayload = {
+  //       documentStore: selectedSection.values.documentStore,
+  //       documentLocation: selectedSection.values.documentLocation,
+  //       documentName: selectedSection.values.documentName,
+  //       originalPermissionsMembers,
+  //       revisedPermissionsMembers,
+  //     };
+
+  //     // console.log(jsonPayload, "jsonPayload");
+
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPermissions`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(jsonPayload),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || "Failed to save members");
+  //     }
+
+  //     const data = await response.json();
+  //     console.log("Successfully saved:", data);
+
+  //     setSuccessMessage("Permissions saved successfully!");
+  //     setIsSuccessModalOpen(true);
+  //     setShowEditMembership(false);
+  //     setErrorMessage("");
+
+  //     await fetchPolicies();
+
+  //     setTimeout(() => {
+  //       setIsSuccessModalOpen(false);
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error saving members:", error);
+  //     setErrorMessage(
+  //       error.message || "An error occurred while saving members."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSave = async () => {
     setLoading(true);
     try {
       const selectedSection = sections[activeSectionIndex];
 
+      const isUpdate =
+        selectedSection &&
+        selectedSection.id &&
+        typeof selectedSection.id === "string";
+
       const originalPermissionsMembers = [
-        "66ed58a0cecc698293bf9680",
-        "66ed586bcecc698293bf967e",
+        "66f1407bf898270f2c443aad",
+        "66f1406af898270f2c443aab",
       ];
       const revisedPermissionsMembers = selectedSection.members.map(
         (member) => member._id
@@ -243,19 +354,20 @@ function PermissionsTab() {
         revisedPermissionsMembers,
       };
 
-      // console.log(jsonPayload, "jsonPayload");
+      const url = isUpdate
+        ? `${BASE_URL}/api/data/policyManagerPermissions/${selectedSection.id}`
+        : `${BASE_URL}/api/data/policyManagerPermissions`;
 
-      const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerPermissions`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(jsonPayload),
-        }
-      );
+      const method = isUpdate ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(jsonPayload),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -263,9 +375,16 @@ function PermissionsTab() {
       }
 
       const data = await response.json();
-      console.log("Successfully saved:", data);
+      console.log(
+        isUpdate ? "Successfully updated:" : "Successfully saved:",
+        data
+      );
 
-      setSuccessMessage("Permissions saved successfully!");
+      setSuccessMessage(
+        isUpdate
+          ? "Permissions updated successfully!"
+          : "Permissions saved successfully!"
+      );
       setIsSuccessModalOpen(true);
       setShowEditMembership(false);
       setErrorMessage("");
@@ -276,16 +395,73 @@ function PermissionsTab() {
         setIsSuccessModalOpen(false);
       }, 2000);
     } catch (error) {
-      console.error("Error saving members:", error);
+      console.error("Error saving/updating members:", error);
       setErrorMessage(
-        error.message || "An error occurred while saving members."
+        error.message || "An error occurred while saving or updating members."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const deletePolicy = async (id) => {
+  const selectedSection = sections[activeSectionIndex];
+  const isUpdate =
+    selectedSection &&
+    selectedSection.id &&
+    typeof selectedSection.id === "string";
+
+  const buttonText = isUpdate ? "Update" : "Save";
+
+  // const handleDelete = async (id) => {
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPermissions/${id}`,
+  //       {
+  //         method: "DELETE",
+  //         credentials: "include",
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to delete section");
+  //     }
+
+  //     console.log(`Section with id ${id} deleted successfully`);
+
+  //     setSections((prevSections) =>
+  //       prevSections.filter((section) => section.id !== id)
+  //     );
+  //   } catch (error) {
+  //     console.error("Error deleting section:", error);
+  //   }
+  // };
+
+  // const handleDelete = async (id) => {
+  //   try {
+  //     // Attempt to delete from the database using the API
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/data/policyManagerPermissions/${id}`,
+  //       {
+  //         method: "DELETE",
+  //         credentials: "include",
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to delete section from the database");
+  //     }
+
+  //     // If successful, remove the section from local state
+  //     removeSection(id);
+  //     console.log(
+  //       `Section with id ${id} deleted from database and local state.`
+  //     );
+  //   } catch (error) {
+  //     console.error("Error deleting section:", error);
+  //   }
+  // };
+
+  const handleDelete = async (id) => {
     try {
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPermissions/${id}`,
@@ -294,33 +470,39 @@ function PermissionsTab() {
           credentials: "include",
         }
       );
-
       if (!response.ok) {
-        throw new Error("Failed to delete the policy");
+        if (response.status === 500) {
+          console.error(
+            "Server error occurred. Removing section from local state."
+          );
+          removeSection(id);
+          return;
+        }
+        throw new Error("Failed to delete section from the database");
       }
 
-
-      fetchPolicies(); 
+      removeSection(id);
+      console.log(
+        `Section with id ${id} deleted from database and local state.`
+      );
     } catch (error) {
-      console.error("Error deleting policy:", error);
+      console.error("Error deleting section:", error);
+      removeSection(id);
     }
   };
-  
+
   const toggleMemberships = () => {
     setShowMembership(!showMembership);
   };
 
-
   const toggleEditMembership = (index) => {
     if (activeSectionIndex === index) {
-      setShowEditMembership(!showEditMembership); 
+      setShowEditMembership(!showEditMembership);
     } else {
       setActiveSectionIndex(index);
-      setShowEditMembership(true); 
+      setShowEditMembership(true);
     }
   };
-
-
 
   const data = {
     documentStore: ["Document Store", "Share Point", "One Drive"],
@@ -730,8 +912,35 @@ function PermissionsTab() {
                                       <div className="flex justify-end gap-4 mt-4 group">
                                         <button
                                           onClick={handleSave}
+                                          className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg"
+                                          disabled={loading}
+                                        >
+                                          {loading ? (
+                                            <FontAwesomeIcon
+                                              icon={faSpinner}
+                                              spin
+                                              className="mr-2"
+                                            />
+                                          ) : (
+                                            <img
+                                              src={iconsmodel}
+                                              alt="iconsmodel"
+                                              className="mr-2 btn-icon"
+                                            />
+                                          )}
+                                          <span>
+                                            {loading
+                                              ? "Saving..."
+                                              : isUpdate
+                                              ? "Save"
+                                              : "Save"}
+                                          </span>
+                                        </button>
+
+                                        {/* <button
+                                          onClick={handleSave}
                                           className="flex items-center bg-[#1B1E26] hover:bg-[#31E48F] text-white px-4 py-2 rounded-lg group-hover:text-white"
-                                          disabled={loading} 
+                                          disabled={loading}
                                         >
                                           {loading ? (
                                             <FontAwesomeIcon
@@ -749,7 +958,32 @@ function PermissionsTab() {
                                           <span>
                                             {loading ? "Saving..." : "Save"}
                                           </span>
-                                        </button>
+                                        </button> */}
+                                        {/* {isEditing === section.id ? (
+                                          <button
+                                            onClick={() =>
+                                              handleUpdate(section.id)
+                                            } 
+                                            className="bg-green-600 hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
+                                          >
+                                            <FontAwesomeIcon
+                                              className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
+                                              icon={faPlus}
+                                            />
+                                          </button>
+                                        ) : (
+                                          <button
+                                            onClick={() =>
+                                              handleEditClick(section.id)
+                                            } 
+                                            className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
+                                          >
+                                            <FontAwesomeIcon
+                                              className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
+                                              icon={faEdit}
+                                            />
+                                          </button>
+                                        )} */}
                                         <button
                                           onClick={() =>
                                             toggleEditMembership(index)
@@ -807,7 +1041,8 @@ function PermissionsTab() {
                           ) : (
                             <button
                               className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
-                              onClick={() => removeSection(section.id)}
+                              // onClick={() => removeSection(section.id)}
+                              onClick={() => handleDelete(section.id)}
                             >
                               <FontAwesomeIcon
                                 className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
@@ -829,188 +1064,6 @@ function PermissionsTab() {
                               </button>
                             </div>
                           )}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-
-                {savedData.map((policy) => (
-                  <tr key={policy._id} className="hover:bg-gray-100">
-                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
-                      {policy.documentStore}
-                    </td>
-                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
-                      {policy.documentLocation}
-                    </td>
-                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] ">
-                      {policy.documentName}
-                    </td>
-
-                    <td
-                      className="px-4  border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
-                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
-                    >
-                      <div className="relative">
-                        <div className="flex  flex-col items-start">
-                          <div className="flex flex-col">
-                            {/* <span className="font-poppins text-base">
-                              Everyone System
-                            </span> */}
-                            <span className="text-white block text-base font-poppins font-semibold">
-                              Vinod@mail.com
-                            </span>
-                            <span className="text-white block text-base font-poppins font-semibold">
-                              Rajat@gmail.com
-                            </span>
-                          </div>
-                          <div className="flex">
-                            <button onClick={toggleMemberships}>
-                              <ThreeDotsButton />
-                            </button>
-                          </div>
-                        </div>
-
-                        {showMembership && (
-                          <>
-                            <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-                            <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
-                              <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
-                                  <span className="text-base font-poppins font-semibold">
-                                    Group Membership
-                                  </span>
-                                  <button
-                                    className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
-                                    onClick={toggleMemberships}
-                                    style={{
-                                      width: "29px",
-                                      height: "29px",
-                                      border: "2px solid #31B47663",
-                                    }}
-                                  >
-                                    &times;
-                                  </button>
-                                </div>
-
-                                <div className="p-4 space-y-4">
-                                  <div className="flex justify-between items-center mb-4">
-                                    <span className="text-white text-sm font-poppins font-medium">
-                                      2 Members
-                                    </span>
-                                  </div>
-                                  <div className="space-y-4">
-                                    <div className="flex ">
-                                      <div
-                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                        // style={{
-                                        //   width: "47px",
-                                        //   height: "47px",
-                                        //   background: "#FFFFFF",
-                                        //   opacity: 1,
-                                        // }}
-                                      >
-                                        <img
-                                          src={userIcon}
-                                          alt="icons"
-                                          style={{
-                                            width: "47px",
-                                            height: "47px",
-                                          }}
-                                        />
-                                      </div>
-                                      <div className="flex flex-col ml-3">
-                                        <span className="text-white block text-base font-poppins font-semibold">
-                                          Vinod Vasudevan
-                                        </span>
-                                        <span className="text-gray-400 text-sm font-poppins font-normal">
-                                          Member{" "}
-                                          <FontAwesomeIcon icon={faAngleDown} />
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="border-t border-gray-600"></div>
-                                    <div className="flex ">
-                                      <div
-                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                        style={{
-                                          width: "47px",
-                                          height: "47px",
-                                          background: "#FFFFFF",
-                                          opacity: 1,
-                                        }}
-                                      >
-                                        <img
-                                          src={userIcon}
-                                          alt="icons"
-                                          style={{
-                                            width: "47px",
-                                            height: "47px",
-                                          }}
-                                        />
-                                      </div>
-                                      <div className="flex flex-col ml-3">
-                                        <span className="text-white block text-base font-poppins font-semibold">
-                                          Rajat Mohanty
-                                        </span>
-                                        <span className="text-gray-400 text-sm font-poppins font-normal">
-                                          Member{" "}
-                                          <FontAwesomeIcon icon={faAngleDown} />
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px]">
-                      {policy.revisedPermissionsMembers.length > 0 ? (
-                        policy.revisedPermissionsMembers.map((member) => (
-                          <div key={member._id}>
-                            {member.name} ({member.email})
-                          </div>
-                        ))
-                      ) : (
-                        <span>No revised members</span>
-                      )}
-                      {/* 
-                      <button
-                        onClick={() => deletePolicy(policy._id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        Delete
-                      </button> */}
-
-                      {/* <button
-                        className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black "
-                        onClick={() => deletePolicy(policy._id)}
-                      >
-                        <FontAwesomeIcon
-                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
-                          icon={faTrash}
-                        />
-                      </button> */}
-                    </td>
-
-                    <td className="relative">
-                      <div
-                        className="absolute bottom-0 right-0 flex justify-end gap-2 min-w-[100px] ifmarginleft"
-                        style={{ marginRight: "17px" }}
-                      >
-                        <div className="flex gap-2">
-                          <button
-                            className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
-                            onClick={() => deletePolicy(policy._id)}
-                          >
-                            <FontAwesomeIcon
-                              className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
-                              icon={faTrash}
-                            />
-                          </button>
                         </div>
                       </div>
                     </td>
