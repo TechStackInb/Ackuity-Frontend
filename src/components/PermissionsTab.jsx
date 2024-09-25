@@ -1003,7 +1003,10 @@ function PermissionsTab() {
                         {isSuccessModalOpen && (
                           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                             <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
-                              <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+                              <h2 className="text-2xl font-poppins font-semibold  text-center text-white">
+                                Confirm Permission Save
+                              </h2>
+                              <h2 className="text-xl font-poppins font-semibold  text-center text-gray-800">
                                 {successMessage.includes("Failed")
                                   ? "Failed"
                                   : "Success"}
