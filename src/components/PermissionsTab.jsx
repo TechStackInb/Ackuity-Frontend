@@ -25,6 +25,7 @@ import { BASE_URL } from "../services/api";
 import CustomDropdown from "./CustomDropdown";
 import CustomDropdwonPermisson from "./CustomDropdwonPermisson";
 import { PolicyContext } from "../contexts/PolicyProvider";
+import ConfirmationModalPermission from "./ConfirmationModalPermission";
 
 function PermissionsTab() {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -40,6 +41,11 @@ function PermissionsTab() {
   const [errorMessage, setErrorMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSectionId, setSelectedSectionId] = useState(null);
+
+  console.log(searchQuery, "searchQuery");
+  console.log(searchResults, "searchResults");
 
   const [sections, setSections] = useState([
     {
@@ -131,6 +137,7 @@ function PermissionsTab() {
   // };
 
   const handleDropdownChange = (sectionId, field, value) => {
+    setErrorMessage("");
     setSections((prevSections) =>
       prevSections.map((section) =>
         section.id === sectionId
@@ -314,11 +321,104 @@ function PermissionsTab() {
   //   }
   // };
 
+  // const handleSave = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const selectedSection = sections[activeSectionIndex];
+
+  //     const isUpdate =
+  //       selectedSection &&
+  //       selectedSection.id &&
+  //       typeof selectedSection.id === "string";
+
+  //     const originalPermissionsMembers = [
+  //       "66f1407bf898270f2c443aad",
+  //       "66f1406af898270f2c443aab",
+  //     ];
+  //     const revisedPermissionsMembers = selectedSection.members.map(
+  //       (member) => member._id
+  //     );
+
+  //     const jsonPayload = {
+  //       documentStore: selectedSection.values.documentStore ,
+  //       documentLocation: selectedSection.values.documentLocation,
+  //       documentName: selectedSection.values.documentName,
+  //       originalPermissionsMembers,
+  //       revisedPermissionsMembers,
+  //     };
+
+  //     const url = isUpdate
+  //       ? `${BASE_URL}/api/data/policyManagerPermissions/${selectedSection.id}`
+  //       : `${BASE_URL}/api/data/policyManagerPermissions`;
+
+  //     const method = isUpdate ? "PATCH" : "POST";
+
+  //     const response = await fetch(url, {
+  //       method,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include",
+  //       body: JSON.stringify(jsonPayload),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || "Failed to save members");
+  //     }
+
+  //     const data = await response.json();
+  //     console.log(
+  //       isUpdate ? "Successfully updated:" : "Successfully saved:",
+  //       data
+  //     );
+
+  //     setSuccessMessage(
+  //       isUpdate
+  //         ? "Permissions saved successfully!"
+  //         : "Permissions saved successfully!"
+  //     );
+  //     setIsSuccessModalOpen(true);
+  //     setShowEditMembership(false);
+  //     setErrorMessage("");
+
+  //     await fetchPolicies();
+
+  //     setTimeout(() => {
+  //       setIsSuccessModalOpen(false);
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Error saving/updating members:", error);
+  //     setErrorMessage(
+  //       error.message || "An error occurred while saving or updating members."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSave = async () => {
+    const selectedSection = sections[activeSectionIndex];
+
+    // Client-side validation: Check if required fields are empty
+    if (!selectedSection.values.documentName) {
+      setErrorMessage("Please fill in the document name.");
+      setLoading(false);
+      return;
+    }
+    if (!selectedSection.values.documentStore) {
+      setErrorMessage("Please fill in the document store.");
+      setLoading(false);
+      return;
+    }
+    if (!selectedSection.values.documentLocation) {
+      setErrorMessage("Please fill in the document location.");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
-      const selectedSection = sections[activeSectionIndex];
-
       const isUpdate =
         selectedSection &&
         selectedSection.id &&
@@ -366,11 +466,7 @@ function PermissionsTab() {
         data
       );
 
-      setSuccessMessage(
-        isUpdate
-          ? "Permissions saved successfully!"
-          : "Permissions saved successfully!"
-      );
+      setSuccessMessage("Permissions saved successfully!");
       setIsSuccessModalOpen(true);
       setShowEditMembership(false);
       setErrorMessage("");
@@ -398,55 +494,6 @@ function PermissionsTab() {
 
   const buttonText = isUpdate ? "Update" : "Save";
 
-  // const handleDelete = async (id) => {
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerPermissions/${id}`,
-  //       {
-  //         method: "DELETE",
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to delete section");
-  //     }
-
-  //     console.log(`Section with id ${id} deleted successfully`);
-
-  //     setSections((prevSections) =>
-  //       prevSections.filter((section) => section.id !== id)
-  //     );
-  //   } catch (error) {
-  //     console.error("Error deleting section:", error);
-  //   }
-  // };
-
-  // const handleDelete = async (id) => {
-  //   try {
-  //     // Attempt to delete from the database using the API
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/data/policyManagerPermissions/${id}`,
-  //       {
-  //         method: "DELETE",
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to delete section from the database");
-  //     }
-
-  //     // If successful, remove the section from local state
-  //     removeSection(id);
-  //     console.log(
-  //       `Section with id ${id} deleted from database and local state.`
-  //     );
-  //   } catch (error) {
-  //     console.error("Error deleting section:", error);
-  //   }
-  // };
-
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
@@ -466,7 +513,6 @@ function PermissionsTab() {
         }
         throw new Error("Failed to delete section from the database");
       }
-
       removeSection(id);
       console.log(
         `Section with id ${id} deleted from database and local state.`
@@ -477,11 +523,30 @@ function PermissionsTab() {
     }
   };
 
+  const handleDeleteClick = (id) => {
+    setSelectedSectionId(id);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedSectionId) {
+      handleDelete(selectedSectionId);
+      setIsModalOpen(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const toggleMemberships = () => {
     setShowMembership(!showMembership);
   };
 
   const toggleEditMembership = (index) => {
+
+    setSearchQuery("");
+    setSearchResults([]);
     if (activeSectionIndex === index) {
       setShowEditMembership(!showEditMembership);
     } else {
@@ -891,9 +956,9 @@ function PermissionsTab() {
                                       ))}
 
                                       {errorMessage && (
-                                        <div className="text-red-500 mb-4">
+                                        <p className="text-red-500">
                                           {errorMessage}
-                                        </div>
+                                        </p>
                                       )}
                                       <div className="flex justify-end gap-4 mt-4 group">
                                         <button
@@ -1031,7 +1096,7 @@ function PermissionsTab() {
                             <button
                               className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black"
                               // onClick={() => removeSection(section.id)}
-                              onClick={() => handleDelete(section.id)}
+                              onClick={() => handleDeleteClick(section.id)}
                             >
                               <FontAwesomeIcon
                                 className="transition ease-out duration-300 hover:transform hover:scale-110 w-5 h-5"
@@ -1060,6 +1125,12 @@ function PermissionsTab() {
                 ))}
               </tbody>
             </table>
+
+            <ConfirmationModalPermission
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              onConfirm={handleConfirmDelete}
+            />
           </div>
         </div>
       </div>
