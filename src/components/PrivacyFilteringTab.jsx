@@ -3,6 +3,7 @@ import {
   faEdit,
   faEraser,
   faPlus,
+  faSpinner,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,6 +35,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const [successMessage, setSuccessMessage] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const topRef = useRef(null);
 
@@ -61,7 +63,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     }
   };
 
-  // Call fetchPolicies after saving policy and also on component mount
   useEffect(() => {
     fetchPolicies(currentPage);
   }, [currentPage]);
@@ -69,10 +70,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const handlePolicyNameChange = (event) => {
     setPolicyName(event.target.value);
   };
-
-  // const handleValueWithChange = (event) => {
-  //   setValueWith(event.target.value);
-  // };
 
   const handleInputChange = (sectionId, key, value) => {
     setSections((prevSections) =>
@@ -95,10 +92,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         documentLocationOptions: policyToEdit.documentLocationOptions,
       });
 
-      // Map the multipleSectionData array to sections
       const sectionsToEdit = policyToEdit.multipleSectionData.map(
         (section, index) => ({
-          id: Date.now() + index, // Use a unique ID for each section
+          id: Date.now() + index,
           values: {
             documentOptions: section.documentNameIf,
             containsOptions: section.classifierContains,
@@ -110,10 +106,10 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         })
       );
 
-      setSections(sectionsToEdit); // Set multiple sections from the data
+      setSections(sectionsToEdit);
 
-      setIsEditMode(true); // Set to edit mode
-      setEditingPolicyId(policyId); // Store the policy ID for updating
+      setIsEditMode(true);
+      setEditingPolicyId(policyId);
     }
   };
 
@@ -284,7 +280,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();
 
-    // Map each section into the multipleSectionData array and filter out empty values
     const multipleSectionData = sections.map((section) => {
       const sectionData = {
         documentNameIf: section.values["documentOptions"] || "",
@@ -295,23 +290,19 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         valueAt: section.values["atOptions"] || "",
       };
 
-      // Remove keys with empty values
       Object.keys(sectionData).forEach(
         (key) => sectionData[key] === "" && delete sectionData[key]
       );
 
       return sectionData;
     });
-
-    // Build the complete policy data object and remove empty values
     const policyData = {
       policyName: trimmedPolicyName,
       documentStoreOptions: selectedOptions["documentStore"] || "",
       documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
-      multipleSectionData, // Use the filtered multipleSectionData array here
+      multipleSectionData,
     };
 
-    // Remove keys with empty values from policyData
     Object.keys(policyData).forEach(
       (key) => policyData[key] === "" && delete policyData[key]
     );
@@ -336,22 +327,18 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
       const result = await response.json();
       console.log("Policy updated successfully:", result);
 
-      // Open success modal
       setSuccessMessage("Policy updated successfully!");
       setIsSuccessModalOpen(true);
 
-      // Fetch updated policies after successful update
       await fetchPolicies(currentPage);
 
-      // Reset modal fields
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
       setPolicyName("");
 
-      // Close the success modal after 2 seconds
       setTimeout(() => {
         setIsSuccessModalOpen(false);
-        closeModal(); // Close the main modal if open
+        closeModal();
       }, 2000);
     } catch (error) {
       console.error("Error updating policy:", error);
@@ -378,7 +365,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         const result = await response.json();
         console.log("Policy deleted successfully:", result);
 
-        // Fetch updated policies after successful delete
         await fetchPolicies(currentPage);
       } catch (error) {
         console.error("Error deleting policy:", error);
@@ -590,6 +576,8 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     try {
       const trimmedPolicyName = policyName.trim();
 
+      setLoading(true);
+
       // Create a list to store all sections data, but remove empty values
       const multipleSectionData = sections.map((section) => {
         const sectionData = {
@@ -601,7 +589,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
           valueAt: section.values["atOptions"] || "",
         };
 
-        // Remove keys with empty values
         Object.keys(sectionData).forEach(
           (key) => sectionData[key] === "" && delete sectionData[key]
         );
@@ -609,16 +596,14 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         return sectionData;
       });
 
-      // Build the complete policy data object
       const policyData = {
         policyName: trimmedPolicyName,
         documentStoreOptions: selectedOptions["documentStore"] || "",
         documentLocationOptions:
           selectedOptions["documentLocationOptions"] || "",
-        multipleSectionData, // Add filtered section data here
+        multipleSectionData,
       };
 
-      // Remove keys with empty values from policyData
       Object.keys(policyData).forEach(
         (key) => policyData[key] === "" && delete policyData[key]
       );
@@ -644,21 +629,20 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
       setIsSaveSuccessful(true);
 
-      // Clear all dropdown selections and sections
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
       setPolicyName("");
 
-      // Fetch updated policies after successful save
       await fetchPolicies();
 
-      // Automatically close modal after 2 seconds
       setTimeout(() => {
         setIsSaveSuccessful(false);
         closeModal();
       }, 2000);
     } catch (error) {
       console.error("Error saving policies:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1184,7 +1168,18 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     className="bg-green-600 hover:bg-green-700 text-white py-2 px-5 rounded-lg shadow-md transition-all duration-200 ease-in-out"
                     onClick={confirmSavePolicy}
                   >
-                    Confirm
+                    {loading ? (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faSpinner}
+                          spin
+                          className="mr-2"
+                        />
+                        Loading...
+                      </>
+                    ) : (
+                      "Confirm"
+                    )}
                   </button>
                 </div>
               </>
