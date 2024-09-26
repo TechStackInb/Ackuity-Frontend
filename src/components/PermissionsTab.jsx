@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-import PrivacyCustomDropdown from "./PrivacyCustomDropdown";
-import ThreeDotsButton from "./ThreeDotsButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useContext, useEffect, useState } from 'react';
+import PrivacyCustomDropdown from './PrivacyCustomDropdown';
+import ThreeDotsButton from './ThreeDotsButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEdit,
   faDownload,
@@ -18,14 +18,14 @@ import {
   faEraser,
   faSpinner,
   faDeleteLeft,
-} from "@fortawesome/free-solid-svg-icons";
-import userIcon from "../assets/usericon.svg";
-import iconsmodel from "../assets/save.svg";
-import { BASE_URL } from "../services/api";
-import CustomDropdown from "./CustomDropdown";
-import CustomDropdwonPermisson from "./CustomDropdwonPermisson";
-import { PolicyContext } from "../contexts/PolicyProvider";
-import ConfirmationModalPermission from "./ConfirmationModalPermission";
+} from '@fortawesome/free-solid-svg-icons';
+import userIcon from '../assets/usericon.svg';
+import iconsmodel from '../assets/save.svg';
+import { BASE_URL } from '../services/api';
+import CustomDropdown from './CustomDropdown';
+import CustomDropdwonPermisson from './CustomDropdwonPermisson';
+import { PolicyContext } from '../contexts/PolicyProvider';
+import ConfirmationModalPermission from './ConfirmationModalPermission';
 
 function PermissionsTab() {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -34,11 +34,11 @@ function PermissionsTab() {
   const [showEditMembership, setShowEditMembership] = useState(false);
   const [hoveredAddIndex, setHoveredAddIndex] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
   const [savedData, setSavedData] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,9 +51,9 @@ function PermissionsTab() {
     {
       id: Date.now(),
       values: {
-        documentStore: "",
-        documentLocation: "",
-        documentName: "",
+        documentStore: '',
+        documentLocation: '',
+        documentName: '',
       },
       members: [],
     },
@@ -72,9 +72,9 @@ function PermissionsTab() {
       const newSection = {
         id: Date.now() + sections.length + 1,
         values: {
-          documentStore: "",
-          documentLocation: "",
-          documentName: "",
+          documentStore: '',
+          documentLocation: '',
+          documentName: '',
         },
         members: [],
       };
@@ -100,12 +100,12 @@ function PermissionsTab() {
     );
   };
 
-  console.log(sections, "sections");
+  console.log(sections, 'sections');
 
   const removeMember = (user, sectionIndex) => {
-    console.log("User object received:", user);
+    console.log('User object received:', user);
     if (!user || !user._id) {
-      console.error("Invalid user object:", user);
+      console.error('Invalid user object:', user);
       return;
     }
 
@@ -137,7 +137,7 @@ function PermissionsTab() {
   // };
 
   const handleDropdownChange = (sectionId, field, value) => {
-    setErrorMessage("");
+    setErrorMessage('');
     setSections((prevSections) =>
       prevSections.map((section) =>
         section.id === sectionId
@@ -162,16 +162,16 @@ function PermissionsTab() {
         const response = await fetch(
           `${BASE_URL}/api/data/members?query=${query}&page=${currentPage}&limit=100`,
           {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
-            credentials: "include",
+            credentials: 'include',
           }
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch members");
+          throw new Error('Failed to fetch members');
         }
 
         const data = await response.json();
@@ -194,7 +194,7 @@ function PermissionsTab() {
           setTotalPages(data.totalPages);
         }
       } catch (error) {
-        console.error("Error fetching members:", error);
+        console.error('Error fetching members:', error);
       }
     } else {
       setSearchResults([]);
@@ -218,7 +218,7 @@ function PermissionsTab() {
       return updatedSections;
     });
 
-    setSearchQuery("");
+    setSearchQuery('');
   };
 
   const fetchPolicies = async () => {
@@ -226,26 +226,25 @@ function PermissionsTab() {
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPermissions`,
         {
-          method: "GET",
-          credentials: "include",
+          method: 'GET',
+          credentials: 'include',
         }
       );
-  
+
       if (!response.ok) {
-        throw new Error("Failed to fetch policies");
+        throw new Error('Failed to fetch policies');
       }
-  
+
       const data = await response.json();
-      console.log(data, "data");
-  
+      console.log(data, 'data');
+
       if (data.data.length === 0) {
-    
         const emptySection = {
           id: Date.now(),
           values: {
-            documentStore: "",
-            documentLocation: "",
-            documentName: "",
+            documentStore: '',
+            documentLocation: '',
+            documentName: '',
           },
           members: [],
         };
@@ -260,19 +259,19 @@ function PermissionsTab() {
           },
           members: policy.revisedPermissionsMembers || [],
         }));
-  
+
         setSections(fetchedSections);
       }
     } catch (error) {
-      console.error("Error fetching policies:", error);
+      console.error('Error fetching policies:', error);
     }
   };
-  
 
   useEffect(() => {
     fetchPolicies();
   }, []);
 
+  // console.log(sections, 'sections');
   // const handleSave = async () => {
   //   setLoading(true);
   //   try {
@@ -417,17 +416,17 @@ function PermissionsTab() {
 
     // Client-side validation: Check if required fields are empty
     if (!selectedSection.values.documentName) {
-      setErrorMessage("Please fill in the document name.");
+      setErrorMessage('Please fill in the document name.');
       setLoading(false);
       return;
     }
     if (!selectedSection.values.documentStore) {
-      setErrorMessage("Please fill in the document store.");
+      setErrorMessage('Please fill in the document store.');
       setLoading(false);
       return;
     }
     if (!selectedSection.values.documentLocation) {
-      setErrorMessage("Please fill in the document location.");
+      setErrorMessage('Please fill in the document location.');
       setLoading(false);
       return;
     }
@@ -437,11 +436,11 @@ function PermissionsTab() {
       const isUpdate =
         selectedSection &&
         selectedSection.id &&
-        typeof selectedSection.id === "string";
+        typeof selectedSection.id === 'string';
 
       const originalPermissionsMembers = [
-        "66f1407bf898270f2c443aad",
-        "66f1406af898270f2c443aab",
+        '66f1407bf898270f2c443aad',
+        '66f1406af898270f2c443aab',
       ];
       const revisedPermissionsMembers = selectedSection.members.map(
         (member) => member._id
@@ -459,32 +458,32 @@ function PermissionsTab() {
         ? `${BASE_URL}/api/data/policyManagerPermissions/${selectedSection.id}`
         : `${BASE_URL}/api/data/policyManagerPermissions`;
 
-      const method = isUpdate ? "PATCH" : "POST";
+      const method = isUpdate ? 'PATCH' : 'POST';
 
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
+        credentials: 'include',
         body: JSON.stringify(jsonPayload),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to save members");
+        throw new Error(errorData.message || 'Failed to save members');
       }
 
       const data = await response.json();
       console.log(
-        isUpdate ? "Successfully updated:" : "Successfully saved:",
+        isUpdate ? 'Successfully updated:' : 'Successfully saved:',
         data
       );
 
-      setSuccessMessage("Permissions saved successfully!");
+      setSuccessMessage('Permissions saved successfully!');
       setIsSuccessModalOpen(true);
       setShowEditMembership(false);
-      setErrorMessage("");
+      setErrorMessage('');
 
       await fetchPolicies();
 
@@ -492,9 +491,9 @@ function PermissionsTab() {
         setIsSuccessModalOpen(false);
       }, 2000);
     } catch (error) {
-      console.error("Error saving/updating members:", error);
+      console.error('Error saving/updating members:', error);
       setErrorMessage(
-        error.message || "An error occurred while saving or updating members."
+        error.message || 'An error occurred while saving or updating members.'
       );
     } finally {
       setLoading(false);
@@ -505,35 +504,35 @@ function PermissionsTab() {
   const isUpdate =
     selectedSection &&
     selectedSection.id &&
-    typeof selectedSection.id === "string";
+    typeof selectedSection.id === 'string';
 
-  const buttonText = isUpdate ? "Update" : "Save";
+  const buttonText = isUpdate ? 'Update' : 'Save';
 
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPermissions/${id}`,
         {
-          method: "DELETE",
-          credentials: "include",
+          method: 'DELETE',
+          credentials: 'include',
         }
       );
       if (!response.ok) {
         if (response.status === 500) {
           console.error(
-            "Server error occurred. Removing section from local state."
+            'Server error occurred. Removing section from local state.'
           );
           removeSection(id);
           return;
         }
-        throw new Error("Failed to delete section from the database");
+        throw new Error('Failed to delete section from the database');
       }
       removeSection(id);
       console.log(
         `Section with id ${id} deleted from database and local state.`
       );
     } catch (error) {
-      console.error("Error deleting section:", error);
+      console.error('Error deleting section:', error);
       removeSection(id);
     }
   };
@@ -559,8 +558,7 @@ function PermissionsTab() {
   };
 
   const toggleEditMembership = (index) => {
-
-    setSearchQuery("");
+    setSearchQuery('');
     setSearchResults([]);
     if (activeSectionIndex === index) {
       setShowEditMembership(!showEditMembership);
@@ -571,18 +569,18 @@ function PermissionsTab() {
   };
 
   const data = {
-    documentStore: ["Document Store", "Share Point", "One Drive"],
+    documentStore: ['Document Store', 'Share Point', 'One Drive'],
     documentLocation: [
-      "http://acmecorp.sharepoint.com/sites/operations",
-      "http://acmecorp.sharepoint.com/sites/marketing",
-      "http://acmecorp.sharepoint.com/sites/sales",
+      'http://acmecorp.sharepoint.com/sites/operations',
+      'http://acmecorp.sharepoint.com/sites/marketing',
+      'http://acmecorp.sharepoint.com/sites/sales',
     ],
     documentName: [
-      "Document1",
-      "Document2",
-      "Document3",
-      "Document4",
-      "Document5",
+      'Document1',
+      'Document2',
+      'Document3',
+      'Document4',
+      'Document5',
     ],
   };
 
@@ -619,7 +617,7 @@ function PermissionsTab() {
                   <tr key={section.id}>
                     <td
                       className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] "
-                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                      style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
                     >
                       <CustomDropdwonPermisson
                         options={data.documentStore || []}
@@ -628,11 +626,11 @@ function PermissionsTab() {
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 0)
                         }
-                        selectedOption={section.values.documentStore || ""}
+                        selectedOption={section.values.documentStore || ''}
                         setSelectedOption={(value) =>
                           handleDropdownChange(
                             section.id,
-                            "documentStore",
+                            'documentStore',
                             value
                           )
                         }
@@ -640,7 +638,7 @@ function PermissionsTab() {
                     </td>
                     <td
                       className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[750px] md:w-[600px] sm:w-[450px] "
-                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                      style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
                     >
                       <CustomDropdwonPermisson
                         options={data.documentLocation || []}
@@ -649,11 +647,11 @@ function PermissionsTab() {
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 1)
                         }
-                        selectedOption={section.values.documentLocation || ""}
+                        selectedOption={section.values.documentLocation || ''}
                         setSelectedOption={(value) =>
                           handleDropdownChange(
                             section.id,
-                            "documentLocation",
+                            'documentLocation',
                             value
                           )
                         }
@@ -662,7 +660,7 @@ function PermissionsTab() {
                     <td
                       className="px-4  border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[200px] md:w-[180px] sm:w-[150px]"
                       // width={"200px"}
-                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                      style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
                     >
                       <CustomDropdwonPermisson
                         options={data.documentName || []}
@@ -671,11 +669,11 @@ function PermissionsTab() {
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 2)
                         }
-                        selectedOption={section.values.documentName || ""}
+                        selectedOption={section.values.documentName || ''}
                         setSelectedOption={(value) =>
                           handleDropdownChange(
                             section.id,
-                            "documentName",
+                            'documentName',
                             value
                           )
                         }
@@ -683,7 +681,7 @@ function PermissionsTab() {
                     </td>
                     <td
                       className="px-4  border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
-                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                      style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
                     >
                       <div className="relative">
                         <div className="flex  flex-col items-start">
@@ -718,9 +716,9 @@ function PermissionsTab() {
                                     className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
                                     onClick={toggleMemberships}
                                     style={{
-                                      width: "29px",
-                                      height: "29px",
-                                      border: "2px solid #31B47663",
+                                      width: '29px',
+                                      height: '29px',
+                                      border: '2px solid #31B47663',
                                     }}
                                   >
                                     &times;
@@ -748,8 +746,8 @@ function PermissionsTab() {
                                           src={userIcon}
                                           alt="icons"
                                           style={{
-                                            width: "47px",
-                                            height: "47px",
+                                            width: '47px',
+                                            height: '47px',
                                           }}
                                         />
                                       </div>
@@ -758,7 +756,7 @@ function PermissionsTab() {
                                           Vinod Vasudevan
                                         </span>
                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                          Member{" "}
+                                          Member{' '}
                                           <FontAwesomeIcon icon={faAngleDown} />
                                         </span>
                                       </div>
@@ -768,9 +766,9 @@ function PermissionsTab() {
                                       <div
                                         className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
                                         style={{
-                                          width: "47px",
-                                          height: "47px",
-                                          background: "#FFFFFF",
+                                          width: '47px',
+                                          height: '47px',
+                                          background: '#FFFFFF',
                                           opacity: 1,
                                         }}
                                       >
@@ -778,8 +776,8 @@ function PermissionsTab() {
                                           src={userIcon}
                                           alt="icons"
                                           style={{
-                                            width: "47px",
-                                            height: "47px",
+                                            width: '47px',
+                                            height: '47px',
                                           }}
                                         />
                                       </div>
@@ -788,7 +786,7 @@ function PermissionsTab() {
                                           Rajat Mohanty
                                         </span>
                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                          Member{" "}
+                                          Member{' '}
                                           <FontAwesomeIcon icon={faAngleDown} />
                                         </span>
                                       </div>
@@ -803,7 +801,7 @@ function PermissionsTab() {
                     </td>
                     <td
                       className="px-4  border border-customBorderColor text-customWhite font-poppins bg-[#000000]"
-                      style={{ paddingTop: "3rem", paddingBottom: "7rem" }}
+                      style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
                     >
                       <div className="relative">
                         <div>
@@ -854,9 +852,9 @@ function PermissionsTab() {
                                           toggleEditMembership(index)
                                         } // Close modal for this section
                                         style={{
-                                          width: "29px",
-                                          height: "29px",
-                                          border: "2px solid #31B47663",
+                                          width: '29px',
+                                          height: '29px',
+                                          border: '2px solid #31B47663',
                                         }}
                                       >
                                         &times;
@@ -875,8 +873,8 @@ function PermissionsTab() {
                                                   src={userIcon}
                                                   alt="icons"
                                                   style={{
-                                                    width: "47px",
-                                                    height: "47px",
+                                                    width: '47px',
+                                                    height: '47px',
                                                   }}
                                                 />
                                               </div>
@@ -885,7 +883,7 @@ function PermissionsTab() {
                                                   {member.name}
                                                 </span>
                                                 <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                  Member{" "}
+                                                  Member{' '}
                                                   <FontAwesomeIcon
                                                     icon={faAngleDown}
                                                   />
@@ -895,10 +893,10 @@ function PermissionsTab() {
                                             <button
                                               className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
                                               style={{
-                                                width: "29px",
-                                                height: "29px",
-                                                background: "#FFFFFF00",
-                                                border: "2px solid #31B47663",
+                                                width: '29px',
+                                                height: '29px',
+                                                background: '#FFFFFF00',
+                                                border: '2px solid #31B47663',
                                               }}
                                               onClick={() =>
                                                 removeMember(
@@ -935,8 +933,8 @@ function PermissionsTab() {
                                               src={userIcon}
                                               className="text-[#31B476]"
                                               style={{
-                                                width: "29px",
-                                                height: "29px",
+                                                width: '29px',
+                                                height: '29px',
                                               }}
                                               alt="User Icon"
                                             />
@@ -947,10 +945,10 @@ function PermissionsTab() {
                                           <button
                                             className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
                                             style={{
-                                              width: "29px",
-                                              height: "29px",
-                                              background: "#FFFFFF00",
-                                              border: "2px solid #31B47663",
+                                              width: '29px',
+                                              height: '29px',
+                                              background: '#FFFFFF00',
+                                              border: '2px solid #31B47663',
                                             }}
                                             onClick={() =>
                                               addMember(
@@ -996,10 +994,10 @@ function PermissionsTab() {
                                           )}
                                           <span>
                                             {loading
-                                              ? "Saving..."
+                                              ? 'Saving...'
                                               : isUpdate
-                                              ? "Save"
-                                              : "Save"}
+                                              ? 'Save'
+                                              : 'Save'}
                                           </span>
                                         </button>
 
@@ -1073,15 +1071,15 @@ function PermissionsTab() {
                                 Confirm Permission Save
                               </h2>
                               <h2 className="text-xl font-poppins font-semibold  text-center text-gray-800">
-                                {successMessage.includes("Failed")
-                                  ? "Failed"
-                                  : "Success"}
+                                {successMessage.includes('Failed')
+                                  ? 'Failed'
+                                  : 'Success'}
                               </h2>
                               <p
                                 className={
-                                  successMessage.includes("Failed")
-                                    ? "text-red-500 text-center"
-                                    : "text-green-500 text-center"
+                                  successMessage.includes('Failed')
+                                    ? 'text-red-500 text-center'
+                                    : 'text-green-500 text-center'
                                 }
                               >
                                 {successMessage}
@@ -1094,7 +1092,7 @@ function PermissionsTab() {
                     <td className="relative">
                       <div
                         className="absolute bottom-0 right-0 flex justify-end gap-2 min-w-[100px] ifmarginleft"
-                        style={{ marginRight: "17px" }}
+                        style={{ marginRight: '17px' }}
                       >
                         <div className="flex gap-2">
                           {sections.length === 1 ? (
