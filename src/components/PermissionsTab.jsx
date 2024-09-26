@@ -44,8 +44,8 @@ function PermissionsTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState(null);
 
-  console.log(searchQuery, "searchQuery");
-  console.log(searchResults, "searchResults");
+  // console.log(searchQuery, "searchQuery");
+  // console.log(searchResults, "searchResults");
 
   const [sections, setSections] = useState([
     {
@@ -230,29 +230,44 @@ function PermissionsTab() {
           credentials: "include",
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Failed to fetch policies");
       }
-
+  
       const data = await response.json();
       console.log(data, "data");
-
-      const fetchedSections = data.data.map((policy, index) => ({
-        id: policy._id,
-        values: {
-          documentStore: policy.documentStore,
-          documentLocation: policy.documentLocation,
-          documentName: policy.documentName,
-        },
-        members: policy.revisedPermissionsMembers || [],
-      }));
-
-      setSections(fetchedSections);
+  
+      if (data.data.length === 0) {
+    
+        const emptySection = {
+          id: Date.now(),
+          values: {
+            documentStore: "",
+            documentLocation: "",
+            documentName: "",
+          },
+          members: [],
+        };
+        setSections([emptySection]);
+      } else {
+        const fetchedSections = data.data.map((policy) => ({
+          id: policy._id,
+          values: {
+            documentStore: policy.documentStore,
+            documentLocation: policy.documentLocation,
+            documentName: policy.documentName,
+          },
+          members: policy.revisedPermissionsMembers || [],
+        }));
+  
+        setSections(fetchedSections);
+      }
     } catch (error) {
       console.error("Error fetching policies:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchPolicies();
