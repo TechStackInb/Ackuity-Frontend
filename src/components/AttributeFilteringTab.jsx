@@ -3,6 +3,7 @@ import {
   faEdit,
   faEraser,
   faPlus,
+  faSpinner,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,9 +35,10 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const topRef = useRef(null);
 
-  // Function to fetch policies
   const fetchPolicies = async (page = 1) => {
     try {
       const response = await fetch(
@@ -62,79 +64,13 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
 
   // console.log(policies, "policies");
 
-  // Call fetchPolicies after saving policy and also on component mount
   useEffect(() => {
     fetchPolicies(currentPage);
   }, [currentPage]);
 
-  // const handlePolicyNameChange = (event) => {
-  //   setPolicyName(event.target.value.trim());
-  // };
-
   const handlePolicyNameChange = (e) => {
     setPolicyName(e.target.value);
   };
-
-  // const openEditModal = (policyId) => {
-  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   const policyToEdit = policies.find((policy) => policy._id === policyId);
-
-  //   if (policyToEdit) {
-  //     setPolicyName(policyToEdit.policyName);
-  //     setSelectedOptions({
-  //       documentStore: policyToEdit.documentStoreOptions,
-  //       documentLocationOptions: policyToEdit.documentLocationOptions,
-  //     });
-
-  //     setSections([
-  //       {
-  //         id: Date.now(),
-  //         values: {
-  //           documentOptions: policyToEdit.documentNameIf,
-  //           containsOptions: policyToEdit.classifierContains,
-  //           withOptions: policyToEdit.valueWith,
-  //           thenOptions: policyToEdit.documentNameThen,
-  //           roleOptions: policyToEdit.classifierRole,
-  //           atOptions: policyToEdit.valueAt,
-  //         },
-  //       },
-  //     ]);
-
-  //     setIsEditMode(true); // Set to edit mode
-  //     setEditingPolicyId(policyId); // Store the policy ID for updating
-  //   }
-  // };
-
-  // const openEditModal = (policyId) => {
-  //   // Find the policy with the given ID
-  //   const policyToEdit = policies.find((policy) => policy._id === policyId);
-
-  //   if (policyToEdit) {
-  //     setPolicyName(policyToEdit.policyName);
-  //     setSelectedOptions({
-  //       documentStore: policyToEdit.documentStoreOptions,
-  //       documentLocationOptions: policyToEdit.documentLocationOptions,
-  //     });
-
-  //     setSections([
-  //       {
-  //         id: Date.now(),
-  //         values: {
-  //           documentOptions: policyToEdit.documentOptions,
-  //           containsOptions: policyToEdit.containsOptions,
-  //           withOptions: policyToEdit.withOptions,
-  //           thenOptions: policyToEdit.thenOptions,
-  //           roleOptions: policyToEdit.roleOptions,
-  //           atOptions: policyToEdit.atOptions,
-  //         },
-  //       },
-  //     ]);
-
-  //     setIsEditMode(true);
-  //     setEditingPolicyId(policyId);
-  //     setIsEditModalOpen(true);
-  //   }
-  // };
 
   const openEditModal = (policyId) => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -147,10 +83,9 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
         documentLocationOptions: policyToEdit.documentLocationOptions,
       });
 
-      // Map the multipleSectionData array to sections
       const sectionsToEdit = policyToEdit.multipleSectionData.map(
         (section, index) => ({
-          id: Date.now() + index, // Use a unique ID for each section
+          id: Date.now() + index,
           values: {
             documentOptions: section.documentNameIf,
             containsOptions: section.classifierContains,
@@ -162,10 +97,10 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
         })
       );
 
-      setSections(sectionsToEdit); // Set multiple sections from the data
+      setSections(sectionsToEdit);
 
-      setIsEditMode(true); // Set to edit mode
-      setEditingPolicyId(policyId); // Store the policy ID for updating
+      setIsEditMode(true);
+      setEditingPolicyId(policyId);
     }
   };
 
@@ -305,7 +240,6 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   const handleUpdatePolicy = async () => {
     const trimmedPolicyName = policyName.trim();
 
-    // Map each section into the multipleSectionData array and filter out empty values
     const multipleSectionData = sections.map((section) => {
       const sectionData = {
         documentNameIf: section.values["documentOptions"] || "",
@@ -316,7 +250,6 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
         valueAt: section.values["atOptions"] || "",
       };
 
-      // Remove keys with empty values
       Object.keys(sectionData).forEach(
         (key) => sectionData[key] === "" && delete sectionData[key]
       );
@@ -324,15 +257,13 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       return sectionData;
     });
 
-    // Build the complete policy data object and filter out empty values
     const policyData = {
       policyName: trimmedPolicyName,
       documentStoreOptions: selectedOptions["documentStore"] || "",
       documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
-      multipleSectionData, // Use the multipleSectionData array here
+      multipleSectionData,
     };
 
-    // Remove keys with empty values from policyData
     Object.keys(policyData).forEach(
       (key) => policyData[key] === "" && delete policyData[key]
     );
@@ -357,22 +288,18 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       const result = await response.json();
       console.log("Policy updated successfully:", result);
 
-      // Open success modal
       setSuccessMessage("Policy updated successfully!");
       setIsSuccessModalOpen(true);
 
-      // Fetch updated policies after successful update
       await fetchPolicies(currentPage);
 
-      // Reset modal fields
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
       setPolicyName("");
 
-      // Close the success modal after 2 seconds
       setTimeout(() => {
         setIsSuccessModalOpen(false);
-        closeModal(); // Close the main modal if open
+        closeModal();
       }, 2000);
     } catch (error) {
       console.error("Error updating policy:", error);
@@ -399,7 +326,6 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
         const result = await response.json();
         console.log("Policy deleted successfully:", result);
 
-        // Fetch updated policies after successful delete
         await fetchPolicies(currentPage);
       } catch (error) {
         console.error("Error deleting policy:", error);
@@ -689,8 +615,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   const confirmSavePolicy = async () => {
     try {
       const trimmedPolicyName = policyName.trim();
-
-      // Create a list to store all sections data and filter out empty values
+      setLoading(true);
       const multipleSectionData = sections.map((section) => {
         const sectionData = {
           documentNameIf: section.values["documentOptions"] || "",
@@ -759,6 +684,8 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       }, 2000);
     } catch (error) {
       console.error("Error saving policies:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1243,7 +1170,18 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                     className="bg-green-600 hover:bg-green-700 text-white py-2 px-5 rounded-lg shadow-md transition-all duration-200 ease-in-out"
                     onClick={confirmSavePolicy}
                   >
-                    Confirm
+                    {loading ? (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faSpinner}
+                          spin
+                          className="mr-2"
+                        />
+                        Loading...
+                      </>
+                    ) : (
+                      "Confirm"
+                    )}
                   </button>
                 </div>
               </>

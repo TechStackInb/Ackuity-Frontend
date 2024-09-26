@@ -11,6 +11,7 @@ import {
   faPlus,
   faPlusMinus,
   faSearch,
+  faSpinner,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -94,6 +95,8 @@ const FunctionCalling = () => {
   const [membersBySection, setMembersBySection] = useState([[], []]);
   const [openMembershipIndex, setOpenMembershipIndex] = useState(null);
   const [openEditMembershipIndex, setOpeneditMembershipIndex] = useState(null);
+
+  const [loading, setLoading] = useState(false);
 
   const availableUsers = [
     "Rajat Mohanty",
@@ -506,16 +509,12 @@ const FunctionCalling = () => {
       (member) => member._id
     );
 
-    // console.log(configurePermissionsReadRevised,configurePermissionsReadWriteRevised,configurePermissionsReadExisting,configurePermissionsReadWriteExisting)
-
     const functionCallingPlusData = sections.map((section) => ({
       actionOnDataField: section.values["actionOnDataField"] || "",
       actionOnPermissionReadExistingMember,
       actionOnPermissionReadRevisedMember,
       actionOnPermissionReadorWriteExistingMember,
       actionOnPermissionReadorWriteRevisedMember,
-      // actionOnPrivacyFilteringCategory:
-      //   section.values["privacyValueOption"] || "",
       actionOnPrivacyFilteringAction:
         section.values["privacyActionOption"] || "",
       actionOnPrivacyFilteringTransformValue: "Transformation privacy" || "",
@@ -543,9 +542,8 @@ const FunctionCalling = () => {
       functionCallingPlusData,
     };
 
-    // console.log(postData, "postData");
-
     try {
+      setLoading(true);
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerFunctionCalling`,
         {
@@ -598,8 +596,106 @@ const FunctionCalling = () => {
     } catch (error) {
       console.error("Error saving policy:", error);
       setIsSaveSuccessful(false);
+    } finally {
+      setLoading(false);
     }
   };
+
+  // const handleEditButtonClick = async (policyId) => {
+  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   setIsSaveSuccessful(false);
+
+  //   const policyToEdit = tableData.find((policy) => policy._id === policyId);
+  //   if (policyToEdit) {
+  //     setPolicyName(policyToEdit.policyName);
+  //     setSelectedOptions({
+  //       netSales: policyToEdit.query,
+  //       targetLocation: policyToEdit.targetApplication,
+  //       genAiApp: policyToEdit.genAiApp,
+  //       selectApiName: policyToEdit.selectApiName,
+  //     });
+  //     setDescription(policyToEdit.selectApiDescription);
+
+  //     setDataFields(
+  //       policyToEdit.selectApiDataFields.reduce((acc, field) => {
+  //         acc[field.label] = field.isChecked;
+  //         return acc;
+  //       }, {})
+  //     );
+
+  //     const memberIds = [
+  //       ...new Set(
+  //         policyToEdit.functionCallingPlusData.flatMap((section) => [
+  //           ...section.actionOnPermissionReadRevisedMember,
+  //           ...section.actionOnPermissionReadorWriteRevisedMember,
+  //         ])
+  //       ),
+  //     ];
+
+  //     if (memberIds.length > 0) {
+  //       const queryParams = new URLSearchParams({
+  //         ids: memberIds.join(","),
+  //       }).toString();
+
+  //       try {
+  //         const response = await fetch(
+  //           `${BASE_URL}/api/data/members?${queryParams}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //             credentials: "include",
+  //           }
+  //         );
+
+  //         const memberData = await response.json();
+
+  //         const readMembers = memberData.data.filter((member) =>
+  //           policyToEdit.functionCallingPlusData.some((section) =>
+  //             section.actionOnPermissionReadRevisedMember.includes(member._id)
+  //           )
+  //         );
+
+  //         const readWriteMembers = memberData.data.filter((member) =>
+  //           policyToEdit.functionCallingPlusData.some((section) =>
+  //             section.actionOnPermissionReadorWriteRevisedMember.includes(
+  //               member._id
+  //             )
+  //           )
+  //         );
+
+  //         setMembersBySection([readMembers, readWriteMembers]);
+  //       } catch (error) {
+  //         console.error("Error fetching members:", error);
+  //       }
+  //     } else {
+  //       console.log("No members found in the permission fields.");
+  //     }
+
+  //     const sectionsData = policyToEdit.functionCallingPlusData.map(
+  //       (section, index) => ({
+  //         id: Date.now() + index,
+  //         values: {
+  //           actionOnDataField: section.actionOnDataField,
+  //           privacyActionOption: section.actionOnPrivacyFilteringAction,
+  //           actionOnPrivacyFilteringTransformValue:
+  //             section.actionOnPrivacyFilteringTransformValue,
+  //           attributeOption: section.actionOnAttributeFilteringAttribute,
+  //           attributeValueOption: section.actionOnAttributeFilteringValue,
+  //           attributeActionOption: section.actionOnAttributeFilteringAction,
+  //           actionOnAttributeFilteringTransformValue:
+  //             section.actionOnAttributeFilteringTransformValue,
+  //         },
+  //       })
+  //     );
+
+  //     setSections(sectionsData);
+  //     setPolicyId(policyId);
+  //   } else {
+  //     console.error("Policy not found with ID:", policyId);
+  //   }
+  // };
 
   const handleEditButtonClick = async (policyId) => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -607,7 +703,6 @@ const FunctionCalling = () => {
 
     const policyToEdit = tableData.find((policy) => policy._id === policyId);
     if (policyToEdit) {
-      // Set policy data
       setPolicyName(policyToEdit.policyName);
       setSelectedOptions({
         netSales: policyToEdit.query,
@@ -624,55 +719,15 @@ const FunctionCalling = () => {
         }, {})
       );
 
-      const memberIds = [
-        ...new Set(
-          policyToEdit.functionCallingPlusData.flatMap((section) => [
-            ...section.actionOnPermissionReadRevisedMember,
-            ...section.actionOnPermissionReadorWriteRevisedMember,
-          ])
-        ),
-      ];
+      const readMembers = policyToEdit.functionCallingPlusData.flatMap(
+        (section) => section.actionOnPermissionReadRevisedMember
+      );
 
-      if (memberIds.length > 0) {
-        const queryParams = new URLSearchParams({
-          ids: memberIds.join(","),
-        }).toString();
+      const readWriteMembers = policyToEdit.functionCallingPlusData.flatMap(
+        (section) => section.actionOnPermissionReadorWriteRevisedMember
+      );
 
-        try {
-          const response = await fetch(
-            `${BASE_URL}/api/data/members?${queryParams}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              credentials: "include",
-            }
-          );
-
-          const memberData = await response.json();
-
-          const readMembers = memberData.data.filter((member) =>
-            policyToEdit.functionCallingPlusData.some((section) =>
-              section.actionOnPermissionReadRevisedMember.includes(member._id)
-            )
-          );
-
-          const readWriteMembers = memberData.data.filter((member) =>
-            policyToEdit.functionCallingPlusData.some((section) =>
-              section.actionOnPermissionReadorWriteRevisedMember.includes(
-                member._id
-              )
-            )
-          );
-
-          setMembersBySection([readMembers, readWriteMembers]);
-        } catch (error) {
-          console.error("Error fetching members:", error);
-        }
-      } else {
-        console.log("No members found in the permission fields.");
-      }
+      setMembersBySection([readMembers, readWriteMembers]);
 
       const sectionsData = policyToEdit.functionCallingPlusData.map(
         (section, index) => ({
@@ -2308,7 +2363,18 @@ const FunctionCalling = () => {
                     className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
                     onClick={handleConfirm}
                   >
-                    Confirm
+                    {loading ? (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faSpinner}
+                          spin
+                          className="mr-2"
+                        />
+                        Loading...
+                      </>
+                    ) : (
+                      "Confirm"
+                    )}
                   </button>
                 </div>
               </>
@@ -2319,8 +2385,8 @@ const FunctionCalling = () => {
 
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
-            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+          <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
               {successMessage.includes("Failed") ? "Failed" : "Success"}
             </h2>
             <p

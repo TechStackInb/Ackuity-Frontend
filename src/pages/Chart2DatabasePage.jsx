@@ -11,6 +11,7 @@ import {
   faPlus,
   faPlusMinus,
   faSearch,
+  faSpinner,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -47,6 +48,8 @@ const Chart2DatabasePage = () => {
   const [isDeleteModel, setDeleteModel] = useState(false);
   const [selectedPolicyId, setSelectedPolicyId] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
+
+  const [loading, setLoading] = useState(false);
 
   const [policyId, setPolicyId] = useState(null);
 
@@ -215,7 +218,6 @@ const Chart2DatabasePage = () => {
 
         setSearchResults(uniqueFilteredUsers);
 
-        // Set total pages based on response (if included in API response)
         if (data.totalPages) {
           setTotalPages(data.totalPages);
         }
@@ -235,7 +237,7 @@ const Chart2DatabasePage = () => {
           : section
       )
     );
-    setOpenDropdown(null); // Optional: If you want to close the dropdown after selection
+    setOpenDropdown(null);
 
     if (errorMessage) {
       setErrorMessage("");
@@ -271,47 +273,26 @@ const Chart2DatabasePage = () => {
       (member) => member._id
     );
 
-    const ONpermissionsSelectRevised = membersBySection[0].map(
-      (member) => member._id
-    );
-    const ONpermissionsInsertRevised = membersBySection[1].map(
-      (member) => member._id
-    );
-    const ONpermissionsUpdateRevised = membersBySection[2].map(
-      (member) => member._id
-    );
-    const ONpermissionsDeleteRevised = membersBySection[3].map(
-      (member) => member._id
-    );
+    const cleanSection = (section) => {
+      return Object.fromEntries(
+        Object.entries(section).filter(([_, v]) => v !== "")
+      );
+    };
 
-    const ONpermissionsSelectExisting = membersBySection[0].map(
-      (member) => member._id
+    const plusData = sectionsPlus.map((section) =>
+      cleanSection({
+        ONname: section.values["dataFeildOption"] || "",
+        ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
+        ONprivacyFilteringTransformValue: "transformation value",
+        ONattributeFilteringAttribute: section.values["attributeOption"] || "",
+        ONattributeFilteringValue: section.values["attributeValueOption"] || "",
+        ONattributeFilteringAction:
+          section.values["attributeActionOption"] || "",
+        ONattributeFilteringTransformationValue: "",
+        rowLevelFilteringBasedonValue:
+          section.values["rowLevelFilterinOption"] || "",
+      })
     );
-    const ONpermissionsInsertExisting = membersBySection[1].map(
-      (member) => member._id
-    );
-    const ONpermissionsUpdateExisting = membersBySection[2].map(
-      (member) => member._id
-    );
-    const ONpermissionsDeleteExisting = membersBySection[3].map(
-      (member) => member._id
-    );
-
-    const plusData = sectionsPlus.map((section) => ({
-      ONname: section.values["dataFeildOption"] || "Account Name",
-      ONprivacyFilteringAction:
-        section.values["privacyActionOption"] || "Tokenize",
-      ONprivacyFilteringTransformValue: "transformation value",
-      ONattributeFilteringAttribute:
-        section.values["attributeOption"] || "Department",
-      ONattributeFilteringValue:
-        section.values["attributeValueOption"] || "North America",
-      ONattributeFilteringAction:
-        section.values["attributeActionOption"] || "Redact",
-      ONattributeFilteringTransformationValue: "transformation value",
-      rowLevelFilteringBasedonValue:
-        section.values["rowLevelFilterinOption"] || "MNO Corp",
-    }));
 
     const postData = {
       policyName: trimmedPolicyName,
@@ -331,6 +312,7 @@ const Chart2DatabasePage = () => {
     console.log(postData);
 
     try {
+      setLoading(true);
       const response = await fetch(
         `${BASE_URL}/api/data/PolicyManagerText2SQL`,
         {
@@ -360,10 +342,11 @@ const Chart2DatabasePage = () => {
         setIsSaveSuccessful(false);
         closeModal();
       }, 2000);
-      // Clear all dropdown selections and section data
     } catch (error) {
       console.error("Error saving policy:", error);
       setIsSaveSuccessful(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -399,102 +382,132 @@ const Chart2DatabasePage = () => {
     setIsSuccessModalOpen(false);
   };
 
+  // const handleEditButtonClick = async (policyId) => {
+  //   topRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   setIsSaveSuccessful(false);
+
+  //   try {
+  //     const policyToEdit = tableData.find((policy) => policy._id === policyId);
+
+  //     if (policyToEdit) {
+  //       setPolicyName(policyToEdit.policyName);
+  //       setSelectedOptions({
+  //         dataStoreOptions: policyToEdit.ONdataStore,
+  //         tableOptions: policyToEdit.ONtableView,
+  //       });
+
+  //       const memberIds = [
+  //         ...policyToEdit.configurePermissionsSelectRevised,
+  //         ...policyToEdit.configurePermissionsInsertRevised,
+  //         ...policyToEdit.configurePermissionsUpdateRevised,
+  //         ...policyToEdit.configurePermissionsDeleteRevised,
+  //       ];
+
+  //       if (memberIds.length > 0) {
+  //         const queryParams = new URLSearchParams({
+  //           ids: memberIds.join(","),
+  //         }).toString();
+
+  //         const response = await fetch(
+  //           `${BASE_URL}/api/data/members?${queryParams}`,
+  //           {
+  //             method: "GET",
+  //             headers: { "Content-Type": "application/json" },
+  //             credentials: "include",
+  //           }
+  //         );
+  //         const memberData = await response.json();
+
+  //         const sections = [
+  //           policyToEdit.configurePermissionsSelectRevised,
+  //           policyToEdit.configurePermissionsInsertRevised,
+  //           policyToEdit.configurePermissionsUpdateRevised,
+  //           policyToEdit.configurePermissionsDeleteRevised,
+  //         ];
+
+  //         const organizedMembers = sections.map((section) =>
+  //           memberData.data.filter((member) => section.includes(member._id))
+  //         );
+
+  //         const sectionsData = policyToEdit.plusData.map((section, index) => ({
+  //           id: Date.now() + index,
+  //           values: {
+  //             dataFeildOption: section.ONname,
+  //             privacyActionOption: section.ONprivacyFilteringAction,
+  //             attributeOption: section.ONattributeFilteringAttribute,
+  //             attributeValueOption: section.ONattributeFilteringValue,
+  //             attributeActionOption: section.ONattributeFilteringAction,
+  //             rowLevelFilterinOption: section.rowLevelFilteringBasedonValue,
+  //           },
+  //         }));
+  //         console.log(sectionsData, "sectionsData");
+  //         setSectionsPlus(sectionsData);
+
+  //         setMembersBySection(organizedMembers);
+  //         setPolicyId(policyId);
+  //       } else {
+  //         setPolicyId(policyId);
+  //         console.log("No members found in the permission fields.");
+  //       }
+  //     } else {
+  //       console.log("No policy found with the given policyId.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during fetchMemberData:", error);
+  //   }
+  // };
+
   const handleEditButtonClick = async (policyId) => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
     setIsSaveSuccessful(false);
 
     try {
-      // Find the policy based on policyId
       const policyToEdit = tableData.find((policy) => policy._id === policyId);
 
       if (policyToEdit) {
-        // Set policy-related fields
         setPolicyName(policyToEdit.policyName);
         setSelectedOptions({
           dataStoreOptions: policyToEdit.ONdataStore,
           tableOptions: policyToEdit.ONtableView,
         });
-
-        // Fetch member IDs from policy
-        const memberIds = [
-          ...policyToEdit.configurePermissionsSelectRevised,
-          ...policyToEdit.configurePermissionsInsertRevised,
-          ...policyToEdit.configurePermissionsUpdateRevised,
-          ...policyToEdit.configurePermissionsDeleteRevised,
+        const sections = [
+          policyToEdit.configurePermissionsSelectRevised,
+          policyToEdit.configurePermissionsInsertRevised,
+          policyToEdit.configurePermissionsUpdateRevised,
+          policyToEdit.configurePermissionsDeleteRevised,
         ];
 
-        // Fetch members if there are any
-        if (memberIds.length > 0) {
-          const queryParams = new URLSearchParams({
-            ids: memberIds.join(","),
-          }).toString();
+        const organizedMembers = sections.map((section) => section);
 
-          const response = await fetch(
-            `${BASE_URL}/api/data/members?${queryParams}`,
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-            }
-          );
-          const memberData = await response.json();
+        const sectionsData = policyToEdit.plusData.map((section, index) => ({
+          id: Date.now() + index,
+          values: {
+            dataFeildOption: section.ONname,
+            privacyActionOption: section.ONprivacyFilteringAction,
+            attributeOption: section.ONattributeFilteringAttribute,
+            attributeValueOption: section.ONattributeFilteringValue,
+            attributeActionOption: section.ONattributeFilteringAction,
+            rowLevelFilterinOption: section.rowLevelFilteringBasedonValue,
+          },
+        }));
+        console.log(sectionsData, "sectionsData");
+        setSectionsPlus(sectionsData);
 
-          // Organize members into sections
-          const sections = [
-            policyToEdit.configurePermissionsSelectRevised,
-            policyToEdit.configurePermissionsInsertRevised,
-            policyToEdit.configurePermissionsUpdateRevised,
-            policyToEdit.configurePermissionsDeleteRevised,
-          ];
-
-          const organizedMembers = sections.map((section) =>
-            memberData.data.filter((member) => section.includes(member._id))
-          );
-
-          // Map `plusData` to sections
-          const sectionsData = policyToEdit.plusData.map((section, index) => ({
-            id: Date.now() + index,
-            values: {
-              dataFeildOption: section.ONname,
-              privacyActionOption: section.ONprivacyFilteringAction,
-              attributeOption: section.ONattributeFilteringAttribute,
-              attributeValueOption: section.ONattributeFilteringValue,
-              attributeActionOption: section.ONattributeFilteringAction,
-              rowLevelFilterinOption: section.rowLevelFilteringBasedonValue,
-            },
-          }));
-          console.log(sectionsData, "sectionsData");
-
-          // Set sections and members by section in state
-          setSectionsPlus(sectionsData);
-
-          setMembersBySection(organizedMembers);
-          setPolicyId(policyId);
-        } else {
-          setPolicyId(policyId);
-          console.log("No members found in the permission fields.");
-        }
+        setMembersBySection(organizedMembers);
+        setPolicyId(policyId);
       } else {
         console.log("No policy found with the given policyId.");
       }
     } catch (error) {
-      console.error("Error during fetchMemberData:", error);
+      console.error("Error during handleEditButtonClick:", error);
     }
   };
 
   const handleUpdatePolicy = async () => {
     setIsSaveSuccessful(false);
 
-    // Trim the policy name for validation
     const trimmedPolicyName = policyName.trim();
 
-    // Validate the policy name
-    if (!trimmedPolicyName) {
-      setErrorMessage("Policy name is required.");
-      return;
-    }
-
-    // Map member IDs for each section
     const configurePermissionsSelectRevised = membersBySection[0].map(
       (member) => member._id
     );
@@ -508,18 +521,35 @@ const Chart2DatabasePage = () => {
       (member) => member._id
     );
 
+    const cleanSection = (section) => {
+      return Object.fromEntries(
+        Object.entries(section).filter(([_, v]) => v !== "")
+      );
+    };
 
-    const plusData = sectionsPlus.map((section) => ({
-      ONname: section.values["dataFeildOption"] || "",
-      ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
-      ONattributeFilteringAttribute: section.values["attributeOption"] || "",
-      ONattributeFilteringValue: section.values["attributeValueOption"],
-      ONattributeFilteringAction: section.values["attributeActionOption"] || "",
-      rowLevelFilteringBasedonValue:
-        section.values["rowLevelFilterinOption"] || "",
-    }));
+    // const plusData = sectionsPlus.map((section) => ({
+    //   ONname: section.values["dataFeildOption"] || "",
+    //   ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
+    //   ONattributeFilteringAttribute: section.values["attributeOption"] || "",
+    //   ONattributeFilteringValue: section.values["attributeValueOption"],
+    //   ONattributeFilteringAction: section.values["attributeActionOption"] || "",
+    //   rowLevelFilteringBasedonValue:
+    //     section.values["rowLevelFilterinOption"] || "",
+    // }));
 
-    // Prepare the updated policy data
+    const plusData = sectionsPlus.map((section) =>
+      cleanSection({
+        ONname: section.values["dataFeildOption"] || "",
+        ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
+        ONattributeFilteringAttribute: section.values["attributeOption"] || "",
+        ONattributeFilteringValue: section.values["attributeValueOption"] || "",
+        ONattributeFilteringAction:
+          section.values["attributeActionOption"] || "",
+        rowLevelFilteringBasedonValue:
+          section.values["rowLevelFilterinOption"] || "",
+      })
+    );
+
     const updatedPolicy = {
       policyName: trimmedPolicyName,
       configurePermissionsSelectRevised,
@@ -531,10 +561,8 @@ const Chart2DatabasePage = () => {
       plusData,
     };
 
-    // Log the policy ID to ensure correctness
     console.log("Updating policy with ID:", policyId);
 
-    // Validate the existence of a policy ID before proceeding with the update
     if (!policyId) {
       console.error("Invalid policy ID.");
       return;
@@ -565,10 +593,9 @@ const Chart2DatabasePage = () => {
       setSelectedOptions({});
       setPolicyName("");
       setMembersBySection([[], [], [], []]);
-      setPolicyId(null); // Reset the policy ID after updating
+      setPolicyId(null);
       setSectionsPlus([{ id: Date.now(), values: {} }]);
 
-      // Fetch the updated data to reflect the changes in the UI
       await fetchData();
 
       setTimeout(() => {
@@ -624,10 +651,6 @@ const Chart2DatabasePage = () => {
     }
   };
   console.log(members, "members");
-  // const handleConfirm = () => {
-  //   // Add your save logic here
-  //   setIsModalOpen(false);
-  // };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -2457,7 +2480,18 @@ const Chart2DatabasePage = () => {
                     className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-200 ease-in-out"
                     onClick={handleConfirm}
                   >
-                    Confirm
+                    {loading ? (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faSpinner}
+                          spin
+                          className="mr-2"
+                        />
+                        Loading...
+                      </>
+                    ) : (
+                      "Confirm"
+                    )}
                   </button>
                 </div>
               </>
@@ -2468,8 +2502,8 @@ const Chart2DatabasePage = () => {
 
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
-            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+          <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
               {successMessage.includes("Failed") ? "Failed" : "Success"}
             </h2>
             <p
