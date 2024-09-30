@@ -39,14 +39,14 @@ const ThreatManagement = () => {
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     const selectedData = averages[optionMapping[option]];
-    updateThreatData(selectedData); // Update dashboard based on the selected option
+    updateThreatData(selectedData); 
     setIsOpen(false);
   };
 
   const handleRefreshClick = () => {
     setSelectedOption("Last 24 hours");
     const last24HoursData = averages.last24Hours;
-    updateThreatData(last24HoursData); // Reset to "Last 24 hours" data
+    updateThreatData(last24HoursData); 
   };
 
   const optionMapping = {
@@ -81,7 +81,7 @@ const ThreatManagement = () => {
         if (response.ok) {
           const data = await response.json();
           setAverages(data.averages);
-          updateThreatData(data.averages.last24Hours); // Default to "Last 24 hours"
+          updateThreatData(data.averages.last24Hours); 
         } else {
           console.error("Failed to fetch threat data");
         }
@@ -101,9 +101,9 @@ const ThreatManagement = () => {
 
   const handleDropdownClick = (dropdownKey) => {
     if (openDropdown === dropdownKey) {
-      setOpenDropdown(null); // Close if it's already open
+      setOpenDropdown(null); 
     } else {
-      setOpenDropdown(dropdownKey); // Open the clicked dropdown
+      setOpenDropdown(dropdownKey); 
     }
   };
 
@@ -113,7 +113,6 @@ const ThreatManagement = () => {
       [dropdownKey]: option,
     });
 
-    // You can also perform additional error handling here if needed.
   };
 
   const handleOptionClicks = (option) => {
@@ -145,20 +144,20 @@ const ThreatManagement = () => {
       try {
         const response = await fetch(`${BASE_URL}/api/data/threatManagement`, {
           method: "GET",
-          credentials: "include", // Include credentials
+          credentials: "include", 
         });
 
         if (response.ok) {
           const data = await response.json();
           // console.log(data, "threat");
-          setThreatData(data.data); // Set fetched data to state
+          setThreatData(data.data); 
         } else {
           console.error("Failed to fetch threat data");
         }
       } catch (error) {
         console.error("Error fetching threat data:", error);
       } finally {
-        setLoading(false); // Stop loading once data is fetched
+        setLoading(false); 
       }
     };
 
@@ -179,11 +178,11 @@ const ThreatManagement = () => {
       assignedTo: selectedOptions["statusOption"] || "",
     };
 
-    setIsLoading(true); // Set loading state
+    setIsLoading(true); 
     try {
       const response = await fetch(`${BASE_URL}/api/data/threatManagement`, {
         method: "POST",
-        credentials: "include", // Ensure cookies are sent with the request
+        credentials: "include", 
         headers: {
           "Content-Type": "application/json",
         },
@@ -191,7 +190,7 @@ const ThreatManagement = () => {
       });
 
       if (response.ok) {
-        setIsSaveSuccessful(true); // Mark save as successful
+        setIsSaveSuccessful(true);
       } else {
         alert("Failed to save data");
       }
@@ -199,7 +198,7 @@ const ThreatManagement = () => {
       console.error("Error saving data:", error);
       alert("An error occurred while saving data.");
     }
-    setIsLoading(false); // Reset loading state
+    setIsLoading(false); 
   };
 
   return (
@@ -227,7 +226,7 @@ const ThreatManagement = () => {
             <div className="flex basis-[80%] justify-end gap-[10px]">
               <button
                 className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]"
-                onClick={handleRefreshClick} // Reset to "Last 24 hours"
+                onClick={handleRefreshClick} 
               >
                 <FontAwesomeIcon
                   icon={faSyncAlt}
@@ -250,7 +249,6 @@ const ThreatManagement = () => {
                   <span className="text-[#31B476] truncate">
                     {selectedOption}
                   </span>{" "}
-                  {/* Use 'truncate' to prevent text overflow */}
                   <FontAwesomeIcon
                     icon={isOpen ? faChevronUp : faChevronDown}
                     className="ml-2 text-[#31B476]"
@@ -259,7 +257,7 @@ const ThreatManagement = () => {
                 {isOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26] rounded-lg shadow-lg z-10">
                     {" "}
-                    {/* Fixed width for dropdown content */}
+  
                     <ul className="py-2">
                       <li
                         className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
@@ -437,7 +435,7 @@ const ThreatManagement = () => {
                       selectedOption={selectedOptions["statusOption"]}
                       onOptionClick={(option) => {
                         handleOptionClickDrop("statusOption", option);
-                        setOpenDropdown(null); // Close the dropdown after selecting an option
+                        setOpenDropdown(null); 
                       }}
                     />
                   </td>

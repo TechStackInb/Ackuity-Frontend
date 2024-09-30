@@ -79,33 +79,33 @@
 // };
 
 // export default Analytics;
-import React, { useEffect, useState } from "react";
-import FunctionCalling from "../components/FunctionCallingTab";
-import Chat2Database from "../components/Chat2DatabaseTab";
-import Agents from "../components/AgentsTab";
-import DocumentRAG from "../components/DocumentRAGTab";
-import PieCharts from "../components/PieCharts";
-import DashboardChart from "../components/DashboardChart";
-import ProgressBar from "../components/ProgressBar";
+import React, { useEffect, useState } from 'react';
+import FunctionCalling from '../components/FunctionCallingTab';
+import Chat2Database from '../components/Chat2DatabaseTab';
+import Agents from '../components/AgentsTab';
+import DocumentRAG from '../components/DocumentRAGTab';
+import PieCharts from '../components/PieCharts';
+import DashboardChart from '../components/DashboardChart';
+import ProgressBar from '../components/ProgressBar';
 import {
   faChevronDown,
   faChevronUp,
   faClock,
   faSyncAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axiosInstance from "../axiosInstance";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axiosInstance from '../axiosInstance';
 
 const tabs = [
-  { name: "Function Calling", component: <FunctionCalling /> },
-  { name: "Chat2Database", component: <Chat2Database /> },
-  { name: "Agents", component: <Agents /> },
-  { name: "Document RAG", component: <DocumentRAG /> },
+  { name: 'Function Calling', component: <FunctionCalling /> },
+  { name: 'Chat2Database', component: <Chat2Database /> },
+  { name: 'Agents', component: <Agents /> },
+  { name: 'Document RAG', component: <DocumentRAG /> },
 ];
 
 const Analytics = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedOption, setSelectedOption] = useState("Last 24 hours");
+  const [selectedOption, setSelectedOption] = useState('Last 24 hours');
   const [isOpen, setIsOpen] = useState(false);
   const [chartData, setChartData] = useState([]);
 
@@ -126,20 +126,20 @@ const Analytics = () => {
   const fetchChartData = async () => {
     try {
       let response;
-      if (selectedOption === "Last 24 hours") {
-        response = await axiosInstance.get("/api/data/chartData");
+      if (selectedOption === 'Last 24 hours') {
+        response = await axiosInstance.get('/api/data/chartData');
         setChartData(response.data.recentEntries);
       } else {
-        response = await axiosInstance.get("/api/data/chartData/getAverage");
+        response = await axiosInstance.get('/api/data/chartData/getAverage');
         const data =
-          selectedOption === "Last 7 days"
+          selectedOption === 'Last 7 days'
             ? response.data.sevenDayAverages
             : response.data.thirtyDayAverages;
 
         const mappedData = data.map((entry) => ({
           title: entry._id,
           data: {
-            labels: ["RAG", "Function Calling", "Agents", "Chat2Database"],
+            labels: ['RAG', 'Function Calling', 'Agents', 'Chat2Database'],
             values: [
               entry.avgRAG,
               entry.avgFunctionCalling,
@@ -151,17 +151,15 @@ const Analytics = () => {
         setChartData(mappedData);
       }
     } catch (error) {
-      console.error("Error fetching chart data:", error);
+      console.error('Error fetching chart data:', error);
     }
   };
 
-  // Modify the refresh button click handler
   const handleRefreshClick = async () => {
     await fetchChartData();
-    setSelectedOption("Last 24 hours"); // Reset dropdown to "Last 24 hours" only on refresh
+    setSelectedOption('Last 24 hours');
   };
 
-  // Fetch data whenever the selectedOption changes
   useEffect(() => {
     fetchChartData();
   }, [selectedOption]);
@@ -200,31 +198,31 @@ const Analytics = () => {
               <ul className="py-2">
                 <li
                   className={`px-4 py-2 cursor-pointer ${
-                    selectedOption === "Last 24 hours"
-                      ? "text-[#31B476]"
-                      : "text-white hover:bg-[#31B476]"
+                    selectedOption === 'Last 24 hours'
+                      ? 'text-[#31B476]'
+                      : 'text-white hover:bg-[#31B476]'
                   }`}
-                  onClick={() => handleOptionClick("Last 24 hours")}
+                  onClick={() => handleOptionClick('Last 24 hours')}
                 >
                   Last 24 hours
                 </li>
                 <li
                   className={`px-4 py-2 cursor-pointer ${
-                    selectedOption === "Last 7 days"
-                      ? "text-[#31B476]"
-                      : "text-white hover:bg-[#31B476]"
+                    selectedOption === 'Last 7 days'
+                      ? 'text-[#31B476]'
+                      : 'text-white hover:bg-[#31B476]'
                   }`}
-                  onClick={() => handleOptionClick("Last 7 days")}
+                  onClick={() => handleOptionClick('Last 7 days')}
                 >
                   Last 7 days
                 </li>
                 <li
                   className={`px-4 py-2 cursor-pointer ${
-                    selectedOption === "Last 30 days"
-                      ? "text-[#31B476]"
-                      : "text-white hover:bg-[#31B476]"
+                    selectedOption === 'Last 30 days'
+                      ? 'text-[#31B476]'
+                      : 'text-white hover:bg-[#31B476]'
                   }`}
-                  onClick={() => handleOptionClick("Last 30 days")}
+                  onClick={() => handleOptionClick('Last 30 days')}
                 >
                   Last 30 days
                 </li>
@@ -257,23 +255,24 @@ const Analytics = () => {
           Inventory Information
         </p>
       </div> */}
-      <div className="flex gap-[4px] mt-4">
+      <div className="flex gap-1 sm:gap-2 lg:gap-2 mt-4">
         {tabs.map((tab, index) => (
           <button
             key={index}
-            className={`flex items-center justify-center  rounded-sm w-full h-15 py-3 px-4 text-left ${
+            className={`flex items-center justify-center rounded-sm py-2 px-2 sm:py-3 sm:px-4 w-full ${
               index === activeTab
-                ? "bg-[#31B476] text-white"
-                : "bg-black text-[#31E48F]"
+                ? 'bg-[#31B476] text-white'
+                : 'bg-black text-[#31E48F]'
             }`}
             onClick={() => setActiveTab(index)}
           >
-            <span className="font-poppins font-semibold leading-6 text-[11px] sm:text-base">
+            <span className="font-poppins font-semibold text-[10px] leading-4 sm:text-[12px] sm:leading-6 md:text-base lg:text-lg">
               {tab.name}
             </span>
           </button>
         ))}
       </div>
+
       <div>{tabs[activeTab].component}</div>
     </div>
   );

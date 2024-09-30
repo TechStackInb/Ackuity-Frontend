@@ -626,7 +626,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
           valueAt: section.values["atOptions"] || "",
         };
 
-        // Remove keys with empty values
+
         Object.keys(sectionData).forEach(
           (key) => sectionData[key] === "" && delete sectionData[key]
         );
@@ -634,16 +634,15 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
         return sectionData;
       });
 
-      // Build the complete policy data object and remove empty values
+
       const policyData = {
         policyName: trimmedPolicyName,
         documentStoreOptions: selectedOptions["documentStore"] || "",
         documentLocationOptions:
           selectedOptions["documentLocationOptions"] || "",
-        multipleSectionData, // Add section data here
+        multipleSectionData, 
       };
 
-      // Remove keys with empty values from policyData
       Object.keys(policyData).forEach(
         (key) => policyData[key] === "" && delete policyData[key]
       );
@@ -668,16 +667,11 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       console.log("Policy saved successfully:", result);
 
       setIsSaveSuccessful(true);
-
-      // Clear all dropdown selections and sections
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
       setPolicyName("");
-
-      // Fetch updated policies after successful save
       await fetchPolicies();
 
-      // Automatically close modal after 2 seconds
       setTimeout(() => {
         setIsSaveSuccessful(false);
         closeModal();
@@ -1276,8 +1270,8 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
 
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
-            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
               {successMessage.includes("Failed") ? "Failed" : "Success"}
             </h2>
             <p

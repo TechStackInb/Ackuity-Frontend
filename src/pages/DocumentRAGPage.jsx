@@ -27,7 +27,6 @@ const DocumentRAG = () => {
   };
 
   const handleConfirm = () => {
-    // Add your save logic here
     setIsModalOpen(false);
   };
 

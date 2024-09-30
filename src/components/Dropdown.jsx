@@ -38,7 +38,6 @@ const Dropdown = ({
           <span className="dropdown-item-text text-sizess font-poppins">
             {selectedItem}
           </span>{" "}
-          {/* Specific class for text */}
         </div>
         <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} />
       </div>

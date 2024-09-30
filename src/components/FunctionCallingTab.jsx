@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   BarChart,
   Bar,
@@ -8,9 +8,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import WaterfallChart from "./WaterfallChart";
-
+} from 'recharts';
+import WaterfallChart from './WaterfallChart';
 
 const CustomBackground = (props) => {
   const { x, y, width, height, radius } = props;
@@ -21,13 +20,12 @@ const CustomBackground = (props) => {
       y={y}
       width={width}
       height={height}
-      rx={radius} // This adds rounded corners to the background
+      rx={radius}
       ry={radius}
       fill="#1B1E26"
     />
   );
 };
-
 
 const options = {
   chart: {
@@ -60,11 +58,11 @@ const options = {
 };
 
 const data1 = [
-  { day: "All", value: 12, base: 0 },
-  { day: "Served", value: -4, base: 12 },
-  { day: "Denied", value: -3, base: 8 },
-  { day: "Transformed", value: -2, base: 5 },
-  { day: "Flagged", value: -1, base: 3 },
+  { day: 'All', value: 12, base: 0 },
+  { day: 'Served', value: -4, base: 12 },
+  { day: 'Denied', value: -3, base: 8 },
+  { day: 'Transformed', value: -2, base: 5 },
+  { day: 'Flagged', value: -1, base: 3 },
 ];
 // const data1 = [
 //   {
@@ -89,98 +87,57 @@ const data1 = [
 //   },
 // ];
 const data = [
-  { name: "Permissions", value: 10 },
-  { name: "Attributes", value: 50 },
-  { name: "Privacy", value: 30 },
+  { name: 'Permissions', value: 10 },
+  { name: 'Attributes', value: 50 },
+  { name: 'Privacy', value: 30 },
 ];
 
 const topItemsServed = [
-  { name: "MS O365", value: 50 },
-  { name: "Hubspot", value: 40 },
-  { name: "MS Dynamics", value: 30 },
-  { name: "Servicenow", value: 20 },
-  { name: "Salesforce", value: 10 },
+  { name: 'MS O365', value: 50 },
+  { name: 'Hubspot', value: 40 },
+  { name: 'MS Dynamics', value: 30 },
+  { name: 'Servicenow', value: 20 },
+  { name: 'Salesforce', value: 10 },
 ];
 
 const topItemsDenied = [
-  { name: "MS O365", value: 5 },
-  { name: "Hubspot", value: 10 },
-  { name: "MS Dynamics", value: 8 },
-  { name: "Servicenow", value: 10 },
-  { name: "Salesforce", value: 3 },
+  { name: 'MS O365', value: 5 },
+  { name: 'Hubspot', value: 10 },
+  { name: 'MS Dynamics', value: 8 },
+  { name: 'Servicenow', value: 10 },
+  { name: 'Salesforce', value: 3 },
 ];
 
 const topItemTransformed = [
-  { name: "MS O365", value: 45 },
-  { name: "Hubspot", value: 30 },
-  { name: "MS Dynamics", value: 22 },
-  { name: "Servicenow", value: 10 },
-  { name: "Salesforce", value: 7 },
+  { name: 'MS O365', value: 45 },
+  { name: 'Hubspot', value: 30 },
+  { name: 'MS Dynamics', value: 22 },
+  { name: 'Servicenow', value: 10 },
+  { name: 'Salesforce', value: 7 },
 ];
 
 const topItemsThreats = [
-  { name: "MS O365", value: 6 },
-  { name: "Hubspot", value: 12 },
-  { name: "MS Dynamics", value: 13 },
-  { name: "Servicenow", value: 4 },
-  { name: "Salesforce", value: 6 },
+  { name: 'MS O365', value: 6 },
+  { name: 'Hubspot', value: 12 },
+  { name: 'MS Dynamics', value: 13 },
+  { name: 'Servicenow', value: 4 },
+  { name: 'Salesforce', value: 6 },
 ];
 
-const colors = ["#31B476", "#31B476", "#31B476", "#31B476", "#31B476"]; // Green, Yellow, Red, Black, Grey
+const colors = ['#31B476', '#31B476', '#31B476', '#31B476', '#31B476']; // Green, Yellow, Red, Black, Grey
 
 const FunctionCalling = () => {
   return (
     <div className="page-center p-4">
       <div className="mt-8">
-        <div className="flex flex-col md:flex-row gap-5">
-          {/* <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                width={630}
-                height={250}
-                data={data1}
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-                barSize={40}
-              >
-                <XAxis dataKey="day" stroke="#fff" />
-                <YAxis stroke="#fff" />
-                <Tooltip />
-                <Bar
-                  dataKey="FunctionCalling"
-                  fill={colors[0]}
-                  radius={[22, 22, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div> */}
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
-            {/* <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                width={630}
-                height={250}
-                data={data1}
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-              >
-                <XAxis dataKey="day" stroke="#fff" />
-                <YAxis stroke="#fff" />
-                <Tooltip />
-                <CartesianGrid strokeDasharray="3 3" />
-
-                <Bar dataKey="base" fill="transparent" stackId="a" />
-
-                <Bar
-                  dataKey="value"
-                  fill={colors[0]}
-                  stackId="a"
-                  radius={[22, 22, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer> */}
-          <WaterfallChart />
-            
+        <div className="flex flex-wrap justify-between">
+          {/* Waterfall Chart */}
+          <div className="w-full md:w-1/2 lg:w-[49%] p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4">
+            <WaterfallChart />
           </div>
-          
-          <div className="w-full md:w-1/2 lg:w-1/2 p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4 md:mb-0">
+
+          {/* Bar Chart */}
+          <div className="w-full md:w-1/2 lg:w-[49%]  p-2 bg-[#303D4B] shadow-lg rounded-lg mb-4">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={data}
@@ -190,7 +147,7 @@ const FunctionCalling = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="#85898d87" />
                 <XAxis dataKey="name" stroke="#fff" />
                 <YAxis stroke="#fff" />
-                <Tooltip cursor={{ fill: "#444" }} />
+                <Tooltip cursor={{ fill: '#444' }} />
                 <Legend />
                 <Bar
                   dataKey="value"

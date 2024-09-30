@@ -578,7 +578,6 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
       setLoading(true);
 
-      // Create a list to store all sections data, but remove empty values
       const multipleSectionData = sections.map((section) => {
         const sectionData = {
           documentNameIf: section.values["documentOptions"] || "",
@@ -1273,8 +1272,8 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
       </div>
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
-            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-gray-800">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
+            <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
               {successMessage.includes("Failed") ? "Failed" : "Success"}
             </h2>
             <p
@@ -1297,113 +1296,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
           </div>
         </div>
       )}
-      {/* {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-[#373945] p-6 rounded-lg shadow-lg w-1/2">
-            <h2 className="text-lg font-poppins font-semibold mb-4 text-center text-white">
-              {isEditMode ? "Edit Policy" : "Confirm Policy Save"}
-            </h2>
-            {isSaveSuccessful ? (
-              <p className="text-green-500 text-center">
-                Policy updated successfully!
-              </p>
-            ) : (
-              <>
-                <div className="mb-4">
-                  <label
-                    htmlFor="policyName"
-                    className="block text-sm font-poppins font-semibold  mb-2 text-customGreen"
-                  >
-                    Policy Name
-                  </label>
-                  <input
-                    type="text"
-                    id="policyName"
-                    value={policyName}
-                    onChange={handlePolicyNameChange}
-                    className="w-full rounded-md shadow-sm px-2.5 py-2.5 border-2 border-black focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-black text-white font-semibold placeholder-gray-500"
-                    placeholder="Enter policy name"
-                  />
-                </div>
 
-                <div className="flex flex-col">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-2">
-                    Document Store
-                  </label>
-                  <PrivacyCustomDropdown
-                    options={datas.documentStoreOptions || []}
-                    placeholder="Select Document Store"
-                    isOpen={openDropdown === "documentStore"}
-                    onDropdownClick={() => handleDropdownClick("documentStore")}
-                    selectedOption={selectedOptions["documentStore"]}
-                    onOptionClick={(option) =>
-                      handleOptionClick("documentStore", option)
-                    }
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-customGreen font-poppins font-semibold text-sm mb-2">
-                    Document Location
-                  </label>
-                  <PrivacyCustomDropdown
-                    options={datas.documentLocationOptions || []}
-                    placeholder="Select Document Location"
-                    isOpen={openDropdown === "documentLocationOptions"}
-                    onDropdownClick={() =>
-                      handleDropdownClick("documentLocationOptions")
-                    }
-                    selectedOption={selectedOptions["documentLocationOptions"]}
-                    onOptionClick={(option) =>
-                      handleOptionClick("documentLocationOptions", option)
-                    }
-                  />
-                </div>
-                {sections.map((section, sectionIndex) => (
-                  <div key={section.id} className="flex flex-col">
-                    <label className="text-customGreen font-poppins font-semibold text-sm mb-2">
-                      Document Name
-                    </label>
-                    <CustomDropdown
-                      options={datas.documentOptions || []}
-                      placeholder="Select Document"
-                      isOpen={openDropdown === `${section.id}-0`}
-                      onDropdownClick={() =>
-                        handleDropdownClick1(section.id, 0)
-                      }
-                      selectedOption={section.values["documentOptions"] || ""}
-                      setSelectedOption={(value) =>
-                        handleDropdownChange(
-                          section.id,
-                          "documentOptions",
-                          value
-                        )
-                      }
-                    />
-                  </div>
-                ))}
-
-                <div className="flex justify-end">
-                  <button
-                    className="bg-red-500 text-white py-2 px-4 rounded mr-2"
-                    onClick={closeModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-green-500 text-white py-2 px-4 rounded"
-                    onClick={
-                      isEditMode ? handleUpdatePolicy : confirmSavePolicy
-                    }
-                  >
-                    {isEditMode ? "Update Policy" : "Confirm"}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )} */}
       <div className="flex justify-end items-center mt-4 space-x-2">
         <button
           className={`px-4 py-2 rounded-lg transition-colors duration-300 ${

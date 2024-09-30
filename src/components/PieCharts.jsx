@@ -11,8 +11,8 @@ const PieCharts = ({ title, data }) => {
       {
         data: data.values,
         backgroundColor: data.colors,
-        borderColor: "#303D4B", // Border color
-        borderWidth: 2, // Border width
+        borderColor: "#303D4B",
+        borderWidth: 2, 
         hoverBackgroundColor: data.colors,
       },
     ],
@@ -66,7 +66,7 @@ const PieCharts = ({ title, data }) => {
     radius: "40%",
     plugins: {
       legend: {
-        display: false, // Hide the legend
+        display: false, 
       },
     },
   };

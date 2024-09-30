@@ -807,9 +807,7 @@ function PermissionsTab() {
                         <div>
                           <div className="flex justify-between items-start">
                             <div className="flex flex-col">
-                              {/* <span className="font-poppins text-base">
-                                Everyone System
-                              </span> */}
+                    
                               {(section.members || []).map(
                                 (member, memberIndex) => (
                                   <div

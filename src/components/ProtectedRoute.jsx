@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 const ProtectedRoute = ({ children }) => {
   const { auth, loading } = useAuth();
 
-  if (loading) return <div>Loading...</div>; // Show a loading indicator while checking auth status
+  if (loading) return <div>Loading...</div>; 
 
   return auth.email ? children : <Navigate to="/login" />;
 };

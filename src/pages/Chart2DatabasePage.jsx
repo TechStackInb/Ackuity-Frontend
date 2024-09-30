@@ -162,7 +162,7 @@ const Chart2DatabasePage = () => {
       }
 
       const result = await response.json();
-      setTableData(result.data); // Ensure you correctly set the fetched data
+      setTableData(result.data); 
       setCurrentPage(result.currentPage);
       setTotalPages(result.totalPages);
     } catch (error) {
@@ -208,7 +208,6 @@ const Chart2DatabasePage = () => {
           return query === userNameLower || userNameLower.startsWith(query);
         });
 
-        // Ensure no duplicate members are added
         const uniqueFilteredUsers = filteredUsers.reduce((acc, current) => {
           if (!acc.find((user) => user._id === current._id)) {
             acc.push(current);
@@ -353,21 +352,20 @@ const Chart2DatabasePage = () => {
   const addMember = (user, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
 
-    // Add member to the correct section's array based on sectionIndex
     updatedMembersBySection[sectionIndex] = [
       ...updatedMembersBySection[sectionIndex],
       user,
     ];
 
-    setMembersBySection(updatedMembersBySection); // Update state
-    setSearchResults(searchResults.filter((u) => u._id !== user._id)); // Remove from search
-    setSearchQuery(""); // Clear search query
+    setMembersBySection(updatedMembersBySection); 
+    setSearchResults(searchResults.filter((u) => u._id !== user._id)); 
+    setSearchQuery(""); 
   };
 
   const removeMember = (memberIndex, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
     updatedMembersBySection[sectionIndex].splice(memberIndex, 1);
-    setMembersBySection(updatedMembersBySection); // Update state
+    setMembersBySection(updatedMembersBySection); 
   };
 
   const handleSavePolicy = () => {
@@ -629,7 +627,7 @@ const Chart2DatabasePage = () => {
 
       console.log("Policy deleted successfully");
 
-      // Call fetchData to update table data after deletion
+  
       await fetchData();
       setDeleteModel(false);
     } catch (error) {
@@ -684,9 +682,9 @@ const Chart2DatabasePage = () => {
 
   const handleDropdownClick = (dropdownKey) => {
     if (openDropdown === dropdownKey) {
-      setOpenDropdown(null); // Close if it's already open
+      setOpenDropdown(null); 
     } else {
-      setOpenDropdown(dropdownKey); // Open the clicked dropdown
+      setOpenDropdown(dropdownKey); 
     }
   };
 
@@ -696,7 +694,6 @@ const Chart2DatabasePage = () => {
       [dropdownKey]: option,
     });
 
-    // You can also perform additional error handling here if needed.
   };
 
   const data = {
@@ -867,26 +864,26 @@ const Chart2DatabasePage = () => {
                                           </div>
                                         </div>
 
-                                        {/* Show membership modal only if this row's index is open */}
+                                  
                                         {openMembershipIndex === index && (
                                           <>
-                                            {/* Overlay */}
+                                      
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } // Close when clicking outside
+                                              } 
                                             />
 
-                                            {/* Membership Modal */}
+                                         
                                             <div
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } // Prevent clicks inside modal from closing it
+                                              } 
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                                {/* Close button */}
+                                           
                                                 <button
                                                   className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                                   onClick={() =>
@@ -1031,7 +1028,7 @@ const Chart2DatabasePage = () => {
                                           </div>
                                         </div>
 
-                                        {/* Show membership modal only if this row's index is open */}
+                                
                                         {openMembershipIndex === index && (
                                           <>
                                             {/* Overlay */}
@@ -1039,7 +1036,7 @@ const Chart2DatabasePage = () => {
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } // Close when clicking outside
+                                              } 
                                             />
 
                                             {/* Membership Modal */}
@@ -1047,7 +1044,7 @@ const Chart2DatabasePage = () => {
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } // Prevent clicks inside modal from closing it
+                                              } 
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
                                                 {/* Close button */}
@@ -1195,15 +1192,14 @@ const Chart2DatabasePage = () => {
                                           </div>
                                         </div>
 
-                                        {/* Show membership modal only if this row's index is open */}
                                         {openMembershipIndex === index && (
                                           <>
-                                            {/* Overlay */}
+                                        
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } // Close when clicking outside
+                                              } 
                                             />
 
                                             {/* Membership Modal */}
@@ -1211,7 +1207,7 @@ const Chart2DatabasePage = () => {
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } // Prevent clicks inside modal from closing it
+                                              } 
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
                                                 {/* Close button */}
@@ -1367,7 +1363,7 @@ const Chart2DatabasePage = () => {
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } // Close when clicking outside
+                                              } 
                                             />
 
                                             {/* Membership Modal */}
@@ -1375,7 +1371,7 @@ const Chart2DatabasePage = () => {
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } // Prevent clicks inside modal from closing it
+                                              }
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
                                                 {/* Close button */}
@@ -1534,7 +1530,7 @@ const Chart2DatabasePage = () => {
                                     {members.length > 0 ? (
                                       members.map((member, memberIndex) => (
                                         <div
-                                          key={member._id} // Assuming _id is unique for each member
+                                          key={member._id} 
                                           className="flex justify-between items-center mb-2"
                                         >
                                           <span className="text-white block text-base font-poppins font-semibold">
@@ -1714,7 +1710,7 @@ const Chart2DatabasePage = () => {
                                                             user,
                                                             sectionIndex
                                                           )
-                                                        } // Add member to correct section
+                                                        } 
                                                         style={{
                                                           width: "29px",
                                                           height: "29px",
@@ -1843,9 +1839,9 @@ const Chart2DatabasePage = () => {
                           onOptionClick={(option) => {
                             handleOptionClick("tableOptions", option);
                             if (option) {
-                              setErrorMessage(""); // Clear error message if a valid option is selected
+                              setErrorMessage(""); 
                             }
-                            setOpenDropdown(null); // Close the dropdown after selecting an option
+                            setOpenDropdown(null);
                           }}
 
                           // paddingLeft={"1rem"}
@@ -1907,65 +1903,12 @@ const Chart2DatabasePage = () => {
                               </thead>
                               <tbody>
                                 <tr>
-                                  {/* <td className=" py-2 border border-customBorderColor text-customWhite bg-black">
-                                    <PrivacyCustomDropdown
-                                      options={data.privacyValueOption || []}
-                                      width={"169px "}
-                                      placeholder="None"
-                                      isOpen={
-                                        openDropdown === "privacyValueOption"
-                                      }
-                                      onDropdownClick={() =>
-                                        handleDropdownClick(
-                                          "privacyValueOption"
-                                        )
-                                      }
-                                      selectedOption={
-                                        selectedOptions["privacyValueOption"]
-                                      }
-                                      onOptionClick={(option) => {
-                                        handleOptionClick(
-                                          "privacyValueOption",
-                                          option
-                                        );
-                                        if (option) {
-                                          setErrorMessage("");
-                                        }
-                                        setOpenDropdown(null);
-                                      }}
-                                    />
-                                  </td> */}
+                           
                                   <td
                                     className=" py-2 border border-customBorderColor text-customWhite bg-black"
                                     style={{ width: "200px" }}
                                   >
-                                    {/* <PrivacyCustomDropdown
-                                      options={data.privacyActionOption || []}
-                                      placeholder="None"
-                                      width={"162px"}
-                                      isOpen={
-                                        openDropdown === "privacyActionOption"
-                                      }
-                                      onDropdownClick={() =>
-                                        handleDropdownClick(
-                                          "privacyActionOption"
-                                        )
-                                      }
-                                      selectedOption={
-                                        selectedOptions["privacyActionOption"]
-                                      }
-                                      onOptionClick={(option) => {
-                                        handleOptionClick(
-                                          "privacyActionOption",
-                                          option
-                                        );
-                                        if (option) {
-                                          setErrorMessage("");
-                                        }
-                                        setOpenDropdown(null);
-                                      }}
-                                    /> */}
-
+                            
                                     <CustomDropdown
                                       options={data.privacyActionOption || []}
                                       placeholder="None"
@@ -2035,30 +1978,7 @@ const Chart2DatabasePage = () => {
                                     className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
                                     style={{ width: "200px" }}
                                   >
-                                    {/* <PrivacyCustomDropdown
-                                      options={data.attributeOption || []}
-                                      placeholder="Select Option"
-                                      isOpen={
-                                        openDropdown === "attributeOption"
-                                      }
-                                      width={"194px"}
-                                      onDropdownClick={() =>
-                                        handleDropdownClick("attributeOption")
-                                      }
-                                      selectedOption={
-                                        selectedOptions["attributeOption"]
-                                      }
-                                      onOptionClick={(option) => {
-                                        handleOptionClick(
-                                          "attributeOption",
-                                          option
-                                        );
-                                        if (option) {
-                                          setErrorMessage(""); // Clear error message if a valid option is selected
-                                        }
-                                        setOpenDropdown(null); // Close the dropdown after selecting an option
-                                      }}
-                                    /> */}
+                              
 
                                     <CustomDropdown
                                       options={data.attributeOption || []}
@@ -2085,28 +2005,7 @@ const Chart2DatabasePage = () => {
                                     className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
                                     style={{ width: "200px" }}
                                   >
-                                    {/* <PrivacyCustomDropdown
-                                      options={data.attributeValueOption || []}
-                                      placeholder="Select Option"
-                                      width={"194px"}
-                                      isOpen={openDropdown === "attributeValue"}
-                                      onDropdownClick={() =>
-                                        handleDropdownClick("attributeValue")
-                                      }
-                                      selectedOption={
-                                        selectedOptions["attributeValue"]
-                                      }
-                                      onOptionClick={(option) => {
-                                        handleOptionClick(
-                                          "attributeValue",
-                                          option
-                                        );
-                                        if (option) {
-                                          setErrorMessage(""); // Clear error message if a valid option is selected
-                                        }
-                                        setOpenDropdown(null); // Close the dropdown after selecting an option
-                                      }}
-                                    /> */}
+                            
 
                                     <CustomDropdown
                                       options={data.attributeValueOption || []}
@@ -2135,32 +2034,7 @@ const Chart2DatabasePage = () => {
                                     className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
                                     style={{ width: "200px" }}
                                   >
-                                    {/* <PrivacyCustomDropdown
-                                      options={data.attributeActionOption || []}
-                                      placeholder="Select Option"
-                                      width={"194px"}
-                                      isOpen={
-                                        openDropdown === "attributeActionOption"
-                                      }
-                                      onDropdownClick={() =>
-                                        handleDropdownClick(
-                                          "attributeActionOption"
-                                        )
-                                      }
-                                      selectedOption={
-                                        selectedOptions["attributeActionOption"]
-                                      }
-                                      onOptionClick={(option) => {
-                                        handleOptionClick(
-                                          "attributeActionOption",
-                                          option
-                                        );
-                                        if (option) {
-                                          setErrorMessage(""); // Clear error message if a valid option is selected
-                                        }
-                                        setOpenDropdown(null); // Close the dropdown after selecting an option
-                                      }}
-                                    /> */}
+                      
 
                                     <CustomDropdown
                                       options={data.attributeActionOption || []}
@@ -2216,26 +2090,7 @@ const Chart2DatabasePage = () => {
                         <span className="text-[#31B476]  mr-2 font-poppins  font-semibold">
                           Row Level Filtering Based on Value
                         </span>
-                        {/* <PrivacyCustomDropdown
-                          options={data.rowLevelFilterinOption || []}
-                          placeholder="XYZ Corp"
-                          isOpen={openDropdown === "rowLevelFilterinOption"}
-                          onDropdownClick={() =>
-                            handleDropdownClick("rowLevelFilterinOption")
-                          }
-                          selectedOption={
-                            selectedOptions["rowLevelFilterinOption"]
-                          }
-                          onOptionClick={(option) => {
-                            handleOptionClick("rowLevelFilterinOption", option);
-                            if (option) {
-                              setErrorMessage(""); 
-                            }
-                            setOpenDropdown(null); 
-                          }}
-                          width={"250px"}
-       
-                        /> */}
+           
 
                         <CustomDropdown
                           options={data.rowLevelFilterinOption || []}
@@ -2258,26 +2113,6 @@ const Chart2DatabasePage = () => {
                       </div>
                     </div>
 
-                    {/* <div className="flex justify-end text-end gap-2 px-4 py-4">
-          <button
-            className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded  hover:bg-black  "
-            onClick={addSection}
-          >
-            <FontAwesomeIcon
-              className=" transition ease-out duration-300 hover:transform hover:scale-110 w-7 h-7"
-              icon={faPlus}
-            />
-          </button>
-          <button
-            className="bg-[#2E313B] hover:text-customGreen text-[#6A7581] px-2 py-2 rounded hover:bg-black transition ease-out duration-300"
-            onClick={() => removeSection(section.id)}
-          >
-            <FontAwesomeIcon
-              className=" transition ease-out duration-300 hover:transform hover:scale-110 w-7 h-7"
-              icon={faTrash}
-            />
-          </button>
-        </div> */}
 
                     {sectionsPlus.length === 1 ? (
                       <div className="flex justify-end text-end gap-2 px-4 py-4">
@@ -2653,8 +2488,8 @@ const Chart2DatabasePage = () => {
 
       <ConfirmationModal
         isOpen={isDeleteModel}
-        onClose={closeModal} // Close modal handler
-        onConfirm={handleDeleteButtonClick} // Confirm deletion handler
+        onClose={closeModal} 
+        onConfirm={handleDeleteButtonClick}
       />
 
       <div className="flex justify-end items-center mt-4 space-x-2">

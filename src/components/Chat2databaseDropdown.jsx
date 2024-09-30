@@ -24,7 +24,7 @@ const Chat2databaseDropdown = ({
         }`}
         onClick={onDropdownClick}
         style={{
-          fontSize: `${fontSize}em`, // Dynamically adjust font size
+          fontSize: `${fontSize}em`, 
         }}
       >
         {selectedOption || placeholder}

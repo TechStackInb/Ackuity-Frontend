@@ -37,7 +37,7 @@
 
 /* Custom span styling when checkbox is checked */
 .custom-checkbox:checked + span {
-  color: #31b476; /* Change this to your desired green color */
+  color: #31b476; 
 }
 
 .custom-arrow {
@@ -76,18 +76,17 @@
 }
 
 .dropdown-item {
-  /* Ensure default background and text color */
-  background-color: black; /* Adjust as needed */
+  background-color: black; 
 }
 
 .dropdown-item-text {
-  color: #31b476; /* Initial green color */
+  color: #31b476;
 }
 
 .dropdown-item:hover {
-  background-color: #34d399; /* Hover background color */
+  background-color: #34d399;
 }
 
 .dropdown-item:hover .dropdown-item-text {
-  color: white; /* Hover text color */
+  color: white; 
 }

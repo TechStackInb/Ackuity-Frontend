@@ -7,6 +7,7 @@ import {
   Legend,
   Tooltip,
   XAxis,
+  ResponsiveContainer,
 } from "recharts";
 
 const datas = [
@@ -17,60 +18,39 @@ const datas = [
   { name: "Flagged", value: [0, 240], label: "Flagged" },
 ];
 
-const horizontalPoints = [0, 60, 110, 160, 210, 260, 310, 360, 410, 480];
-
-
-
 function Waterfall() {
   return (
-    <BarChart
-      width={500}
-      height={400}
-      data={datas}
-      margin={{
-        top: 20,
-      }}
-    >
-      <CartesianGrid
-        strokeDasharray="1 10"
-        vertical={false}
-        // horizontalCoordinatesGenerator={args => {
-        //   let hPoints = [];
-        //   const totalLines = Math.ceil(args.offset.height / 70);
-        //   const hScale = scaleLinear()
-        //     .range([args.offset.top, args.height - args.offset.bottom])
-        //     .domain([0, totalLines]);
-
-        //   for (let i = 0; i <= totalLines; i++) {
-        //     hPoints = [...hPoints, hScale(i)];
-        //   }
-
-        //   console.log(hPoints, args);
-        //   return hPoints;
-        // }}
-      />
-      <XAxis dataKey="name" height={20} stroke="#fff" />
-      <Legend
-        verticalAlign="top"
-        height={36}
-        content={<p style={{ margin: 0 }}></p>}
-      />
-      <Tooltip
-        cursor={false}
-        separator=""
-        formatter={(value, name, props) => {
-          return [props.payload.label, ""];
+    <ResponsiveContainer width="100%" height={400}>
+      <BarChart
+        data={datas}
+        margin={{
+          top: 20,
         }}
-      />
-      <Bar
-        fill="#31B476"
-        dataKey="value"
-        maxBarSize={50}
-        radius={[15, 15, 0, 0]}
       >
-        <LabelList position="top" dataKey="label" />
-      </Bar>
-    </BarChart>
+        <CartesianGrid strokeDasharray="1 10" vertical={false} />
+        <XAxis dataKey="name" height={20} stroke="#fff" />
+        <Legend
+          verticalAlign="top"
+          height={36}
+          content={<p style={{ margin: 0 }}></p>}
+        />
+        <Tooltip
+          cursor={false}
+          separator=""
+          formatter={(value, name, props) => {
+            return [props.payload.label, ""];
+          }}
+        />
+        <Bar
+          fill="#31B476"
+          dataKey="value"
+          maxBarSize={50}
+          radius={[15, 15, 0, 0]}
+        >
+          <LabelList position="top" dataKey="label" />
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
 

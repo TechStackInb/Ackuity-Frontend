@@ -1,5 +1,5 @@
 .sub-items-container::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 22px;
   bottom: 19px;
@@ -19,7 +19,7 @@
 }
 
 .sub-items-containers::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 22px;
   bottom: 19px;
@@ -47,11 +47,11 @@
 }
 
 .custom-select-permission {
-  background-color: #1B1E26;
+  background-color: #1b1e26;
   border-radius: 3px;
   opacity: 1;
   color: #6a7581;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   line-height: 25px;
   text-align: left;
@@ -70,7 +70,7 @@
   border-radius: 3px;
   opacity: 1;
   color: #6a7581;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   line-height: 25px;
   text-align: left;
@@ -123,7 +123,7 @@ ul li:hover .dot-circle {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background-image: url("/src/assets/ArrowDropdown.svg");
+  background-image: url('/src/assets/ArrowDropdown.svg');
   background-repeat: no-repeat;
   background-position: right 17px top 50%;
   background-size: 10px 10px;
@@ -132,7 +132,7 @@ ul li:hover .dot-circle {
   border-radius: 3px;
   opacity: 1;
   color: #6a7581;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   line-height: 25px;
   text-align: left;
@@ -149,17 +149,17 @@ ul li:hover .dot-circle {
 }
 
 .custom-selectother:hover {
-  background-image: url("/src/assets/ArrowDropdownHoverGreen.svg");
+  background-image: url('/src/assets/ArrowDropdownHoverGreen.svg');
   background-size: 12px 12px;
   color: #31e48f;
 }
 
 .custom-selectother:focus {
-  background-image: url("/src/assets/ArrowDropdown.svg");
+  background-image: url('/src/assets/ArrowDropdown.svg');
 }
 
 .custom-selectother option::before {
-  content: url("/src/assets/dotCircle.svg");
+  content: url('/src/assets/dotCircle.svg');
   display: inline-block;
   margin-right: 8px;
 }
@@ -187,7 +187,6 @@ ul li:hover .dot-circle {
 .group:hover .text-white {
   color: white;
 }
-
 
 .btn-icon {
   transition: filter 0.3s ease;
@@ -254,5 +253,8 @@ ul li:hover .dot-circle {
   }
   .ipad-threat {
     flex-basis: 100% !important;
+  }
+  .ipad-dataField {
+    width: 100% !important;
   }
 }
