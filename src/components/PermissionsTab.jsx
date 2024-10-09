@@ -616,8 +616,8 @@ function PermissionsTab() {
                 {sections.map((section, index) => (
                   <tr key={section.id}>
                     <td
-                      className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[220px] md:w-[180px] sm:w-[150px] "
-                      style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
+                      className="border border-customBorderColor text-customWhite bg-black w-full"
+                      style={{ paddingTop: '3rem', paddingBottom: '7rem',paddingLeft:"2rem", paddingRight:"2rem"  }}
                     >
                       <CustomDropdwonPermisson
                         options={data.documentStore || []}
@@ -637,7 +637,7 @@ function PermissionsTab() {
                       />
                     </td>
                     <td
-                      className="px-4 border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[750px] md:w-[600px] sm:w-[450px] "
+                      className="px-4 border border-customBorderColor text-customWhite bg-black  w-full"
                       style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
                     >
                       <CustomDropdwonPermisson
@@ -658,7 +658,7 @@ function PermissionsTab() {
                       />
                     </td>
                     <td
-                      className="px-4  border border-customBorderColor text-customWhite bg-black w-full max-w-full lg:w-[200px] md:w-[180px] sm:w-[150px]"
+                      className="px-4  border border-customBorderColor text-customWhite bg-black w-full"
                       // width={"200px"}
                       style={{ paddingTop: '3rem', paddingBottom: '7rem' }}
                     >
