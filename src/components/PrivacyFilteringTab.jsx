@@ -5,14 +5,14 @@ import {
   faPlus,
   faSpinner,
   faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useRef, useState } from "react";
-import "../css/style.css";
-import CustomDropdown from "../components/CustomDropdown";
-import Modal from "../components/Model";
-import PrivacyCustomDropdown from "../components/PrivacyCustomDropdown";
-import { BASE_URL } from "../services/api";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useRef, useState } from 'react';
+import '../css/style.css';
+import CustomDropdown from '../components/CustomDropdown';
+import Modal from '../components/Model';
+import PrivacyCustomDropdown from '../components/PrivacyCustomDropdown';
+import { BASE_URL } from '../services/api';
 
 const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const [isClickedAdd, setIsClickedAdd] = useState(false);
@@ -22,8 +22,8 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [policies, setPolicies] = useState([]);
   const [isSaveSuccessful, setIsSaveSuccessful] = useState(false);
-  const [policyName, setPolicyName] = useState("");
-  const [valueWith, setValueWith] = useState("");
+  const [policyName, setPolicyName] = useState('');
+  const [valueWith, setValueWith] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -32,9 +32,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const topRef = useRef(null);
@@ -43,15 +43,15 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   const fetchPolicies = async (page = 1) => {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/data/policyManagerPrivacy?page=${page}&limit=5`,
+        `${BASE_URL}/api/data/policyManagerPrivacy?page=${page}&limit=10`,
         {
-          method: "GET",
-          credentials: "include",
+          method: 'GET',
+          credentials: 'include',
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch policies");
+        throw new Error('Failed to fetch policies');
       }
 
       const data = await response.json();
@@ -59,7 +59,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
       setCurrentPage(data.currentPage);
       setTotalPages(data.totalPages);
     } catch (error) {
-      console.error("Error fetching policies:", error);
+      console.error('Error fetching policies:', error);
     }
   };
 
@@ -82,7 +82,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   };
 
   const openEditModal = (policyId) => {
-    topRef.current?.scrollIntoView({ behavior: "smooth" });
+    topRef.current?.scrollIntoView({ behavior: 'smooth' });
     const policyToEdit = policies.find((policy) => policy._id === policyId);
 
     if (policyToEdit) {
@@ -282,92 +282,92 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
     const multipleSectionData = sections.map((section) => {
       const sectionData = {
-        documentNameIf: section.values["documentOptions"] || "",
-        classifierContains: section.values["containsOptions"] || "",
-        valueWith: section.values["withOptions"] || "",
-        documentNameThen: section.values["thenOptions"] || "",
-        classifierRole: section.values["roleOptions"] || "",
-        valueAt: section.values["atOptions"] || "",
+        documentNameIf: section.values['documentOptions'] || '',
+        classifierContains: section.values['containsOptions'] || '',
+        valueWith: section.values['withOptions'] || '',
+        documentNameThen: section.values['thenOptions'] || '',
+        classifierRole: section.values['roleOptions'] || '',
+        valueAt: section.values['atOptions'] || '',
       };
 
       Object.keys(sectionData).forEach(
-        (key) => sectionData[key] === "" && delete sectionData[key]
+        (key) => sectionData[key] === '' && delete sectionData[key]
       );
 
       return sectionData;
     });
     const policyData = {
       policyName: trimmedPolicyName,
-      documentStoreOptions: selectedOptions["documentStore"] || "",
-      documentLocationOptions: selectedOptions["documentLocationOptions"] || "",
+      documentStoreOptions: selectedOptions['documentStore'] || '',
+      documentLocationOptions: selectedOptions['documentLocationOptions'] || '',
       multipleSectionData,
     };
 
     Object.keys(policyData).forEach(
-      (key) => policyData[key] === "" && delete policyData[key]
+      (key) => policyData[key] === '' && delete policyData[key]
     );
 
     try {
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPrivacy/${editingPolicyId}`,
         {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(policyData),
-          credentials: "include",
+          credentials: 'include',
         }
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
 
       const result = await response.json();
-      console.log("Policy updated successfully:", result);
+      console.log('Policy updated successfully:', result);
 
-      setSuccessMessage("Policy updated successfully!");
+      setSuccessMessage('Policy updated successfully!');
       setIsSuccessModalOpen(true);
 
       await fetchPolicies(currentPage);
 
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
-      setPolicyName("");
+      setPolicyName('');
 
       setTimeout(() => {
         setIsSuccessModalOpen(false);
         closeModal();
       }, 2000);
     } catch (error) {
-      console.error("Error updating policy:", error);
-      setSuccessMessage("Failed to update policy.");
+      console.error('Error updating policy:', error);
+      setSuccessMessage('Failed to update policy.');
       setIsSuccessModalOpen(true);
     }
   };
 
   const handleDeletePolicy = async (policyId) => {
-    if (window.confirm("Are you sure you want to delete this policy?")) {
+    if (window.confirm('Are you sure you want to delete this policy?')) {
       try {
         const response = await fetch(
           `${BASE_URL}/api/data/policyManagerPrivacy/${policyId}`,
           {
-            method: "DELETE",
-            credentials: "include",
+            method: 'DELETE',
+            credentials: 'include',
           }
         );
 
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
 
         const result = await response.json();
-        console.log("Policy deleted successfully:", result);
+        console.log('Policy deleted successfully:', result);
 
         await fetchPolicies(currentPage);
       } catch (error) {
-        console.error("Error deleting policy:", error);
+        console.error('Error deleting policy:', error);
       }
     }
   };
@@ -580,16 +580,16 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
       const multipleSectionData = sections.map((section) => {
         const sectionData = {
-          documentNameIf: section.values["documentOptions"] || "",
-          classifierContains: section.values["containsOptions"] || "",
-          valueWith: section.values["withOptions"] || "",
-          documentNameThen: section.values["thenOptions"] || "",
-          classifierRole: section.values["roleOptions"] || "",
-          valueAt: section.values["atOptions"] || "",
+          documentNameIf: section.values['documentOptions'] || '',
+          classifierContains: section.values['containsOptions'] || '',
+          valueWith: section.values['withOptions'] || '',
+          documentNameThen: section.values['thenOptions'] || '',
+          classifierRole: section.values['roleOptions'] || '',
+          valueAt: section.values['atOptions'] || '',
         };
 
         Object.keys(sectionData).forEach(
-          (key) => sectionData[key] === "" && delete sectionData[key]
+          (key) => sectionData[key] === '' && delete sectionData[key]
         );
 
         return sectionData;
@@ -597,40 +597,40 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
       const policyData = {
         policyName: trimmedPolicyName,
-        documentStoreOptions: selectedOptions["documentStore"] || "",
+        documentStoreOptions: selectedOptions['documentStore'] || '',
         documentLocationOptions:
-          selectedOptions["documentLocationOptions"] || "",
+          selectedOptions['documentLocationOptions'] || '',
         multipleSectionData,
       };
 
       Object.keys(policyData).forEach(
-        (key) => policyData[key] === "" && delete policyData[key]
+        (key) => policyData[key] === '' && delete policyData[key]
       );
 
       const response = await fetch(
         `${BASE_URL}/api/data/policyManagerPrivacy`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(policyData),
-          credentials: "include",
+          credentials: 'include',
         }
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
 
       const result = await response.json();
-      console.log("Policy saved successfully:", result);
+      console.log('Policy saved successfully:', result);
 
       setIsSaveSuccessful(true);
 
       setSections([{ id: Date.now(), values: {} }]);
       setSelectedOptions({});
-      setPolicyName("");
+      setPolicyName('');
 
       await fetchPolicies();
 
@@ -639,7 +639,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         closeModal();
       }, 2000);
     } catch (error) {
-      console.error("Error saving policies:", error);
+      console.error('Error saving policies:', error);
     } finally {
       setLoading(false);
     }
@@ -656,12 +656,12 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
     if (policyToDownload) {
       const dataToDownload = JSON.stringify(policyToDownload, null, 2);
-      const blob = new Blob([dataToDownload], { type: "application/json" });
+      const blob = new Blob([dataToDownload], { type: 'application/json' });
       saveAs(blob, `policy_${policyId}.json`);
 
-      console.log("Data downloaded successfully");
+      console.log('Data downloaded successfully');
     } else {
-      console.error("Policy not found");
+      console.error('Policy not found');
     }
   };
 
@@ -690,18 +690,24 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
   // };
 
   const datas = {
-    documentStoreOptions: ["Document Store", "Share Point", "One Drive"],
+    documentStoreOptions: ['Document Store', 'Share Point', 'One Drive'],
     documentLocationOptions: [
-      "http://acmecorp.sharepoint.com/sites/operations",
-      "http://acmecorp.sharepoint.com/sites/marketing",
-      "http://acmecorp.sharepoint.com/sites/sales",
+      'http://acmecorp.sharepoint.com/sites/operations',
+      'http://acmecorp.sharepoint.com/sites/marketing',
+      'http://acmecorp.sharepoint.com/sites/sales',
     ],
-    documentOptions: ["Document1", "Document2", "Document3", "Document4"],
-    containsOptions: ["Name", "DOB", "SSN", "Age"],
-    withOptions: ["Confidential", "Private", "Public"],
-    thenOptions: ["Anonymize", "Tokenize", "Encrypt", "De-identification"],
-    roleOptions: ["Finance", "HR", "Operation"],
-    atOptions: ["All Times", "1 Day", "1 Week", "One Month", "1 Year"],
+    documentOptions: [
+      'Document1',
+      'Document2',
+      'Document3',
+      'Document4',
+      'Any',
+    ],
+    containsOptions: ['Name', 'DOB', 'SSN', 'Age'],
+    withOptions: ['Confidential', 'Private', 'Public'],
+    thenOptions: ['Anonymize', 'Tokenize', 'Encrypt', 'De-identification'],
+    roleOptions: ['Finance', 'HR', 'Operation'],
+    atOptions: ['All Times', '1 Day', '1 Week', 'One Month', '1 Year'],
   };
   return (
     <div ref={topRef}>
@@ -748,11 +754,11 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 <PrivacyCustomDropdown
                   options={datas.documentStoreOptions || []}
                   placeholder="Select Document Store"
-                  isOpen={openDropdown === "documentStore"}
-                  onDropdownClick={() => handleDropdownClick("documentStore")}
-                  selectedOption={selectedOptions["documentStore"]}
+                  isOpen={openDropdown === 'documentStore'}
+                  onDropdownClick={() => handleDropdownClick('documentStore')}
+                  selectedOption={selectedOptions['documentStore']}
                   onOptionClick={(option) =>
-                    handleOptionClick("documentStore", option)
+                    handleOptionClick('documentStore', option)
                   }
                 />
               </div>
@@ -763,13 +769,13 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 <PrivacyCustomDropdown
                   options={datas.documentLocationOptions || []}
                   placeholder="Select Document Location"
-                  isOpen={openDropdown === "documentLocationOptions"}
+                  isOpen={openDropdown === 'documentLocationOptions'}
                   onDropdownClick={() =>
-                    handleDropdownClick("documentLocationOptions")
+                    handleDropdownClick('documentLocationOptions')
                   }
-                  selectedOption={selectedOptions["documentLocationOptions"]}
+                  selectedOption={selectedOptions['documentLocationOptions']}
                   onOptionClick={(option) =>
-                    handleOptionClick("documentLocationOptions", option)
+                    handleOptionClick('documentLocationOptions', option)
                   }
                 />
               </div>
@@ -790,7 +796,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 <div className="flex flex-col w-full">
                   <span
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
-                    style={{ marginLeft: "85px" }}
+                    style={{ marginLeft: '85px' }}
                   >
                     Document Name
                   </span>
@@ -805,11 +811,11 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       onDropdownClick={() =>
                         handleDropdownClick1(section.id, 0)
                       }
-                      selectedOption={section.values["documentOptions"] || ""}
+                      selectedOption={section.values['documentOptions'] || ''}
                       setSelectedOption={(value) =>
                         handleDropdownChange(
                           section.id,
-                          "documentOptions",
+                          'documentOptions',
                           value
                         )
                       }
@@ -819,10 +825,10 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
               </div>
               <div className="flex basis-full sm:basis-full md:basis-full lg:basis-[33.333333%] xl:basis-[33.333333%] 2xl:basis-[33.333333%] items-baseline flex-col sm:flex-row ipad-if-prvcy">
                 <div className="flex flex-col w-full">
-                  {" "}
+                  {' '}
                   <span
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
-                    style={{ marginLeft: "85px" }}
+                    style={{ marginLeft: '85px' }}
                   >
                     Classifier
                   </span>
@@ -837,11 +843,11 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       onDropdownClick={() =>
                         handleDropdownClick1(section.id, 1)
                       }
-                      selectedOption={section.values["containsOptions"] || ""}
+                      selectedOption={section.values['containsOptions'] || ''}
                       setSelectedOption={(value) =>
                         handleDropdownChange(
                           section.id,
-                          "containsOptions",
+                          'containsOptions',
                           value
                         )
                       }
@@ -853,7 +859,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 <div className="flex flex-col w-full">
                   <span
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
-                    style={{ marginLeft: "85px" }}
+                    style={{ marginLeft: '85px' }}
                   >
                     Action
                   </span>
@@ -868,9 +874,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       onDropdownClick={() =>
                         handleDropdownClick1(section.id, 2)
                       }
-                      selectedOption={section.values["thenOptions"] || ""}
+                      selectedOption={section.values['thenOptions'] || ''}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "thenOptions", value)
+                        handleDropdownChange(section.id, 'thenOptions', value)
                       }
                     />
                   </div>
@@ -883,7 +889,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 <div className="flex flex-col w-full">
                   <span
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
-                    style={{ marginLeft: "85px" }}
+                    style={{ marginLeft: '85px' }}
                   >
                     Value
                   </span>
@@ -907,11 +913,11 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     <input
                       type="text"
                       id={`withOptions-${section.id}`}
-                      value={section.values["withOptions"] || ""}
+                      value={section.values['withOptions'] || ''}
                       onChange={(e) =>
                         handleInputChange(
                           section.id,
-                          "withOptions",
+                          'withOptions',
                           e.target.value
                         )
                       }
@@ -925,7 +931,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 <div className="flex flex-col w-full">
                   <span
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
-                    style={{ marginLeft: "85px" }}
+                    style={{ marginLeft: '85px' }}
                   >
                     Role
                   </span>
@@ -940,9 +946,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       onDropdownClick={() =>
                         handleDropdownClick1(section.id, 3)
                       }
-                      selectedOption={section.values["roleOptions"] || ""}
+                      selectedOption={section.values['roleOptions'] || ''}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "roleOptions", value)
+                        handleDropdownChange(section.id, 'roleOptions', value)
                       }
                     />
                   </div>
@@ -952,7 +958,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                 <div className="flex flex-col w-full">
                   <span
                     className="text-customGreen font-poppins font-semibold text-sm mb-4"
-                    style={{ marginLeft: "85px", visibility: "hidden" }}
+                    style={{ marginLeft: '85px', visibility: 'hidden' }}
                   >
                     At
                   </span>
@@ -967,9 +973,9 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                       onDropdownClick={() =>
                         handleDropdownClick1(section.id, 4)
                       }
-                      selectedOption={section.values["atOptions"] || ""}
+                      selectedOption={section.values['atOptions'] || ''}
                       setSelectedOption={(value) =>
-                        handleDropdownChange(section.id, "atOptions", value)
+                        handleDropdownChange(section.id, 'atOptions', value)
                       }
                     />
                   </div>
@@ -978,7 +984,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
             </div>
             <div
               className="flex justify-end gap-2 min-w-[100px] ifmarginleft"
-              style={{ marginRight: "17px" }}
+              style={{ marginRight: '17px' }}
             >
               {sections.length === 1 ? (
                 <div className="flex gap-2">
@@ -1030,26 +1036,26 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
 
       <div
         className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins  ${
-          isClickedAdd ? "hover:bg-customGreen hover:text-white" : ""
+          isClickedAdd ? 'hover:bg-customGreen hover:text-white' : ''
         }`}
         onClick={isEditMode ? handleUpdatePolicy : openModal}
       >
         <span
           className="transition-transform duration-300 ease-out"
           style={{
-            display: "inline-block",
-            letterSpacing: "0.2em",
+            display: 'inline-block',
+            letterSpacing: '0.2em',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.letterSpacing = "normal";
-            e.currentTarget.style.transform = "scale(0.95)";
+            e.currentTarget.style.letterSpacing = 'normal';
+            e.currentTarget.style.transform = 'scale(0.95)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.letterSpacing = "0.2em";
-            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.letterSpacing = '0.2em';
+            e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          {isEditMode ? "UPDATE POLICY" : "SAVE POLICY"}
+          {isEditMode ? 'UPDATE POLICY' : 'SAVE POLICY'}
         </span>
       </div>
 
@@ -1059,7 +1065,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
           onClick={() => {
             setIsEditMode(false);
             setEditingPolicyId(null);
-            setPolicyName("");
+            setPolicyName('');
             setSelectedOptions({});
             setSections([{ id: Date.now(), values: {} }]);
           }}
@@ -1106,12 +1112,12 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                     <li className="mb-6">
                       <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
                         <p className="text-white">
-                          <strong>Document Store:</strong>{" "}
-                          {selectedOptions["documentStore"]}
+                          <strong>Document Store:</strong>{' '}
+                          {selectedOptions['documentStore']}
                         </p>
                         <p className="text-white">
-                          <strong>Document Location:</strong>{" "}
-                          {selectedOptions["documentLocationOptions"]}
+                          <strong>Document Location:</strong>{' '}
+                          {selectedOptions['documentLocationOptions']}
                         </p>
                       </div>
                     </li>
@@ -1124,27 +1130,27 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                             </h3>
                           </div>
                           <div className="text-white">
-                            <strong>Document:</strong>{" "}
-                            {section.values["documentOptions"]}
+                            <strong>Document:</strong>{' '}
+                            {section.values['documentOptions']}
                           </div>
                           <div className="text-white">
-                            <strong>Contains:</strong>{" "}
-                            {section.values["containsOptions"]}
+                            <strong>Contains:</strong>{' '}
+                            {section.values['containsOptions']}
                           </div>
                           <div className="text-white">
-                            <strong>With:</strong>{" "}
-                            {section.values["withOptions"]}
+                            <strong>With:</strong>{' '}
+                            {section.values['withOptions']}
                           </div>
                           <div className="text-white">
-                            <strong>Action:</strong>{" "}
-                            {section.values["thenOptions"]}
+                            <strong>Action:</strong>{' '}
+                            {section.values['thenOptions']}
                           </div>
                           <div className="text-white">
-                            <strong>Role:</strong>{" "}
-                            {section.values["roleOptions"]}
+                            <strong>Role:</strong>{' '}
+                            {section.values['roleOptions']}
                           </div>
                           <div className="text-white">
-                            <strong>At:</strong> {section.values["atOptions"]}
+                            <strong>At:</strong> {section.values['atOptions']}
                           </div>
                         </div>
                       </li>
@@ -1177,7 +1183,7 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
                         Loading...
                       </>
                     ) : (
-                      "Confirm"
+                      'Confirm'
                     )}
                   </button>
                 </div>
@@ -1274,13 +1280,13 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
             <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
-              {successMessage.includes("Failed") ? "Failed" : "Success"}
+              {successMessage.includes('Failed') ? 'Failed' : 'Success'}
             </h2>
             <p
               className={
-                successMessage.includes("Failed")
-                  ? "text-red-500 text-center"
-                  : "text-green-500 text-center"
+                successMessage.includes('Failed')
+                  ? 'text-red-500 text-center'
+                  : 'text-green-500 text-center'
               }
             >
               {successMessage}
@@ -1301,8 +1307,8 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         <button
           className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
             currentPage === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-[#31B476] text-white hover:bg-[#28a165]'
           }`}
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -1317,8 +1323,8 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
         <button
           className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
             currentPage === totalPages
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-[#31B476] text-white hover:bg-[#28a165]'
           }`}
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
