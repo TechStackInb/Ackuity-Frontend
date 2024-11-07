@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./../App.css";
-import CustomDropdown from "../components/CustomDropdown";
+import React, { useEffect, useRef, useState } from 'react';
+import './../App.css';
+import CustomDropdown from '../components/CustomDropdown';
 import {
   faAngleDown,
   faClose,
@@ -13,16 +13,16 @@ import {
   faSearch,
   faSpinner,
   faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Dropdown from "../components/Dropdown";
-import PrivacyCustomDropdown from "../components/PrivacyCustomDropdown";
-import Modal from "../components/Model";
-import ThreeDotsButton from "../components/ThreeDotsButton";
-import userIcon from "../assets/usericon.svg";
-import iconsmodel from "../assets/save.svg";
-import { BASE_URL } from "../services/api";
-import ConfirmationModal from "../components/ConfirmationModal";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Dropdown from '../components/Dropdown';
+import PrivacyCustomDropdown from '../components/PrivacyCustomDropdown';
+import Modal from '../components/Model';
+import ThreeDotsButton from '../components/ThreeDotsButton';
+import userIcon from '../assets/usericon.svg';
+import iconsmodel from '../assets/save.svg';
+import { BASE_URL } from '../services/api';
+import ConfirmationModal from '../components/ConfirmationModal';
 // import GroupMembershipModal from "../components/GroupMembershipModal";
 // import EditPermissionsModal from "../components/EditPermissionsModal";
 
@@ -41,10 +41,10 @@ const Chart2DatabasePage = () => {
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [members, setMembers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
   const [isDeleteModel, setDeleteModel] = useState(false);
   const [selectedPolicyId, setSelectedPolicyId] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
@@ -104,7 +104,7 @@ const Chart2DatabasePage = () => {
   const [openEditMembershipIndex, setOpeneditMembershipIndex] = useState(null);
 
   const [searchResults, setSearchResults] = useState([]);
-  const [policyName, setPolicyName] = useState("");
+  const [policyName, setPolicyName] = useState('');
   const [isSaveSuccessful, setIsSaveSuccessful] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -125,7 +125,36 @@ const Chart2DatabasePage = () => {
 
   // console.log(membersBySection, "membersBySectiontext2sql");
 
-  console.log(sectionsPlus, "sectionsPlus");
+  console.log(sectionsPlus, 'sectionsPlus');
+
+  const [isListVisibleSelect, setIsListVisibleSelect] = useState(null);
+  const [isListVisibleInsert, setIsListVisibleInsert] = useState(null);
+  const [isListVisibleUpdate, setIsListVisibleUpdate] = useState(null);
+  const [isListVisibleDelete, setIsListVisibleDelete] = useState(null);
+
+  const toggleListVisibilitySelect = (sectionIndex) => {
+    setIsListVisibleSelect(
+      isListVisibleSelect === sectionIndex ? null : sectionIndex
+    );
+  };
+
+  const toggleListVisibilityInsert = (sectionIndex) => {
+    setIsListVisibleInsert(
+      isListVisibleInsert === sectionIndex ? null : sectionIndex
+    );
+  };
+
+  const toggleListVisibilityUpdate = (sectionIndex) => {
+    setIsListVisibleUpdate(
+      isListVisibleUpdate === sectionIndex ? null : sectionIndex
+    );
+  };
+
+  const toggleListVisibilityDelete = (sectionIndex) => {
+    setIsListVisibleDelete(
+      isListVisibleDelete === sectionIndex ? null : sectionIndex
+    );
+  };
 
   const toggleMembership = (index) => {
     setOpenMembershipIndex((prevIndex) => (prevIndex === index ? null : index));
@@ -152,21 +181,21 @@ const Chart2DatabasePage = () => {
       const response = await fetch(
         `${BASE_URL}/api/data/PolicyManagerText2SQL?page=${page}&limit=6`,
         {
-          method: "GET",
-          credentials: "include",
+          method: 'GET',
+          credentials: 'include',
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch data");
+        throw new Error('Failed to fetch data');
       }
 
       const result = await response.json();
-      setTableData(result.data); 
+      setTableData(result.data);
       setCurrentPage(result.currentPage);
       setTotalPages(result.totalPages);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     }
   };
 
@@ -190,16 +219,16 @@ const Chart2DatabasePage = () => {
         const response = await fetch(
           `${BASE_URL}/api/data/members?query=${query}&page=${currentPage}&limit=100`,
           {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
-            credentials: "include",
+            credentials: 'include',
           }
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch members");
+          throw new Error('Failed to fetch members');
         }
 
         const data = await response.json();
@@ -221,7 +250,7 @@ const Chart2DatabasePage = () => {
           setTotalPages(data.totalPages);
         }
       } catch (error) {
-        console.error("Error fetching members:", error);
+        console.error('Error fetching members:', error);
       }
     } else {
       setSearchResults([]);
@@ -239,7 +268,7 @@ const Chart2DatabasePage = () => {
     setOpenDropdown(null);
 
     if (errorMessage) {
-      setErrorMessage("");
+      setErrorMessage('');
     }
   };
 
@@ -274,22 +303,22 @@ const Chart2DatabasePage = () => {
 
     const cleanSection = (section) => {
       return Object.fromEntries(
-        Object.entries(section).filter(([_, v]) => v !== "")
+        Object.entries(section).filter(([_, v]) => v !== '')
       );
     };
 
     const plusData = sectionsPlus.map((section) =>
       cleanSection({
-        ONname: section.values["dataFeildOption"] || "",
-        ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
-        ONprivacyFilteringTransformValue: "transformation value",
-        ONattributeFilteringAttribute: section.values["attributeOption"] || "",
-        ONattributeFilteringValue: section.values["attributeValueOption"] || "",
+        ONname: section.values['dataFeildOption'] || '',
+        ONprivacyFilteringAction: section.values['privacyActionOption'] || '',
+        ONprivacyFilteringTransformValue: 'transformation value',
+        ONattributeFilteringAttribute: section.values['attributeOption'] || '',
+        ONattributeFilteringValue: section.values['attributeValueOption'] || '',
         ONattributeFilteringAction:
-          section.values["attributeActionOption"] || "",
-        ONattributeFilteringTransformationValue: "",
+          section.values['attributeActionOption'] || '',
+        ONattributeFilteringTransformationValue: '',
         rowLevelFilteringBasedonValue:
-          section.values["rowLevelFilterinOption"] || "",
+          section.values['rowLevelFilterinOption'] || '',
       })
     );
 
@@ -303,8 +332,8 @@ const Chart2DatabasePage = () => {
       configurePermissionsUpdateRevised,
       configurePermissionsDeleteExisting,
       configurePermissionsDeleteRevised,
-      ONdataStore: selectedOptions["dataStoreOptions"],
-      ONtableView: selectedOptions["tableOptions"],
+      ONdataStore: selectedOptions['dataStoreOptions'],
+      ONtableView: selectedOptions['tableOptions'],
       plusData,
     };
 
@@ -315,25 +344,25 @@ const Chart2DatabasePage = () => {
       const response = await fetch(
         `${BASE_URL}/api/data/PolicyManagerText2SQL`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-          credentials: "include",
+          credentials: 'include',
           body: JSON.stringify(postData),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
       await fetchData();
 
       const result = await response.json();
-      console.log("Policy saved successfully:", result);
+      console.log('Policy saved successfully:', result);
       setIsSaveSuccessful(true);
       setSelectedOptions({});
-      setPolicyName("");
+      setPolicyName('');
       setMembersBySection([[], [], [], []]);
       setSectionsPlus([{ id: Date.now(), values: {} }]);
 
@@ -342,7 +371,7 @@ const Chart2DatabasePage = () => {
         closeModal();
       }, 2000);
     } catch (error) {
-      console.error("Error saving policy:", error);
+      console.error('Error saving policy:', error);
       setIsSaveSuccessful(false);
     } finally {
       setLoading(false);
@@ -357,15 +386,15 @@ const Chart2DatabasePage = () => {
       user,
     ];
 
-    setMembersBySection(updatedMembersBySection); 
-    setSearchResults(searchResults.filter((u) => u._id !== user._id)); 
-    setSearchQuery(""); 
+    setMembersBySection(updatedMembersBySection);
+    setSearchResults(searchResults.filter((u) => u._id !== user._id));
+    setSearchQuery('');
   };
 
   const removeMember = (memberIndex, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
     updatedMembersBySection[sectionIndex].splice(memberIndex, 1);
-    setMembersBySection(updatedMembersBySection); 
+    setMembersBySection(updatedMembersBySection);
   };
 
   const handleSavePolicy = () => {
@@ -456,7 +485,7 @@ const Chart2DatabasePage = () => {
   // };
 
   const handleEditButtonClick = async (policyId) => {
-    topRef.current?.scrollIntoView({ behavior: "smooth" });
+    topRef.current?.scrollIntoView({ behavior: 'smooth' });
     setIsSaveSuccessful(false);
 
     try {
@@ -488,16 +517,16 @@ const Chart2DatabasePage = () => {
             rowLevelFilterinOption: section.rowLevelFilteringBasedonValue,
           },
         }));
-        console.log(sectionsData, "sectionsData");
+        console.log(sectionsData, 'sectionsData');
         setSectionsPlus(sectionsData);
 
         setMembersBySection(organizedMembers);
         setPolicyId(policyId);
       } else {
-        console.log("No policy found with the given policyId.");
+        console.log('No policy found with the given policyId.');
       }
     } catch (error) {
-      console.error("Error during handleEditButtonClick:", error);
+      console.error('Error during handleEditButtonClick:', error);
     }
   };
 
@@ -521,7 +550,7 @@ const Chart2DatabasePage = () => {
 
     const cleanSection = (section) => {
       return Object.fromEntries(
-        Object.entries(section).filter(([_, v]) => v !== "")
+        Object.entries(section).filter(([_, v]) => v !== '')
       );
     };
 
@@ -537,14 +566,14 @@ const Chart2DatabasePage = () => {
 
     const plusData = sectionsPlus.map((section) =>
       cleanSection({
-        ONname: section.values["dataFeildOption"] || "",
-        ONprivacyFilteringAction: section.values["privacyActionOption"] || "",
-        ONattributeFilteringAttribute: section.values["attributeOption"] || "",
-        ONattributeFilteringValue: section.values["attributeValueOption"] || "",
+        ONname: section.values['dataFeildOption'] || '',
+        ONprivacyFilteringAction: section.values['privacyActionOption'] || '',
+        ONattributeFilteringAttribute: section.values['attributeOption'] || '',
+        ONattributeFilteringValue: section.values['attributeValueOption'] || '',
         ONattributeFilteringAction:
-          section.values["attributeActionOption"] || "",
+          section.values['attributeActionOption'] || '',
         rowLevelFilteringBasedonValue:
-          section.values["rowLevelFilterinOption"] || "",
+          section.values['rowLevelFilterinOption'] || '',
       })
     );
 
@@ -554,15 +583,15 @@ const Chart2DatabasePage = () => {
       configurePermissionsInsertRevised,
       configurePermissionsUpdateRevised,
       configurePermissionsDeleteRevised,
-      ONdataStore: selectedOptions["dataStoreOptions"],
-      ONtableView: selectedOptions["tableOptions"],
+      ONdataStore: selectedOptions['dataStoreOptions'],
+      ONtableView: selectedOptions['tableOptions'],
       plusData,
     };
 
-    console.log("Updating policy with ID:", policyId);
+    console.log('Updating policy with ID:', policyId);
 
     if (!policyId) {
-      console.error("Invalid policy ID.");
+      console.error('Invalid policy ID.');
       return;
     }
 
@@ -570,26 +599,26 @@ const Chart2DatabasePage = () => {
       const response = await fetch(
         `${BASE_URL}/api/data/PolicyManagerText2SQL/${policyId}`,
         {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(updatedPolicy),
-          credentials: "include",
+          credentials: 'include',
         }
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
 
       const result = await response.json();
-      console.log("Policy updated successfully:", result);
+      console.log('Policy updated successfully:', result);
 
-      setSuccessMessage("Policy updated successfully!");
+      setSuccessMessage('Policy updated successfully!');
       setIsSuccessModalOpen(true);
       setSelectedOptions({});
-      setPolicyName("");
+      setPolicyName('');
       setMembersBySection([[], [], [], []]);
       setPolicyId(null);
       setSectionsPlus([{ id: Date.now(), values: {} }]);
@@ -601,7 +630,7 @@ const Chart2DatabasePage = () => {
         closeModal();
       }, 2000);
     } catch (error) {
-      console.error("Error updating policy:", error);
+      console.error('Error updating policy:', error);
       setIsSaveSuccessful(false);
     }
   };
@@ -616,22 +645,21 @@ const Chart2DatabasePage = () => {
       const response = await fetch(
         `${BASE_URL}/api/data/PolicyManagerText2SQL/${selectedPolicyId}`,
         {
-          method: "DELETE",
-          credentials: "include",
+          method: 'DELETE',
+          credentials: 'include',
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to delete policy");
+        throw new Error('Failed to delete policy');
       }
 
-      console.log("Policy deleted successfully");
+      console.log('Policy deleted successfully');
 
-  
       await fetchData();
       setDeleteModel(false);
     } catch (error) {
-      console.error("Error deleting policy:", error);
+      console.error('Error deleting policy:', error);
     }
   };
 
@@ -640,27 +668,27 @@ const Chart2DatabasePage = () => {
 
     if (policyToDownload) {
       const dataToDownload = JSON.stringify(policyToDownload, null, 2);
-      const blob = new Blob([dataToDownload], { type: "application/json" });
+      const blob = new Blob([dataToDownload], { type: 'application/json' });
       saveAs(blob, `policy_${id}.json`);
 
-      console.log("Data downloaded successfully");
+      console.log('Data downloaded successfully');
     } else {
-      console.error("Policy not found");
+      console.error('Policy not found');
     }
   };
-  console.log(members, "members");
+  console.log(members, 'members');
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
   const addSection = () => {
-    console.log(sections, "first");
+    console.log(sections, 'first');
     setSections([...sections, { id: Date.now(), values: {} }]);
   };
 
   const addSectionPlus = () => {
-    console.log(sections, "first");
+    console.log(sections, 'first');
     setSectionsPlus([...sectionsPlus, { id: Date.now(), values: {} }]);
   };
 
@@ -682,9 +710,9 @@ const Chart2DatabasePage = () => {
 
   const handleDropdownClick = (dropdownKey) => {
     if (openDropdown === dropdownKey) {
-      setOpenDropdown(null); 
+      setOpenDropdown(null);
     } else {
-      setOpenDropdown(dropdownKey); 
+      setOpenDropdown(dropdownKey);
     }
   };
 
@@ -693,21 +721,27 @@ const Chart2DatabasePage = () => {
       ...selectedOptions,
       [dropdownKey]: option,
     });
-
   };
 
   const data = {
-    dataStoreOptions: ["DB1", "DB2", "DB3"],
-    tableOptions: ["TABLE1", "TABLE2", "TABLE3"],
-    dataFeildOption: ["Opportunity Name", "Account Name", "Amount", "Age"],
-    genAiAppOptions: ["App1", "App2", "App3", "App4"],
-    locationOption: ["Department", "Location"],
-    privacyValueOption: ["Name", "DOB", "SSN", "None"],
-    privacyActionOption: ["Anonymize", "Tokenize", "None", "De-Identification"],
-    attributeOption: ["Department", "Location"],
-    attributeValueOption: ["Asia", "North America"],
-    attributeActionOption: ["Allow", "Redact"],
-    rowLevelFilterinOption: ["XYZ Corp", "ABC Corp", "DEF Corp", "MNO Corp"],
+    dataStoreOptions: ['DB1', 'DB2', 'DB3'],
+    tableOptions: ['TABLE1', 'TABLE2', 'TABLE3'],
+    dataFeildOption: ['Opportunity Name', 'Account Name', 'Amount', 'Age'],
+    genAiAppOptions: ['App1', 'App2', 'App3', 'App4'],
+    locationOption: ['Department', 'Location'],
+    privacyValueOption: ['Name', 'DOB', 'SSN', 'None'],
+    privacyActionOption: ['Anonymize', 'Tokenize', 'None', 'De-Identification'],
+    attributeOption: ['Department', 'Location'],
+    attributeValueOption: [
+      'Asia',
+      'North America',
+      'Sales',
+      'Human Resources',
+      'Finance',
+      'Operations',
+    ],
+    attributeActionOption: ['Allow', 'Redact'],
+    rowLevelFilterinOption: ['XYZ Corp', 'ABC Corp', 'DEF Corp', 'MNO Corp'],
   };
 
   const [isGroupMembershipOpen, setGroupMembershipOpen] = useState(false);
@@ -823,39 +857,22 @@ const Chart2DatabasePage = () => {
                                   <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                     {sectionIndex === 0 && (
                                       <div className="relative">
-                                        <div className="flex flex-wrap">
-                                          <div className="px-4 flex gap-4">
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Vinod")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
-                                                selectedItems.includes("Vinod")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Vinod
-                                            </button>
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Rajat")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4 py-2  ${
-                                                selectedItems.includes("Rajat")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Rajat
-                                            </button>
-
-                                            <div className="flex ">
+                                        <div className="flex  flex-col items-start">
+                                          <div className="px-4 flex flex-col">
+                                            <span className="text-white block text-base font-poppins ">
+                                              Alice Evans,
+                                            </span>
+                                            <span className="text-white block text-base font-poppins">
+                                              Bob Rogers,
+                                            </span>
+                                          </div>
+                                          <div className="px-4 flex">
+                                            <div className="">
                                               <button
                                                 onClick={() =>
-                                                  toggleMembership(index)
+                                                  toggleListVisibilitySelect(
+                                                    sectionIndex
+                                                  )
                                                 }
                                               >
                                                 <ThreeDotsButton />
@@ -864,37 +881,36 @@ const Chart2DatabasePage = () => {
                                           </div>
                                         </div>
 
-                                  
-                                        {openMembershipIndex === index && (
+                                        {isListVisibleSelect ===
+                                          sectionIndex && (
                                           <>
-                                      
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } 
+                                              }
                                             />
 
-                                         
                                             <div
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } 
+                                              }
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                           
                                                 <button
                                                   className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                                   onClick={() =>
-                                                    toggleMembership(index)
+                                                    toggleListVisibilitySelect(
+                                                      null
+                                                    )
                                                   }
                                                   style={{
-                                                    width: "29px",
-                                                    height: "29px",
-                                                    background: "#FFFFFF",
+                                                    width: '29px',
+                                                    height: '29px',
+                                                    background: '#FFFFFF',
                                                     border:
-                                                      "2px solid #31B47663",
+                                                      '2px solid #31B47663',
                                                     opacity: 1,
                                                   }}
                                                 >
@@ -915,62 +931,46 @@ const Chart2DatabasePage = () => {
 
                                                   <div className="space-y-4">
                                                     <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        // style={{
-                                                        //   width: "47px",
-                                                        //   height: "47px",
-                                                        //   background: "#FFFFFF",
-                                                        //   opacity: 1,
-                                                        // }}
-                                                      >
+                                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                                         <img
                                                           src={userIcon}
                                                           alt="icons"
                                                           style={{
-                                                            width: "47px",
-                                                            height: "47px",
+                                                            width: '47px',
+                                                            height: '47px',
                                                           }}
                                                         />
                                                       </div>
                                                       <div className="flex flex-col ml-3">
                                                         <span className="text-white block text-base font-poppins font-semibold">
-                                                          Vinod Vasudevan
+                                                          Alice Evans
                                                         </span>
                                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
+                                                          Member{' '}
                                                           <FontAwesomeIcon
                                                             icon={faAngleDown}
                                                           />
                                                         </span>
                                                       </div>
                                                     </div>
-                                                    <div className="border-t border-gray-600"></div>
+
                                                     <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        style={{
-                                                          width: "47px",
-                                                          height: "47px",
-                                                          background: "#FFFFFF",
-                                                          opacity: 1,
-                                                        }}
-                                                      >
+                                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                                         <img
                                                           src={userIcon}
                                                           alt="icons"
                                                           style={{
-                                                            width: "47px",
-                                                            height: "47px",
+                                                            width: '47px',
+                                                            height: '47px',
                                                           }}
                                                         />
                                                       </div>
                                                       <div className="flex flex-col ml-3">
                                                         <span className="text-white block text-base font-poppins font-semibold">
-                                                          Rajat Mohanty
+                                                          Bob Rogers
                                                         </span>
                                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
+                                                          Member{' '}
                                                           <FontAwesomeIcon
                                                             icon={faAngleDown}
                                                           />
@@ -987,39 +987,22 @@ const Chart2DatabasePage = () => {
                                     )}
                                     {sectionIndex === 1 && (
                                       <div className="relative">
-                                        <div className="flex flex-wrap">
-                                          <div className="px-4 flex gap-4">
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Vinod1")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
-                                                selectedItems.includes("Vinod1")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Vinod
-                                            </button>
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Rajat1")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4 py-2  ${
-                                                selectedItems.includes("Rajat1")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Rajat
-                                            </button>
-
-                                            <div className="flex ">
+                                        <div className="flex  flex-col items-start">
+                                          <div className="px-4 flex flex-col">
+                                            <span className="text-white block text-base font-poppins">
+                                              Aiden Harper,
+                                            </span>
+                                            <span className="text-white block text-base font-poppins">
+                                              Lila Montgomery,
+                                            </span>
+                                          </div>
+                                          <div className="px-4 flex">
+                                            <div className="">
                                               <button
                                                 onClick={() =>
-                                                  toggleMembership(index)
+                                                  toggleListVisibilityInsert(
+                                                    sectionIndex
+                                                  )
                                                 }
                                               >
                                                 <ThreeDotsButton />
@@ -1028,37 +1011,36 @@ const Chart2DatabasePage = () => {
                                           </div>
                                         </div>
 
-                                
-                                        {openMembershipIndex === index && (
+                                        {isListVisibleInsert ===
+                                          sectionIndex && (
                                           <>
-                                            {/* Overlay */}
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } 
+                                              }
                                             />
 
-                                            {/* Membership Modal */}
                                             <div
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } 
+                                              }
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                                {/* Close button */}
                                                 <button
                                                   className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                                   onClick={() =>
-                                                    toggleMembership(index)
+                                                    toggleListVisibilityInsert(
+                                                      null
+                                                    )
                                                   }
                                                   style={{
-                                                    width: "29px",
-                                                    height: "29px",
-                                                    background: "#FFFFFF",
+                                                    width: '29px',
+                                                    height: '29px',
+                                                    background: '#FFFFFF',
                                                     border:
-                                                      "2px solid #31B47663",
+                                                      '2px solid #31B47663',
                                                     opacity: 1,
                                                   }}
                                                 >
@@ -1079,30 +1061,22 @@ const Chart2DatabasePage = () => {
 
                                                   <div className="space-y-4">
                                                     <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        // style={{
-                                                        //   width: "47px",
-                                                        //   height: "47px",
-                                                        //   background: "#FFFFFF",
-                                                        //   opacity: 1,
-                                                        // }}
-                                                      >
+                                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                                         <img
                                                           src={userIcon}
                                                           alt="icons"
                                                           style={{
-                                                            width: "47px",
-                                                            height: "47px",
+                                                            width: '47px',
+                                                            height: '47px',
                                                           }}
                                                         />
                                                       </div>
                                                       <div className="flex flex-col ml-3">
                                                         <span className="text-white block text-base font-poppins font-semibold">
-                                                          Vinod Vasudevan
+                                                          Aiden Harper
                                                         </span>
                                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
+                                                          Member{' '}
                                                           <FontAwesomeIcon
                                                             icon={faAngleDown}
                                                           />
@@ -1114,9 +1088,9 @@ const Chart2DatabasePage = () => {
                                                       <div
                                                         className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
                                                         style={{
-                                                          width: "47px",
-                                                          height: "47px",
-                                                          background: "#FFFFFF",
+                                                          width: '47px',
+                                                          height: '47px',
+                                                          background: '#FFFFFF',
                                                           opacity: 1,
                                                         }}
                                                       >
@@ -1124,17 +1098,17 @@ const Chart2DatabasePage = () => {
                                                           src={userIcon}
                                                           alt="icons"
                                                           style={{
-                                                            width: "47px",
-                                                            height: "47px",
+                                                            width: '47px',
+                                                            height: '47px',
                                                           }}
                                                         />
                                                       </div>
                                                       <div className="flex flex-col ml-3">
                                                         <span className="text-white block text-base font-poppins font-semibold">
-                                                          Rajat Mohanty
+                                                          Lila Montgomery
                                                         </span>
                                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
+                                                          Member{' '}
                                                           <FontAwesomeIcon
                                                             icon={faAngleDown}
                                                           />
@@ -1151,39 +1125,22 @@ const Chart2DatabasePage = () => {
                                     )}
                                     {sectionIndex === 2 && (
                                       <div className="relative">
-                                        <div className="flex flex-wrap">
-                                          <div className="px-4 flex gap-4">
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Vinod2")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
-                                                selectedItems.includes("Vinod2")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Vinod
-                                            </button>
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Rajat2")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4 py-2  ${
-                                                selectedItems.includes("Rajat2")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Rajat
-                                            </button>
-
-                                            <div className="flex ">
+                                        <div className="flex  flex-col items-start">
+                                          <div className="px-4 flex flex-col">
+                                            <span className="text-white block text-base font-poppins">
+                                              Ethan Caldwell,
+                                            </span>
+                                            <span className="text-white block text-base font-poppins">
+                                              Sophie Bennett,
+                                            </span>
+                                          </div>
+                                          <div className="px-4 flex">
+                                            <div className="">
                                               <button
                                                 onClick={() =>
-                                                  toggleMembership(index)
+                                                  toggleListVisibilityUpdate(
+                                                    sectionIndex
+                                                  )
                                                 }
                                               >
                                                 <ThreeDotsButton />
@@ -1192,36 +1149,36 @@ const Chart2DatabasePage = () => {
                                           </div>
                                         </div>
 
-                                        {openMembershipIndex === index && (
+                                        {isListVisibleUpdate ===
+                                          sectionIndex && (
                                           <>
-                                        
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } 
+                                              }
                                             />
 
-                                            {/* Membership Modal */}
                                             <div
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
                                                 e.stopPropagation()
-                                              } 
+                                              }
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                                {/* Close button */}
                                                 <button
                                                   className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                                   onClick={() =>
-                                                    toggleMembership(index)
+                                                    toggleListVisibilityUpdate(
+                                                      null
+                                                    )
                                                   }
                                                   style={{
-                                                    width: "29px",
-                                                    height: "29px",
-                                                    background: "#FFFFFF",
+                                                    width: '29px',
+                                                    height: '29px',
+                                                    background: '#FFFFFF',
                                                     border:
-                                                      "2px solid #31B47663",
+                                                      '2px solid #31B47663',
                                                     opacity: 1,
                                                   }}
                                                 >
@@ -1242,30 +1199,22 @@ const Chart2DatabasePage = () => {
 
                                                   <div className="space-y-4">
                                                     <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        // style={{
-                                                        //   width: "47px",
-                                                        //   height: "47px",
-                                                        //   background: "#FFFFFF",
-                                                        //   opacity: 1,
-                                                        // }}
-                                                      >
+                                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                                         <img
                                                           src={userIcon}
                                                           alt="icons"
                                                           style={{
-                                                            width: "47px",
-                                                            height: "47px",
+                                                            width: '47px',
+                                                            height: '47px',
                                                           }}
                                                         />
                                                       </div>
                                                       <div className="flex flex-col ml-3">
                                                         <span className="text-white block text-base font-poppins font-semibold">
-                                                          Vinod Vasudevan
+                                                          Ethan Caldwell
                                                         </span>
                                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
+                                                          Member{' '}
                                                           <FontAwesomeIcon
                                                             icon={faAngleDown}
                                                           />
@@ -1277,9 +1226,9 @@ const Chart2DatabasePage = () => {
                                                       <div
                                                         className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
                                                         style={{
-                                                          width: "47px",
-                                                          height: "47px",
-                                                          background: "#FFFFFF",
+                                                          width: '47px',
+                                                          height: '47px',
+                                                          background: '#FFFFFF',
                                                           opacity: 1,
                                                         }}
                                                       >
@@ -1287,17 +1236,17 @@ const Chart2DatabasePage = () => {
                                                           src={userIcon}
                                                           alt="icons"
                                                           style={{
-                                                            width: "47px",
-                                                            height: "47px",
+                                                            width: '47px',
+                                                            height: '47px',
                                                           }}
                                                         />
                                                       </div>
                                                       <div className="flex flex-col ml-3">
                                                         <span className="text-white block text-base font-poppins font-semibold">
-                                                          Rajat Mohanty
+                                                          Sophie Bennett
                                                         </span>
                                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
+                                                          Member{' '}
                                                           <FontAwesomeIcon
                                                             icon={faAngleDown}
                                                           />
@@ -1314,39 +1263,19 @@ const Chart2DatabasePage = () => {
                                     )}
                                     {sectionIndex === 3 && (
                                       <div className="relative">
-                                        <div className="flex flex-wrap">
-                                          <div className="px-4 flex gap-4">
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Vinod3")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4  ${
-                                                selectedItems.includes("Vinod3")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Vinod
-                                            </button>
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                handleClick("Rajat3")
-                                              }
-                                              className={`border border-green-500 font-poppins font-normal text-[#FFFFFF] px-4 py-2  ${
-                                                selectedItems.includes("Rajat3")
-                                                  ? "text-white bg-[#0a854b]"
-                                                  : "bg-black"
-                                              }`}
-                                            >
-                                              Rajat
-                                            </button>
-
-                                            <div className="flex ">
+                                        <div className="flex  flex-col items-start">
+                                          <div className="px-4 flex flex-col">
+                                            <span className="text-white block text-base font-poppins">
+                                              Lucas Hayes
+                                            </span>
+                                          </div>
+                                          <div className="px-4 flex">
+                                            <div className="">
                                               <button
                                                 onClick={() =>
-                                                  toggleMembership(index)
+                                                  toggleListVisibilityDelete(
+                                                    sectionIndex
+                                                  )
                                                 }
                                               >
                                                 <ThreeDotsButton />
@@ -1355,18 +1284,16 @@ const Chart2DatabasePage = () => {
                                           </div>
                                         </div>
 
-                                        {/* Show membership modal only if this row's index is open */}
-                                        {openMembershipIndex === index && (
+                                        {isListVisibleDelete ===
+                                          sectionIndex && (
                                           <>
-                                            {/* Overlay */}
                                             <div
                                               className="fixed inset-0 bg-black opacity-50 z-40"
                                               onClick={() =>
                                                 toggleMembership(index)
-                                              } 
+                                              }
                                             />
 
-                                            {/* Membership Modal */}
                                             <div
                                               className="fixed inset-0 flex items-center justify-center z-50"
                                               onClick={(e) =>
@@ -1374,18 +1301,19 @@ const Chart2DatabasePage = () => {
                                               }
                                             >
                                               <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                                {/* Close button */}
                                                 <button
                                                   className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                                   onClick={() =>
-                                                    toggleMembership(index)
+                                                    toggleListVisibilityDelete(
+                                                      null
+                                                    )
                                                   }
                                                   style={{
-                                                    width: "29px",
-                                                    height: "29px",
-                                                    background: "#FFFFFF",
+                                                    width: '29px',
+                                                    height: '29px',
+                                                    background: '#FFFFFF',
                                                     border:
-                                                      "2px solid #31B47663",
+                                                      '2px solid #31B47663',
                                                     opacity: 1,
                                                   }}
                                                 >
@@ -1400,68 +1328,28 @@ const Chart2DatabasePage = () => {
                                                 <div className="p-4">
                                                   <div className="flex justify-between items-center mb-4">
                                                     <span className="text-white text-sm font-poppins font-medium">
-                                                      2 Members
+                                                      1 Members
                                                     </span>
                                                   </div>
 
                                                   <div className="space-y-4">
                                                     <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        // style={{
-                                                        //   width: "47px",
-                                                        //   height: "47px",
-                                                        //   background: "#FFFFFF",
-                                                        //   opacity: 1,
-                                                        // }}
-                                                      >
+                                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                                         <img
                                                           src={userIcon}
                                                           alt="icons"
                                                           style={{
-                                                            width: "47px",
-                                                            height: "47px",
+                                                            width: '47px',
+                                                            height: '47px',
                                                           }}
                                                         />
                                                       </div>
                                                       <div className="flex flex-col ml-3">
                                                         <span className="text-white block text-base font-poppins font-semibold">
-                                                          Vinod Vasudevan
+                                                          Lucas Hayes
                                                         </span>
                                                         <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
-                                                          <FontAwesomeIcon
-                                                            icon={faAngleDown}
-                                                          />
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div className="border-t border-gray-600"></div>
-                                                    <div className="flex ">
-                                                      <div
-                                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                        style={{
-                                                          width: "47px",
-                                                          height: "47px",
-                                                          background: "#FFFFFF",
-                                                          opacity: 1,
-                                                        }}
-                                                      >
-                                                        <img
-                                                          src={userIcon}
-                                                          alt="icons"
-                                                          style={{
-                                                            width: "47px",
-                                                            height: "47px",
-                                                          }}
-                                                        />
-                                                      </div>
-                                                      <div className="flex flex-col ml-3">
-                                                        <span className="text-white block text-base font-poppins font-semibold">
-                                                          Rajat Mohanty
-                                                        </span>
-                                                        <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{" "}
+                                                          Member{' '}
                                                           <FontAwesomeIcon
                                                             icon={faAngleDown}
                                                           />
@@ -1493,10 +1381,10 @@ const Chart2DatabasePage = () => {
                                             <button
                                               className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
                                               style={{
-                                                width: "29px",
-                                                height: "29px",
-                                                background: "#FFFFFF00",
-                                                border: "2px solid #31B47663",
+                                                width: '29px',
+                                                height: '29px',
+                                                background: '#FFFFFF00',
+                                                border: '2px solid #31B47663',
                                               }}
                                               onMouseEnter={() =>
                                                 setHoveredRemoveIndex(index)
@@ -1530,7 +1418,7 @@ const Chart2DatabasePage = () => {
                                     {members.length > 0 ? (
                                       members.map((member, memberIndex) => (
                                         <div
-                                          key={member._id} 
+                                          key={member._id}
                                           className="flex justify-between items-center mb-2"
                                         >
                                           <span className="text-white block text-base font-poppins font-semibold">
@@ -1539,10 +1427,10 @@ const Chart2DatabasePage = () => {
                                           <button
                                             className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
                                             style={{
-                                              width: "29px",
-                                              height: "29px",
-                                              background: "#FFFFFF00",
-                                              border: "2px solid #31B47663",
+                                              width: '29px',
+                                              height: '29px',
+                                              background: '#FFFFFF00',
+                                              border: '2px solid #31B47663',
                                             }}
                                             onMouseEnter={() =>
                                               setHoveredRemoveIndex(index)
@@ -1603,9 +1491,9 @@ const Chart2DatabasePage = () => {
                                                   )
                                                 }
                                                 style={{
-                                                  width: "29px",
-                                                  height: "29px",
-                                                  border: "2px solid #31B47663",
+                                                  width: '29px',
+                                                  height: '29px',
+                                                  border: '2px solid #31B47663',
                                                 }}
                                               >
                                                 &times;
@@ -1627,8 +1515,8 @@ const Chart2DatabasePage = () => {
                                                         src={userIcon}
                                                         alt="icons"
                                                         style={{
-                                                          width: "47px",
-                                                          height: "47px",
+                                                          width: '47px',
+                                                          height: '47px',
                                                         }}
                                                       />
                                                     </div>
@@ -1637,7 +1525,7 @@ const Chart2DatabasePage = () => {
                                                         {member.name}
                                                       </span>
                                                       <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                        Member{" "}
+                                                        Member{' '}
                                                         <FontAwesomeIcon
                                                           icon={faAngleDown}
                                                         />
@@ -1653,11 +1541,11 @@ const Chart2DatabasePage = () => {
                                                       )
                                                     }
                                                     style={{
-                                                      width: "29px",
-                                                      height: "29px",
-                                                      background: "#FFFFFF00",
+                                                      width: '29px',
+                                                      height: '29px',
+                                                      background: '#FFFFFF00',
                                                       border:
-                                                        "2px solid #31B47663",
+                                                        '2px solid #31B47663',
                                                     }}
                                                   >
                                                     <FontAwesomeIcon
@@ -1694,8 +1582,8 @@ const Chart2DatabasePage = () => {
                                                         <img
                                                           src={userIcon}
                                                           style={{
-                                                            width: "29px",
-                                                            height: "29px",
+                                                            width: '29px',
+                                                            height: '29px',
                                                           }}
                                                           alt="User Icon"
                                                         />
@@ -1710,14 +1598,14 @@ const Chart2DatabasePage = () => {
                                                             user,
                                                             sectionIndex
                                                           )
-                                                        } 
+                                                        }
                                                         style={{
-                                                          width: "29px",
-                                                          height: "29px",
+                                                          width: '29px',
+                                                          height: '29px',
                                                           background:
-                                                            "#FFFFFF00",
+                                                            '#FFFFFF00',
                                                           border:
-                                                            "2px solid #31B47663",
+                                                            '2px solid #31B47663',
                                                         }}
                                                       >
                                                         <FontAwesomeIcon
@@ -1798,15 +1686,15 @@ const Chart2DatabasePage = () => {
                         <PrivacyCustomDropdown
                           options={data.dataStoreOptions || []}
                           placeholder="DB1"
-                          isOpen={openDropdown === "dataStoreOptions"}
+                          isOpen={openDropdown === 'dataStoreOptions'}
                           onDropdownClick={() =>
-                            handleDropdownClick("dataStoreOptions")
+                            handleDropdownClick('dataStoreOptions')
                           }
-                          selectedOption={selectedOptions["dataStoreOptions"]}
+                          selectedOption={selectedOptions['dataStoreOptions']}
                           onOptionClick={(option) => {
-                            handleOptionClick("dataStoreOptions", option);
+                            handleOptionClick('dataStoreOptions', option);
                             if (option) {
-                              setErrorMessage(""); // Clear error message if a valid option is selected
+                              setErrorMessage(''); // Clear error message if a valid option is selected
                             }
                             setOpenDropdown(null); // Close the dropdown after selecting an option
                           }}
@@ -1831,15 +1719,15 @@ const Chart2DatabasePage = () => {
                         <PrivacyCustomDropdown
                           options={data.tableOptions || []}
                           placeholder="Table1"
-                          isOpen={openDropdown === "tableOptions"}
+                          isOpen={openDropdown === 'tableOptions'}
                           onDropdownClick={() =>
-                            handleDropdownClick("tableOptions")
+                            handleDropdownClick('tableOptions')
                           }
-                          selectedOption={selectedOptions["tableOptions"]}
+                          selectedOption={selectedOptions['tableOptions']}
                           onOptionClick={(option) => {
-                            handleOptionClick("tableOptions", option);
+                            handleOptionClick('tableOptions', option);
                             if (option) {
-                              setErrorMessage(""); 
+                              setErrorMessage('');
                             }
                             setOpenDropdown(null);
                           }}
@@ -1858,7 +1746,7 @@ const Chart2DatabasePage = () => {
                   <div className="pt-[1rem] ">
                     <div
                       className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5"
-                      style={{ width: "350px" }}
+                      style={{ width: '350px' }}
                     >
                       <CustomDropdown
                         options={data.dataFeildOption || []}
@@ -1867,11 +1755,11 @@ const Chart2DatabasePage = () => {
                         onDropdownClick={() =>
                           handleDropdownClick1(section.id, 0)
                         }
-                        selectedOption={section.values["dataFeildOption"] || ""}
+                        selectedOption={section.values['dataFeildOption'] || ''}
                         setSelectedOption={(value) =>
                           handleDropdownChange(
                             section.id,
-                            "dataFeildOption",
+                            'dataFeildOption',
                             value
                           )
                         }
@@ -1903,12 +1791,10 @@ const Chart2DatabasePage = () => {
                               </thead>
                               <tbody>
                                 <tr>
-                           
                                   <td
                                     className=" py-2 border border-customBorderColor text-customWhite bg-black"
-                                    style={{ width: "200px" }}
+                                    style={{ width: '200px' }}
                                   >
-                            
                                     <CustomDropdown
                                       options={data.privacyActionOption || []}
                                       placeholder="None"
@@ -1919,13 +1805,13 @@ const Chart2DatabasePage = () => {
                                         handleDropdownClick1(section.id, 1)
                                       }
                                       selectedOption={
-                                        section.values["privacyActionOption"] ||
-                                        ""
+                                        section.values['privacyActionOption'] ||
+                                        ''
                                       }
                                       setSelectedOption={(value) =>
                                         handleDropdownChange(
                                           section.id,
-                                          "privacyActionOption",
+                                          'privacyActionOption',
                                           value
                                         )
                                       }
@@ -1976,10 +1862,8 @@ const Chart2DatabasePage = () => {
                                 <tr>
                                   <td
                                     className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
-                                    style={{ width: "200px" }}
+                                    style={{ width: '200px' }}
                                   >
-                              
-
                                     <CustomDropdown
                                       options={data.attributeOption || []}
                                       placeholder="Select Option"
@@ -1990,12 +1874,12 @@ const Chart2DatabasePage = () => {
                                         handleDropdownClick1(section.id, 2)
                                       }
                                       selectedOption={
-                                        section.values["attributeOption"] || ""
+                                        section.values['attributeOption'] || ''
                                       }
                                       setSelectedOption={(value) =>
                                         handleDropdownChange(
                                           section.id,
-                                          "attributeOption",
+                                          'attributeOption',
                                           value
                                         )
                                       }
@@ -2003,10 +1887,8 @@ const Chart2DatabasePage = () => {
                                   </td>
                                   <td
                                     className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
-                                    style={{ width: "200px" }}
+                                    style={{ width: '200px' }}
                                   >
-                            
-
                                     <CustomDropdown
                                       options={data.attributeValueOption || []}
                                       placeholder="Select Option"
@@ -2018,13 +1900,13 @@ const Chart2DatabasePage = () => {
                                       }
                                       selectedOption={
                                         section.values[
-                                          "attributeValueOption"
-                                        ] || ""
+                                          'attributeValueOption'
+                                        ] || ''
                                       }
                                       setSelectedOption={(value) =>
                                         handleDropdownChange(
                                           section.id,
-                                          "attributeValueOption",
+                                          'attributeValueOption',
                                           value
                                         )
                                       }
@@ -2032,10 +1914,8 @@ const Chart2DatabasePage = () => {
                                   </td>
                                   <td
                                     className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
-                                    style={{ width: "200px" }}
+                                    style={{ width: '200px' }}
                                   >
-                      
-
                                     <CustomDropdown
                                       options={data.attributeActionOption || []}
                                       placeholder="Select Option"
@@ -2047,19 +1927,25 @@ const Chart2DatabasePage = () => {
                                       }
                                       selectedOption={
                                         section.values[
-                                          "attributeActionOption"
-                                        ] || ""
+                                          'attributeActionOption'
+                                        ] || ''
                                       }
                                       setSelectedOption={(value) =>
                                         handleDropdownChange(
                                           section.id,
-                                          "attributeActionOption",
+                                          'attributeActionOption',
                                           value
                                         )
                                       }
                                     />
                                   </td>
                                   <td className="pl-4  py-6 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                </tr>
+                                <tr>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
+                                  <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                                 </tr>
                                 <tr>
                                   <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
@@ -2082,7 +1968,7 @@ const Chart2DatabasePage = () => {
                       <div className="flex flex-wrap"></div>
                     </div>
 
-                    <div className="pt-[1rem] ">
+                    {/* <div className="pt-[1rem] ">
                       <div
                         className="flex items-baseline  px-4 pt-[1rem] ml-2 gap-2.5"
                         style={{ width: "500px" }}
@@ -2111,8 +1997,42 @@ const Chart2DatabasePage = () => {
                           }
                         />
                       </div>
-                    </div>
+                    </div> */}
 
+                    <div className="pt-4">
+                      <div
+                        className="flex flex-col sm:flex-row items-start sm:items-center px-4 pt-4 ml-2 gap-2 sm:gap-2.5"
+                        style={{
+                          maxWidth: '100%',
+                          width: '50%',
+                          minWidth: '250px',
+                        }}
+                      >
+                        <span className="text-[#31B476] font-poppins font-semibold text-sm sm:text-base lg:text-lg">
+                          Row Level Filtering Based on Value
+                        </span>
+
+                        <CustomDropdown
+                          options={data.rowLevelFilterinOption || []}
+                          placeholder="Select Option"
+                          isOpen={openDropdown === `${section.id}-5`}
+                          onDropdownClick={() =>
+                            handleDropdownClick1(section.id, 5)
+                          }
+                          selectedOption={
+                            section.values['rowLevelFilterinOption'] || ''
+                          }
+                          setSelectedOption={(value) =>
+                            handleDropdownChange(
+                              section.id,
+                              'rowLevelFilterinOption',
+                              value
+                            )
+                          }
+                          className="w-full sm:w-auto"
+                        />
+                      </div>
+                    </div>
 
                     {sectionsPlus.length === 1 ? (
                       <div className="flex justify-end text-end gap-2 px-4 py-4">
@@ -2167,26 +2087,26 @@ const Chart2DatabasePage = () => {
 
       <div
         className={`bg-customBlack hover:bg-customGreen text-white text-center py-2 rounded mt-2 transition-all duration-300 ease-out transform cursor-pointer font-poppins ${
-          isEditMode ? "hover:bg-customGreen hover:text-white" : ""
+          isEditMode ? 'hover:bg-customGreen hover:text-white' : ''
         }`}
         onClick={isEditMode ? handleUpdatePolicy : handleSavePolicy}
       >
         <span
           className="transition-transform duration-300 ease-out"
           style={{
-            display: "inline-block",
-            letterSpacing: "0.2em",
+            display: 'inline-block',
+            letterSpacing: '0.2em',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.letterSpacing = "normal";
-            e.currentTarget.style.transform = "scale(0.95)";
+            e.currentTarget.style.letterSpacing = 'normal';
+            e.currentTarget.style.transform = 'scale(0.95)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.letterSpacing = "0.2em";
-            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.letterSpacing = '0.2em';
+            e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          {isEditMode ? "UPDATE POLICY" : "SAVE POLICY"}
+          {isEditMode ? 'UPDATE POLICY' : 'SAVE POLICY'}
         </span>
       </div>
 
@@ -2196,7 +2116,7 @@ const Chart2DatabasePage = () => {
           onClick={() => {
             setIsEditMode(false);
             setPolicyId(null);
-            setPolicyName("");
+            setPolicyName('');
             setSelectedOptions({});
             setMembersBySection([[], [], [], []]);
             setSectionsPlus([{ id: Date.now(), values: {} }]);
@@ -2234,8 +2154,8 @@ const Chart2DatabasePage = () => {
                     value={policyName}
                     onChange={(e) => {
                       handlePolicyNameChange(e);
-                      if (e.target.value.trim() !== "") {
-                        setErrorMessage(""); // Clear the error if field is filled
+                      if (e.target.value.trim() !== '') {
+                        setErrorMessage('');
                       }
                     }}
                     className="w-full rounded-md shadow-sm px-4 py-2 border-2 border-gray-400 focus:border-green-500 focus:ring-green-500 bg-[#393C46] text-white transition-all duration-200 ease-in-out"
@@ -2246,12 +2166,12 @@ const Chart2DatabasePage = () => {
                 <li className="mb-6">
                   <div className="bg-[#393C46] p-4 rounded-md shadow-lg">
                     <p className="text-white">
-                      <strong>Document Store:</strong>{" "}
-                      {selectedOptions["dataStoreOptions"]}
+                      <strong>Document Store:</strong>{' '}
+                      {selectedOptions['dataStoreOptions']}
                     </p>
                     <p className="text-white">
-                      <strong>Table Option:</strong>{" "}
-                      {selectedOptions["tableOptions"]}
+                      <strong>Table Option:</strong>{' '}
+                      {selectedOptions['tableOptions']}
                     </p>
 
                     {sectionsPlus.map((section) => (
@@ -2267,29 +2187,29 @@ const Chart2DatabasePage = () => {
                             {section.values["privacyValueOption"]}
                           </div> */}
                           <div className="text-[#c4c9d0]">
-                            <strong>Data Field:</strong>{" "}
-                            {section.values["dataFeildOption"]}
+                            <strong>Data Field:</strong>{' '}
+                            {section.values['dataFeildOption']}
                           </div>
 
                           <div className="text-[#c4c9d0]">
-                            <strong>Privacy Action:</strong>{" "}
-                            {section.values["privacyActionOption"]}
+                            <strong>Privacy Action:</strong>{' '}
+                            {section.values['privacyActionOption']}
                           </div>
                           <div className="text-[#c4c9d0]">
-                            <strong>Attribute Option:</strong>{" "}
-                            {section.values["attributeOption"]}
+                            <strong>Attribute Option:</strong>{' '}
+                            {section.values['attributeOption']}
                           </div>
                           <div className="text-[#c4c9d0]">
-                            <strong>Attribute Value:</strong>{" "}
-                            {section.values["attributeValueOption"]}
+                            <strong>Attribute Value:</strong>{' '}
+                            {section.values['attributeValueOption']}
                           </div>
                           <div className="text-[#c4c9d0]">
-                            <strong>Attribute Action:</strong>{" "}
-                            {section.values["attributeActionOption"]}
+                            <strong>Attribute Action:</strong>{' '}
+                            {section.values['attributeActionOption']}
                           </div>
                           <div className="text-[#c4c9d0]">
-                            <strong>Row Level Filter:</strong>{" "}
-                            {section.values["rowLevelFilterinOption"]}
+                            <strong>Row Level Filter:</strong>{' '}
+                            {section.values['rowLevelFilterinOption']}
                           </div>
                         </div>
                       </li>
@@ -2325,7 +2245,7 @@ const Chart2DatabasePage = () => {
                         Loading...
                       </>
                     ) : (
-                      "Confirm"
+                      'Confirm'
                     )}
                   </button>
                 </div>
@@ -2339,13 +2259,13 @@ const Chart2DatabasePage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-[#2E313B] p-6 rounded-lg shadow-lg w-1/3 max-h-[50vh] overflow-y-auto">
             <h2 className="text-xl font-poppins font-semibold mb-4 text-center text-white">
-              {successMessage.includes("Failed") ? "Failed" : "Success"}
+              {successMessage.includes('Failed') ? 'Failed' : 'Success'}
             </h2>
             <p
               className={
-                successMessage.includes("Failed")
-                  ? "text-red-500 text-center"
-                  : "text-green-500 text-center"
+                successMessage.includes('Failed')
+                  ? 'text-red-500 text-center'
+                  : 'text-green-500 text-center'
               }
             >
               {successMessage}
@@ -2429,7 +2349,7 @@ const Chart2DatabasePage = () => {
                   item.plusData.map((plusItem) => (
                     <tr key={plusItem._id}>
                       <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
-                        {item.policyName || "N/A"}
+                        {item.policyName || 'N/A'}
                       </td>
                       <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
                         {plusItem.ONname}
@@ -2488,7 +2408,7 @@ const Chart2DatabasePage = () => {
 
       <ConfirmationModal
         isOpen={isDeleteModel}
-        onClose={closeModal} 
+        onClose={closeModal}
         onConfirm={handleDeleteButtonClick}
       />
 
@@ -2496,8 +2416,8 @@ const Chart2DatabasePage = () => {
         <button
           className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
             currentPage === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-[#31B476] text-white hover:bg-[#28a165]'
           }`}
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -2512,8 +2432,8 @@ const Chart2DatabasePage = () => {
         <button
           className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
             currentPage === totalPages
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-[#31B476] text-white hover:bg-[#28a165]"
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-[#31B476] text-white hover:bg-[#28a165]'
           }`}
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}

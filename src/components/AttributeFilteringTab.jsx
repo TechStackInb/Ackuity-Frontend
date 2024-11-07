@@ -392,7 +392,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       'Any',
     ],
     containsOptions: ['Document Classification', 'Location', 'Division'],
-    withOptions: ['Confidential', 'Private', 'Public'],
+    withOptions: ['Confidential', 'Private', 'Public',"Asia","Europe","North America"],
     thenOptions: ['Anonymize', 'Tokenize', 'Encrypt', 'De-identification'],
     roleOptions: ['Role1', 'Role2', 'Role3', 'Role4'],
     atOptions: ['All Times', '1 Day', '1 Week', 'One Month', '1 Year'],
