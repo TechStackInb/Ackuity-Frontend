@@ -44,8 +44,21 @@ function PermissionsTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState(null);
 
+  const [isModalOpenRevised, setIsModalOpenRevised] = useState(false);
+
+  const [showEditMembershipRevised, setShowEditMembershipRevised] =
+    useState(false);
+
   // console.log(searchQuery, "searchQuery");
   // console.log(searchResults, "searchResults");
+
+  const handleOpenModalRevised = () => {
+    setIsModalOpenRevised(true);
+  };
+
+  const handleCloseModalRevised = () => {
+    setIsModalOpenRevised(false);
+  };
 
   const [sections, setSections] = useState([
     {
@@ -570,6 +583,17 @@ function PermissionsTab() {
     }
   };
 
+  const toggleEditMembershipRevised = (index) => {
+    setSearchQuery('');
+    setSearchResults([]);
+    if (activeSectionIndex === index) {
+      setShowEditMembershipRevised(!showEditMembershipRevised);
+    } else {
+      setActiveSectionIndex(index);
+      setShowEditMembershipRevised(true); // Corrected this line
+    }
+  };
+
   const data = {
     documentStore: ['Document Store', 'Share Point', 'One Drive'],
     documentLocation: [
@@ -755,10 +779,7 @@ function PermissionsTab() {
                                   </div>
                                   <div className="space-y-4 max-h-56 overflow-y-auto">
                                     <div className="flex ">
-                                      <div
-                                        className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                              
-                                      >
+                                      <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
                                         <img
                                           src={userIcon}
                                           alt="icons"
@@ -1008,22 +1029,6 @@ function PermissionsTab() {
                       <div className="relative">
                         <div>
                           <div className="flex justify-between items-start">
-                            {/* <div className="flex flex-col">
-                              {(section.members || []).map(
-                                (member, memberIndex) => (
-                                  <div
-                                    key={memberIndex}
-                                    className="flex justify-between items-center"
-                                    style={{ lineHeight: '2rem' }}
-                                  >
-                                    <span className="font-poppins text-base">
-                                      {member.email}
-                                    </span>
-                                  </div>
-                                )
-                              )}
-                            </div> */}
-
                             <div className="flex flex-col">
                               <span className="font-poppins text-base">
                                 {/* Assuming section.members is an array of objects with an 'email' field */}
@@ -1031,7 +1036,17 @@ function PermissionsTab() {
                                   .map((member) => member.email)
                                   .join(', ')}
                               </span>
+
+                              <button
+                                onClick={() =>
+                                  toggleEditMembershipRevised(index)
+                                }
+                                className="mt-2 text-blue-500 hover:text-blue-700 text-left"
+                              >
+                                <ThreeDotsButton />
+                              </button>
                             </div>
+
                             <div className="flex">
                               <button
                                 onClick={() => toggleEditMembership(index)}
@@ -1044,6 +1059,83 @@ function PermissionsTab() {
                               </button>
                             </div>
                           </div>
+
+                          {activeSectionIndex === index &&
+                            showEditMembershipRevised && (
+                              <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                                <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                  <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
+                                    <span className="text-base font-poppins font-semibold">
+                                      Members List
+                                    </span>
+                                    <button
+                                      className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
+                                      onClick={() =>
+                                        toggleEditMembershipRevised(index)
+                                      }
+                                      style={{
+                                        width: '29px',
+                                        height: '29px',
+                                        border: '2px solid #31B47663',
+                                      }}
+                                    >
+                                      &times;
+                                    </button>
+                                  </div>
+                                  <div className="p-4 space-y-4 max-h-64 overflow-y-auto">
+                                    {section.members.map(
+                                      (member, memberIndex) => (
+                                        <div
+                                          key={memberIndex}
+                                          className="flex justify-between items-center mb-4 "
+                                        >
+                                          <div className="flex items-center">
+                                            <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                              <img
+                                                src={userIcon}
+                                                alt="icons"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                }}
+                                              />
+                                            </div>
+                                            <div className="flex flex-col ml-3 text-left">
+                                              <span className="text-white block text-base font-poppins font-semibold">
+                                                {member.name}
+                                              </span>
+                                              <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                Member{' '}
+                                                <FontAwesomeIcon
+                                                  icon={faAngleDown}
+                                                />
+                                              </span>
+                                            </div>
+                                          </div>
+                                          <button
+                                            className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
+                                            style={{
+                                              width: '29px',
+                                              height: '29px',
+                                              background: '#FFFFFF00',
+                                              border: '2px solid #31B47663',
+                                            }}
+                                            onClick={() =>
+                                              removeMember(
+                                                member,
+                                                activeSectionIndex
+                                              )
+                                            }
+                                          >
+                                            <FontAwesomeIcon icon={faMinus} />
+                                          </button>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
                           {activeSectionIndex === index &&
                             showEditMembership && (
@@ -1070,59 +1162,63 @@ function PermissionsTab() {
                                       </button>
                                     </div>
                                     <div className="p-4 space-y-4">
-                                      <div className='overflow-y-auto' style={{ maxHeight: '250px' }}>
-
-                                      {section.members.map(
-                                        (member, memberIndex) => (
-                                          <div
-                                            key={memberIndex}
-                                            className="flex justify-between items-center mb-4 "
-                                          >
-                                            <div className="flex items-center">
-                                              <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
-                                                <img
-                                                  src={userIcon}
-                                                  alt="icons"
-                                                  style={{
-                                                    width: '47px',
-                                                    height: '47px',
-                                                  }}
-                                                />
-                                              </div>
-                                              <div className="flex flex-col ml-3 text-left">
-                                                <span className="text-white block text-base font-poppins font-semibold">
-                                                  {member.name}
-                                                </span>
-                                                <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                  Member{' '}
-                                                  <FontAwesomeIcon
-                                                    icon={faAngleDown}
-                                                  />
-                                                </span>
-                                              </div>
-                                            </div>
-                                            <button
-                                              className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
-                                              style={{
-                                                width: '29px',
-                                                height: '29px',
-                                                background: '#FFFFFF00',
-                                                border: '2px solid #31B47663',
-                                              }}
-                                              onClick={() =>
-                                                removeMember(
-                                                  member,
-                                                  activeSectionIndex
-                                                )
-                                              }
+                                      <div
+                                        className="overflow-y-auto"
+                                        style={{ maxHeight: '250px' }}
+                                      >
+                                        {section.members.map(
+                                          (member, memberIndex) => (
+                                            <div
+                                              key={memberIndex}
+                                              className="flex justify-between items-center mb-4 "
                                             >
-                                              <FontAwesomeIcon icon={faMinus} />
-                                            </button>
-                                          </div>
-                                        )
-                                      )}
+                                              <div className="flex items-center">
+                                                <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                                  <img
+                                                    src={userIcon}
+                                                    alt="icons"
+                                                    style={{
+                                                      width: '47px',
+                                                      height: '47px',
+                                                    }}
+                                                  />
+                                                </div>
+                                                <div className="flex flex-col ml-3 text-left">
+                                                  <span className="text-white block text-base font-poppins font-semibold">
+                                                    {member.name}
+                                                  </span>
+                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                    Member{' '}
+                                                    <FontAwesomeIcon
+                                                      icon={faAngleDown}
+                                                    />
+                                                  </span>
+                                                </div>
+                                              </div>
+                                              <button
+                                                className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
+                                                style={{
+                                                  width: '29px',
+                                                  height: '29px',
+                                                  background: '#FFFFFF00',
+                                                  border: '2px solid #31B47663',
+                                                }}
+                                                onClick={() =>
+                                                  removeMember(
+                                                    member,
+                                                    activeSectionIndex
+                                                  )
+                                                }
+                                              >
+                                                <FontAwesomeIcon
+                                                  icon={faMinus}
+                                                />
+                                              </button>
+                                            </div>
+                                          )
+                                        )}
                                       </div>
-                                   
+
                                       <div className="flex items-center justify-between bg-[#1B1E26] border border-[#31B47633] rounded-[5px] p-3">
                                         <input
                                           type="text"

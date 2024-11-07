@@ -3357,10 +3357,7 @@ const FunctionCalling = () => {
       'None',
       'De-identification',
     ],
-    actionOnAttributeFilteringAttribute: [
-      'Department',
-      'Location',
-    ],
+    actionOnAttributeFilteringAttribute: ['Department', 'Location'],
     actionOnAttributeFilteringValue: [
       'Asia',
       'North America',
@@ -3681,8 +3678,8 @@ const FunctionCalling = () => {
                               <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                 <span>Read</span>
                               </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
-                                <div className="relative">
+                              <td className="relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                        
                                   <div className="flex  flex-col items-start">
                                     <div className="px-4 flex flex-col">
                                       <span className="text-white block text-base font-poppins ">
@@ -3707,17 +3704,17 @@ const FunctionCalling = () => {
                                         Lucas Hayes
                                       </span>
                                     </div>
-                                    <div className="px-4 flex">
-                                      <div className="">
+                                
                                         <button
                                           onClick={() =>
                                             toggleMembership(sectionIndex)
                                           }
+                                           className="absolute top-2 right-2"
                                         >
                                           <ThreeDotsButton />
                                         </button>
-                                      </div>
-                                    </div>
+                                     
+                                   
                                   </div>
 
                                   {openMembershipIndex === sectionIndex && (
@@ -4021,9 +4018,9 @@ const FunctionCalling = () => {
                                       </div>
                                     </>
                                   )}
-                                </div>
+                             
                               </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                              <td className="relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                 {/* {section.members?.read?.length > 0 ? (
                                   section.members.read.map(
                                     (member, memberIndex) => (
@@ -4043,116 +4040,113 @@ const FunctionCalling = () => {
 
                                 <div>
                                   <div className="mb-6">
-                                    {/* Display comma-separated names in read list */}
                                     {section.members?.read?.length > 0 ? (
-                                      <div className="flex justify-between items-center">
+                                      <div className="flex flex-col justify-between items-center">
                                         <span className="font-poppins text-base">
                                           {section.members.read
                                             .map((member) => member.name)
                                             .join(', ')}
                                         </span>
+
+                                        {/* Position the ThreeDotsButton in the top-right corner */}
                                         <button
                                           onClick={() =>
                                             toggleListVisibility(sectionIndex)
                                           }
-                                          className="ml-4 bg-[#0a854b] text-white py-1 px-3 rounded"
+                                          className="absolute top-2 right-2"
                                         >
-                                          <FontAwesomeIcon
-                                            icon={faList}
-                                            className="mr-2"
-                                          />
+                                          <ThreeDotsButton />
                                         </button>
                                       </div>
                                     ) : (
                                       <div className="text-gray-500"></div>
                                     )}
-
-                                    {/* Show full list in modal/dropdown */}
-                                    {isListVisible === sectionIndex && (
-                                      // <div className="mt-2 bg-gray-100 border border-gray-300 rounded p-3">
-                                      //   <h3 className="font-poppins font-medium mb-2">
-                                      //     Member List:
-                                      //   </h3>
-                                      //   {section.members.read.map(
-                                      //     (member, memberIndex) => (
-                                      //       <div
-                                      //         key={memberIndex}
-                                      //         className="text-gray-700 mb-1"
-                                      //       >
-                                      //         {member.name}
-                                      //       </div>
-                                      //     )
-                                      //   )}
-                                      //   <button
-                                      //     onClick={() =>
-                                      //       toggleListVisibility(null)
-                                      //     }
-                                      //     className="mt-2 bg-gray-300 text-black py-1 px-3 rounded"
-                                      //   >
-                                      //     Close
-                                      //   </button>
-                                      // </div>
-                                      <>
-                                        <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-                                        <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
-                                          <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                            <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
-                                              <span className="text-base font-poppins font-semibold">
-                                                Read Member
-                                              </span>
-                                              <button
-                                                className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
-                                                onClick={() =>
-                                                  toggleListVisibility(null)
-                                                }
-                                                style={{
-                                                  width: '29px',
-                                                  height: '29px',
-                                                  border: '2px solid #31B47663',
-                                                }}
-                                              >
-                                                &times;
-                                              </button>
-                                            </div>
-                                            <div className="p-4 space-y-4  max-h-64 overflow-y-auto">
-                                              {section.members.read.map(
-                                                (member, memberIndex) => (
-                                                  <div
-                                                    key={memberIndex}
-                                                    className="flex justify-between items-center mb-4 "
-                                                  >
-                                                    <div className="flex items-center">
-                                                      <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
-                                                        <img
-                                                          src={userIcon}
-                                                          alt="icons"
-                                                          style={{
-                                                            width: '47px',
-                                                            height: '47px',
-                                                          }}
+                                  </div>
+                                  {/* Show full list in modal/dropdown */}
+                                  {isListVisible === sectionIndex && (
+                                    // <div className="mt-2 bg-gray-100 border border-gray-300 rounded p-3">
+                                    //   <h3 className="font-poppins font-medium mb-2">
+                                    //     Member List:
+                                    //   </h3>
+                                    //   {section.members.read.map(
+                                    //     (member, memberIndex) => (
+                                    //       <div
+                                    //         key={memberIndex}
+                                    //         className="text-gray-700 mb-1"
+                                    //       >
+                                    //         {member.name}
+                                    //       </div>
+                                    //     )
+                                    //   )}
+                                    //   <button
+                                    //     onClick={() =>
+                                    //       toggleListVisibility(null)
+                                    //     }
+                                    //     className="mt-2 bg-gray-300 text-black py-1 px-3 rounded"
+                                    //   >
+                                    //     Close
+                                    //   </button>
+                                    // </div>
+                                    <>
+                                      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+                                      <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                                        <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                          <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
+                                            <span className="text-base font-poppins font-semibold">
+                                              Read Member
+                                            </span>
+                                            <button
+                                              className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
+                                              onClick={() =>
+                                                toggleListVisibility(null)
+                                              }
+                                              style={{
+                                                width: '29px',
+                                                height: '29px',
+                                                border: '2px solid #31B47663',
+                                              }}
+                                            >
+                                              &times;
+                                            </button>
+                                          </div>
+                                          <div className="p-4 space-y-4  max-h-64 overflow-y-auto">
+                                            {section.members.read.map(
+                                              (member, memberIndex) => (
+                                                <div
+                                                  key={memberIndex}
+                                                  className="flex justify-between items-center mb-4 "
+                                                >
+                                                  <div className="flex items-center">
+                                                    <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                                      <img
+                                                        src={userIcon}
+                                                        alt="icons"
+                                                        style={{
+                                                          width: '47px',
+                                                          height: '47px',
+                                                        }}
+                                                      />
+                                                    </div>
+                                                    <div className="flex flex-col ml-3 text-left">
+                                                      <span className="text-white block text-base font-poppins font-semibold">
+                                                        {member.name}
+                                                      </span>
+                                                      <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                        Member{' '}
+                                                        <FontAwesomeIcon
+                                                          icon={faAngleDown}
                                                         />
-                                                      </div>
-                                                      <div className="flex flex-col ml-3 text-left">
-                                                        <span className="text-white block text-base font-poppins font-semibold">
-                                                          {member.name}
-                                                        </span>
-                                                        <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                          Member{' '}
-                                                          <FontAwesomeIcon
-                                                            icon={faAngleDown}
-                                                          />
-                                                        </span>
-                                                      </div>
+                                                      </span>
                                                     </div>
                                                   </div>
-                                                )
-                                              )}
-                                            </div>
+                                                </div>
+                                              )
+                                            )}
                                           </div>
                                         </div>
-                                      </>
-                                    )}
-                                  </div>
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
 
                                 {activeSectionIndex === sectionIndex &&
@@ -4328,8 +4322,8 @@ const FunctionCalling = () => {
                               <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                 <span>Read + Write</span>
                               </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
-                                <div className="relative">
+                              <td className="relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                <div>
                                   <div className="flex  flex-col items-start">
                                     <div className="px-4 flex flex-col">
                                       <span className="text-white block text-base font-poppins ">
@@ -4360,6 +4354,7 @@ const FunctionCalling = () => {
                                           onClick={() =>
                                             toggleMembership(sectionIndex)
                                           }
+                                           className="absolute top-2 right-2"
                                         >
                                           <ThreeDotsButton />
                                         </button>
@@ -4670,7 +4665,7 @@ const FunctionCalling = () => {
                                   )}
                                 </div>
                               </td>
-                              <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                              <td className=" relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                 {/* {section.members?.readWrite?.length > 0 ? (
                                   section.members.readWrite.map(
                                     (member, memberIndex) => (
@@ -4688,30 +4683,56 @@ const FunctionCalling = () => {
                                   <div className="text-gray-500"></div>
                                 )} */}
 
-                                {section.members?.readWrite?.length > 0 ? (
-                                  <div className="flex justify-between items-center mt-4">
+                                <div className="mb-6">
+                                  {section.members?.readWrite?.length > 0 ? (
+                                    <div className="flex flex-col justify-between items-center">
+                                      <span className="font-poppins text-base">
+                                        {section.members.readWrite
+                                          .map((member) => member.name)
+                                          .join(', ')}
+                                      </span>
+
+                                      {/* Position the ThreeDotsButton in the top-right corner */}
+                                      <button
+                                        onClick={() =>
+                                          toggleReadWriteListVisibility(
+                                            sectionIndex
+                                          )
+                                        }
+                                        className="absolute top-2 right-2"
+                                      >
+                                        <ThreeDotsButton />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="text-gray-500"></div>
+                                  )}
+                                </div>
+
+                                {/* {section.members?.readWrite?.length > 0 ? (
+                                  <div className="flex flex-col justify-between items-center mt-4">
                                     <span className="font-poppins text-base">
                                       {section.members.readWrite
                                         .map((member) => member.name)
                                         .join(', ')}
                                     </span>
-                                    <button
-                                      onClick={() =>
-                                        toggleReadWriteListVisibility(
-                                          sectionIndex
-                                        )
-                                      }
-                                      className="ml-4 bg-green-500 text-white py-1 px-3 rounded"
-                                    >
-                                      <FontAwesomeIcon
-                                        icon={faList}
-                                        className="mr-2"
-                                      />
-                                    </button>
+                                    <div className="px-4 flex">
+                                      <div className="mt-2">
+                                        <button
+                                           onClick={() =>
+                                            toggleReadWriteListVisibility(
+                                              sectionIndex
+                                            )
+                                          }
+                                        >
+                                          <ThreeDotsButton />
+                                        </button>
+                                      </div>
+                                    </div>
                                   </div>
                                 ) : (
                                   <div className="text-gray-500"></div>
-                                )}
+                                )} */}
 
                                 {/* Show full list in modal/dropdown */}
                                 {isReadWriteListVisible === sectionIndex && (
