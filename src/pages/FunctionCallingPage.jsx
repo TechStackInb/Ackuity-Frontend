@@ -2642,6 +2642,8 @@ const FunctionCalling = () => {
   const [isListVisible, setIsListVisible] = useState(null);
   const [isReadWriteListVisible, setIsReadWriteListVisible] = useState(null);
 
+  const [errorMessages, setErrorMessages] = useState({});
+
   useEffect(() => {
     if (policyId) {
       setIsEditMode(true);
@@ -2715,9 +2717,38 @@ const FunctionCalling = () => {
   //   setSections(updatedSections);
   // };
 
+  // const addMember = (user, sectionIndex) => {
+  //   const updatedSections = sections.map((section, index) => {
+  //     if (index === sectionIndex) {
+  //       return {
+  //         ...section,
+  //         members: {
+  //           ...section.members,
+  //           [activeType]: [...section.members[activeType], user],
+  //         },
+  //       };
+  //     }
+  //     return section;
+  //   });
+  //   setSections(updatedSections);
+  // };
+
   const addMember = (user, sectionIndex) => {
     const updatedSections = sections.map((section, index) => {
       if (index === sectionIndex) {
+        // Check if the user is already in the members array for the active type
+        const isDuplicate = section.members[activeType].some(
+          (member) => member._id === user._id
+        );
+  
+        // If the user is a duplicate, set an error message
+        if (isDuplicate) {
+          setErrorMessages({ message: 'Member already exists' });
+          return section; // Return without changes
+        }
+  
+        // If the user is not a duplicate, add them to the members array
+        setErrorMessages({ message: '' }); 
         return {
           ...section,
           members: {
@@ -2728,8 +2759,19 @@ const FunctionCalling = () => {
       }
       return section;
     });
+  
     setSections(updatedSections);
   };
+  
+  // Clear error message after a delay, if one is set
+  useEffect(() => {
+    if (errorMessages.message) {
+      const timer = setTimeout(() => setErrorMessages({ message: '' }), 3000);
+      return () => clearTimeout(timer); 
+    }
+  }, [errorMessages.message]);
+  
+  console.log(errorMessages.message, 'errorMessages');
 
   const removeMember = (member, sectionIndex) => {
     const updatedSections = sections.map((section, index) => {
@@ -3679,346 +3721,342 @@ const FunctionCalling = () => {
                                 <span>Read</span>
                               </td>
                               <td className="relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
-                        
-                                  <div className="flex  flex-col items-start">
-                                    <div className="px-4 flex flex-col">
-                                      <span className="text-white block text-base font-poppins ">
-                                        Alice Evans ,
-                                      </span>
-                                      <span className="text-white block text-base font-poppins">
-                                        Bob Rogers,
-                                      </span>
-                                      <span className="text-white block text-base font-poppins">
-                                        Aiden Harper,
-                                      </span>
-                                      <span className="text-white block text-base font-poppins">
-                                        Lila Montgomery,
-                                      </span>
-                                      <span className="text-white block text-base font-poppins">
-                                        Ethan Caldwell,
-                                      </span>
-                                      <span className="text-white block text-base font-poppins">
-                                        Sophie Bennett,
-                                      </span>
-                                      <span className="text-white block text-base font-poppins">
-                                        Lucas Hayes
-                                      </span>
-                                    </div>
-                                
+                                <div className="flex  flex-col items-start">
+                                  <div className="px-4 flex flex-col">
+                                    <span className="text-white block text-base font-poppins ">
+                                      Alice Evans ,
+                                    </span>
+                                    <span className="text-white block text-base font-poppins">
+                                      Bob Rogers,
+                                    </span>
+                                    <span className="text-white block text-base font-poppins">
+                                      Aiden Harper,
+                                    </span>
+                                    <span className="text-white block text-base font-poppins">
+                                      Lila Montgomery,
+                                    </span>
+                                    <span className="text-white block text-base font-poppins">
+                                      Ethan Caldwell,
+                                    </span>
+                                    <span className="text-white block text-base font-poppins">
+                                      Sophie Bennett,
+                                    </span>
+                                    <span className="text-white block text-base font-poppins">
+                                      Lucas Hayes
+                                    </span>
+                                  </div>
+
+                                  <button
+                                    onClick={() =>
+                                      toggleMembership(sectionIndex)
+                                    }
+                                    className="absolute top-2 right-2"
+                                  >
+                                    <ThreeDotsButton />
+                                  </button>
+                                </div>
+
+                                {openMembershipIndex === sectionIndex && (
+                                  <>
+                                    <div
+                                      className="fixed inset-0 bg-black opacity-50 z-40"
+                                      onClick={() =>
+                                        toggleMembership(sectionIndex)
+                                      }
+                                    />
+
+                                    <div
+                                      className="fixed inset-0 flex items-center justify-center z-50"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
                                         <button
+                                          className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
                                           onClick={() =>
                                             toggleMembership(sectionIndex)
                                           }
-                                           className="absolute top-2 right-2"
+                                          style={{
+                                            width: '29px',
+                                            height: '29px',
+                                            background: '#FFFFFF',
+                                            border: '2px solid #31B47663',
+                                            opacity: 1,
+                                          }}
                                         >
-                                          <ThreeDotsButton />
+                                          &times;
                                         </button>
-                                     
-                                   
-                                  </div>
 
-                                  {openMembershipIndex === sectionIndex && (
-                                    <>
-                                      <div
-                                        className="fixed inset-0 bg-black opacity-50 z-40"
-                                        onClick={() =>
-                                          toggleMembership(sectionIndex)
-                                        }
-                                      />
-
-                                      <div
-                                        className="fixed inset-0 flex items-center justify-center z-50"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
-                                          <button
-                                            className="absolute top-2 right-2 text-green-400 bg-[#FFFFFF] rounded-full"
-                                            onClick={() =>
-                                              toggleMembership(sectionIndex)
-                                            }
-                                            style={{
-                                              width: '29px',
-                                              height: '29px',
-                                              background: '#FFFFFF',
-                                              border: '2px solid #31B47663',
-                                              opacity: 1,
-                                            }}
-                                          >
-                                            &times;
-                                          </button>
-
-                                          <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg">
-                                            <span className="text-base font-poppins font-semibold">
-                                              Group Membership
+                                        <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg">
+                                          <span className="text-base font-poppins font-semibold">
+                                            Group Membership
+                                          </span>
+                                        </div>
+                                        <div className="p-4">
+                                          <div className="flex justify-between items-center mb-4">
+                                            <span className="text-white text-sm font-poppins font-medium">
+                                              7 Members
                                             </span>
                                           </div>
-                                          <div className="p-4">
-                                            <div className="flex justify-between items-center mb-4">
-                                              <span className="text-white text-sm font-poppins font-medium">
-                                                7 Members
-                                              </span>
+
+                                          <div className="space-y-4 max-h-56 overflow-y-auto">
+                                            <div className="flex ">
+                                              <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
+                                                  style={{
+                                                    width: '47px',
+                                                    height: '47px',
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Alice Evans
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
+                                                  />
+                                                </span>
+                                              </div>
+                                            </div>
+                                            <div className="border-t border-gray-600"></div>
+                                            <div className="flex ">
+                                              <div
+                                                className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                  background: '#FFFFFF',
+                                                  opacity: 1,
+                                                }}
+                                              >
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
+                                                  style={{
+                                                    width: '47px',
+                                                    height: '47px',
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Bob Rogers
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
+                                                  />
+                                                </span>
+                                              </div>
+                                            </div>
+                                            <div className="border-t border-gray-600"></div>
+                                            <div className="flex ">
+                                              <div
+                                                className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                  background: '#FFFFFF',
+                                                  opacity: 1,
+                                                }}
+                                              >
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
+                                                  style={{
+                                                    width: '47px',
+                                                    height: '47px',
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Bob Rogers
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
+                                                  />
+                                                </span>
+                                              </div>
                                             </div>
 
-                                            <div className="space-y-4 max-h-56 overflow-y-auto">
-                                              <div className="flex ">
-                                                <div className="flex items-center justify-center text-[black] bg-gray-700 rounded-full">
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Alice Evans
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
-                                              </div>
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                            <div className="border-t border-gray-600"></div>
+                                            <div className="flex ">
+                                              <div
+                                                className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                  background: '#FFFFFF',
+                                                  opacity: 1,
+                                                }}
+                                              >
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
                                                   style={{
                                                     width: '47px',
                                                     height: '47px',
-                                                    background: '#FFFFFF',
-                                                    opacity: 1,
                                                   }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Bob Rogers
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
+                                                />
                                               </div>
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                  style={{
-                                                    width: '47px',
-                                                    height: '47px',
-                                                    background: '#FFFFFF',
-                                                    opacity: 1,
-                                                  }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Aiden Harper
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
                                                   />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Bob Rogers
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
+                                                </span>
                                               </div>
+                                            </div>
 
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                            <div className="border-t border-gray-600"></div>
+                                            <div className="flex ">
+                                              <div
+                                                className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                  background: '#FFFFFF',
+                                                  opacity: 1,
+                                                }}
+                                              >
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
                                                   style={{
                                                     width: '47px',
                                                     height: '47px',
-                                                    background: '#FFFFFF',
-                                                    opacity: 1,
                                                   }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Aiden Harper
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
+                                                />
                                               </div>
-
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                  style={{
-                                                    width: '47px',
-                                                    height: '47px',
-                                                    background: '#FFFFFF',
-                                                    opacity: 1,
-                                                  }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Lila Montgomery
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
                                                   />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Lila Montgomery
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
+                                                </span>
                                               </div>
+                                            </div>
 
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                            <div className="border-t border-gray-600"></div>
+                                            <div className="flex ">
+                                              <div
+                                                className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                  background: '#FFFFFF',
+                                                  opacity: 1,
+                                                }}
+                                              >
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
                                                   style={{
                                                     width: '47px',
                                                     height: '47px',
-                                                    background: '#FFFFFF',
-                                                    opacity: 1,
                                                   }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Ethan Caldwell
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
+                                                />
                                               </div>
-
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
-                                                  style={{
-                                                    width: '47px',
-                                                    height: '47px',
-                                                    background: '#FFFFFF',
-                                                    opacity: 1,
-                                                  }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Ethan Caldwell
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
                                                   />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Sophie Bennett
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
+                                                </span>
                                               </div>
+                                            </div>
 
-                                              <div className="border-t border-gray-600"></div>
-                                              <div className="flex ">
-                                                <div
-                                                  className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                            <div className="border-t border-gray-600"></div>
+                                            <div className="flex ">
+                                              <div
+                                                className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                  background: '#FFFFFF',
+                                                  opacity: 1,
+                                                }}
+                                              >
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
                                                   style={{
                                                     width: '47px',
                                                     height: '47px',
-                                                    background: '#FFFFFF',
-                                                    opacity: 1,
                                                   }}
-                                                >
-                                                  <img
-                                                    src={userIcon}
-                                                    alt="icons"
-                                                    style={{
-                                                      width: '47px',
-                                                      height: '47px',
-                                                    }}
+                                                />
+                                              </div>
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Sophie Bennett
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
                                                   />
-                                                </div>
-                                                <div className="flex flex-col ml-3">
-                                                  <span className="text-white block text-base font-poppins font-semibold">
-                                                    Lucas Hayes
-                                                  </span>
-                                                  <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                    Member{' '}
-                                                    <FontAwesomeIcon
-                                                      icon={faAngleDown}
-                                                    />
-                                                  </span>
-                                                </div>
+                                                </span>
+                                              </div>
+                                            </div>
+
+                                            <div className="border-t border-gray-600"></div>
+                                            <div className="flex ">
+                                              <div
+                                                className="flex items-center justify-center text-[black] bg-gray-700 rounded-full"
+                                                style={{
+                                                  width: '47px',
+                                                  height: '47px',
+                                                  background: '#FFFFFF',
+                                                  opacity: 1,
+                                                }}
+                                              >
+                                                <img
+                                                  src={userIcon}
+                                                  alt="icons"
+                                                  style={{
+                                                    width: '47px',
+                                                    height: '47px',
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="flex flex-col ml-3">
+                                                <span className="text-white block text-base font-poppins font-semibold">
+                                                  Lucas Hayes
+                                                </span>
+                                                <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                  Member{' '}
+                                                  <FontAwesomeIcon
+                                                    icon={faAngleDown}
+                                                  />
+                                                </span>
                                               </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </>
-                                  )}
-                             
+                                    </div>
+                                  </>
+                                )}
                               </td>
                               <td className="relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                 {/* {section.members?.read?.length > 0 ? (
@@ -4300,6 +4338,7 @@ const FunctionCalling = () => {
                                                 Cancel
                                               </button>
                                             </div>
+                                            {errorMessages.message && <p style={{ color: 'red' }}>{errorMessages.message}</p>}
                                           </div>
                                         </div>
                                       </div>
@@ -4354,7 +4393,7 @@ const FunctionCalling = () => {
                                           onClick={() =>
                                             toggleMembership(sectionIndex)
                                           }
-                                           className="absolute top-2 right-2"
+                                          className="absolute top-2 right-2"
                                         >
                                           <ThreeDotsButton />
                                         </button>

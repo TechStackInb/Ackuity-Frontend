@@ -47,7 +47,9 @@ const Chart2DatabasePage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [isDeleteModel, setDeleteModel] = useState(false);
   const [selectedPolicyId, setSelectedPolicyId] = useState(null);
-  const [errorMessages, setErrorMessages] = useState({});
+  // const [errorMessages, setErrorMessages] = useState({});
+
+  const [errorMessageMember, setErrorMessageMember] = useState('');
 
   const [loading, setLoading] = useState(false);
 
@@ -102,6 +104,9 @@ const Chart2DatabasePage = () => {
   const [openMembershipPermissonIndex, setOpenMembershipPermissonIndex] =
     useState(null);
   const [openEditMembershipIndex, setOpeneditMembershipIndex] = useState(null);
+
+  const [openEditMembershipIndexRevised, setOpeneditMembershipIndexRevised] =
+    useState(null);
 
   const [searchResults, setSearchResults] = useState([]);
   const [policyName, setPolicyName] = useState('');
@@ -168,6 +173,12 @@ const Chart2DatabasePage = () => {
 
   const toggleMembershipEdit = (index) => {
     setOpeneditMembershipIndex((prevIndex) =>
+      prevIndex === index ? null : index
+    );
+  };
+
+  const toggleMembershipEditRevised = (index) => {
+    setOpeneditMembershipIndexRevised((prevIndex) =>
       prevIndex === index ? null : index
     );
   };
@@ -378,18 +389,57 @@ const Chart2DatabasePage = () => {
     }
   };
 
+  const [showList, setShowList] = useState(
+    Array(membersBySection.length).fill(false)
+  );
+
+  // const addMember = (user, sectionIndex) => {
+  //   const updatedMembersBySection = [...membersBySection];
+
+  //   updatedMembersBySection[sectionIndex] = [
+  //     ...updatedMembersBySection[sectionIndex],
+  //     user,
+  //   ];
+
+  //   setMembersBySection(updatedMembersBySection);
+  //   setSearchResults(searchResults.filter((u) => u._id !== user._id));
+  //   setSearchQuery('');
+  // };
+
   const addMember = (user, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
 
-    updatedMembersBySection[sectionIndex] = [
-      ...updatedMembersBySection[sectionIndex],
-      user,
-    ];
+    // Check if the user already exists in the section to prevent duplicates
+    const isDuplicate = updatedMembersBySection[sectionIndex].some(
+      (member) => member._id === user._id
+    );
 
-    setMembersBySection(updatedMembersBySection);
-    setSearchResults(searchResults.filter((u) => u._id !== user._id));
-    setSearchQuery('');
+    if (isDuplicate) {
+      // Set an error message if the member already exists
+      setErrorMessageMember('Member already exists');
+    } else {
+      // Add the member if not a duplicate
+      updatedMembersBySection[sectionIndex] = [
+        ...updatedMembersBySection[sectionIndex],
+        user,
+      ];
+
+      setMembersBySection(updatedMembersBySection);
+      setSearchResults(searchResults.filter((u) => u._id !== user._id));
+      setSearchQuery('');
+      setErrorMessageMember('');
+    }
   };
+
+  // Clear error message after a delay
+  useEffect(() => {
+    if (errorMessageMember) {
+      const timer = setTimeout(() => setErrorMessageMember(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessageMember]);
+
+  console.log(errorMessageMember, 'errorMessageMember');
 
   const removeMember = (memberIndex, sectionIndex) => {
     const updatedMembersBySection = [...membersBySection];
@@ -854,9 +904,9 @@ const Chart2DatabasePage = () => {
                                     {sectionIndex === 3 && <span>Delete</span>}
                                   </td>
 
-                                  <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                  <td className="relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                     {sectionIndex === 0 && (
-                                      <div className="relative">
+                                      <div>
                                         <div className="flex  flex-col items-start">
                                           <div className="px-4 flex flex-col">
                                             <span className="text-white block text-base font-poppins ">
@@ -874,6 +924,7 @@ const Chart2DatabasePage = () => {
                                                     sectionIndex
                                                   )
                                                 }
+                                                className="absolute top-2 right-2"
                                               >
                                                 <ThreeDotsButton />
                                               </button>
@@ -986,7 +1037,7 @@ const Chart2DatabasePage = () => {
                                       </div>
                                     )}
                                     {sectionIndex === 1 && (
-                                      <div className="relative">
+                                      <div>
                                         <div className="flex  flex-col items-start">
                                           <div className="px-4 flex flex-col">
                                             <span className="text-white block text-base font-poppins">
@@ -1004,6 +1055,7 @@ const Chart2DatabasePage = () => {
                                                     sectionIndex
                                                   )
                                                 }
+                                                className="absolute top-2 right-2"
                                               >
                                                 <ThreeDotsButton />
                                               </button>
@@ -1124,7 +1176,7 @@ const Chart2DatabasePage = () => {
                                       </div>
                                     )}
                                     {sectionIndex === 2 && (
-                                      <div className="relative">
+                                      <div>
                                         <div className="flex  flex-col items-start">
                                           <div className="px-4 flex flex-col">
                                             <span className="text-white block text-base font-poppins">
@@ -1142,6 +1194,7 @@ const Chart2DatabasePage = () => {
                                                     sectionIndex
                                                   )
                                                 }
+                                                className="absolute top-2 right-2"
                                               >
                                                 <ThreeDotsButton />
                                               </button>
@@ -1262,7 +1315,7 @@ const Chart2DatabasePage = () => {
                                       </div>
                                     )}
                                     {sectionIndex === 3 && (
-                                      <div className="relative">
+                                      <div>
                                         <div className="flex  flex-col items-start">
                                           <div className="px-4 flex flex-col">
                                             <span className="text-white block text-base font-poppins">
@@ -1277,6 +1330,7 @@ const Chart2DatabasePage = () => {
                                                     sectionIndex
                                                   )
                                                 }
+                                                className="absolute top-2 right-2"
                                               >
                                                 <ThreeDotsButton />
                                               </button>
@@ -1366,56 +1420,45 @@ const Chart2DatabasePage = () => {
                                     )}
                                   </td>
 
-                                  <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
+                                  <td className="relative px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
                                     {/* Display section-specific members */}
-                                    {sectionMembers.length > 0 ? (
-                                      sectionMembers.map(
-                                        (member, memberIndex) => (
-                                          <div
-                                            key={memberIndex}
-                                            className="flex justify-between items-center mb-2"
-                                          >
-                                            <span className="text-white block text-base font-poppins font-semibold">
-                                              {member.name}
-                                            </span>
-                                            <button
-                                              className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full transition-colors duration-200 ease-in-out"
-                                              style={{
-                                                width: '29px',
-                                                height: '29px',
-                                                background: '#FFFFFF00',
-                                                border: '2px solid #31B47663',
-                                              }}
-                                              onMouseEnter={() =>
-                                                setHoveredRemoveIndex(index)
-                                              }
-                                              onMouseLeave={() =>
-                                                setHoveredRemoveIndex(null)
-                                              }
-                                              onClick={() =>
-                                                removeMember(
-                                                  memberIndex,
-                                                  sectionIndex
-                                                )
-                                              }
-                                            >
-                                              <FontAwesomeIcon
-                                                icon={
-                                                  hoveredRemoveIndex === index
-                                                    ? faClose
-                                                    : faClose
-                                                }
-                                                className="transition-transform duration-1000 ease-in-out"
-                                              />
-                                            </button>
-                                          </div>
-                                        )
-                                      )
-                                    ) : (
-                                      <span></span>
-                                    )}
+                                    <div className="mb-6">
+                                      {sectionMembers.length > 0 ? (
+                                        <div className="flex flex-col space-y-1">
+                                          {sectionMembers.map(
+                                            (member, memberIndex) => (
+                                              <div
+                                                key={memberIndex}
+                                                className="flex items-center"
+                                              >
+                                                <span className="text-white text-base font-poppins">
+                                                  {member.name}
+                                                  {/* Add a comma after each member name except the last one */}
+                                                  {memberIndex <
+                                                    sectionMembers.length - 1 &&
+                                                    ','}
+                                                </span>
+                                              </div>
+                                            )
+                                          )}
 
-                                    {members.length > 0 ? (
+                                          <button
+                                            onClick={() =>
+                                              toggleMembershipEditRevised(
+                                                sectionIndex
+                                              )
+                                            }
+                                            className="absolute top-2 right-2"
+                                          >
+                                            <ThreeDotsButton />
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <span></span>
+                                      )}
+                                    </div>
+
+                                    {/* {members.length > 0 ? (
                                       members.map((member, memberIndex) => (
                                         <div
                                           key={member._id}
@@ -1458,6 +1501,93 @@ const Chart2DatabasePage = () => {
                                       ))
                                     ) : (
                                       <span></span>
+                                    )} */}
+
+                                    {/* Modal for Revised section members */}
+                                    {openEditMembershipIndexRevised ===
+                                      sectionIndex && (
+                                      <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
+                                        <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
+                                          <div className="relative bg-gray-800 rounded-lg shadow-lg w-80">
+                                            <div className="bg-[#1B1E26] text-center text-green-400 py-2 rounded-t-lg relative">
+                                              <span className="text-base font-poppins font-semibold">
+                                                Group Membership
+                                              </span>
+                                              <button
+                                                className="absolute top-2 right-2 text-green-400 bg-white rounded-full"
+                                                onClick={() =>
+                                                  toggleMembershipEditRevised(
+                                                    sectionIndex
+                                                  )
+                                                }
+                                                style={{
+                                                  width: '29px',
+                                                  height: '29px',
+                                                  border: '2px solid #31B47663',
+                                                }}
+                                              >
+                                                &times;
+                                              </button>
+                                            </div>
+
+                                            <div className="p-4 space-y-4 max-h-72 overflow-y-auto">
+                                              {/* Display section-specific members inside modal */}
+                                              {membersBySection[
+                                                sectionIndex
+                                              ].map((member, memberIndex) => (
+                                                <div
+                                                  key={memberIndex}
+                                                  className="flex justify-between items-center mb-4"
+                                                >
+                                                  <div className="flex items-center">
+                                                    <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                                      <img
+                                                        src={userIcon}
+                                                        alt="icons"
+                                                        style={{
+                                                          width: '47px',
+                                                          height: '47px',
+                                                        }}
+                                                      />
+                                                    </div>
+                                                    <div className="flex flex-col ml-3">
+                                                      <span className="text-white block text-base font-poppins font-semibold">
+                                                        {member.name}
+                                                      </span>
+                                                      <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                        Member{' '}
+                                                        <FontAwesomeIcon
+                                                          icon={faAngleDown}
+                                                        />
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                  {/* <button
+                                                    className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
+                                                    onClick={() =>
+                                                      removeMember(
+                                                        memberIndex,
+                                                        sectionIndex
+                                                      )
+                                                    }
+                                                    style={{
+                                                      width: '29px',
+                                                      height: '29px',
+                                                      background: '#FFFFFF00',
+                                                      border:
+                                                        '2px solid #31B47663',
+                                                    }}
+                                                  >
+                                                    <FontAwesomeIcon
+                                                      icon={faMinus}
+                                                    />
+                                                  </button> */}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     )}
                                   </td>
                                   <td className="px-2.5 py-2 border border-customBorderColor text-customWhite bg-black font-poppins">
@@ -1502,58 +1632,64 @@ const Chart2DatabasePage = () => {
 
                                             <div className="p-4 space-y-4">
                                               {/* Display section-specific members inside modal */}
-                                              {membersBySection[
-                                                sectionIndex
-                                              ].map((member, memberIndex) => (
-                                                <div
-                                                  key={memberIndex}
-                                                  className="flex justify-between items-center mb-4"
-                                                >
-                                                  <div className="flex items-center">
-                                                    <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
-                                                      <img
-                                                        src={userIcon}
-                                                        alt="icons"
-                                                        style={{
-                                                          width: '47px',
-                                                          height: '47px',
-                                                        }}
-                                                      />
-                                                    </div>
-                                                    <div className="flex flex-col ml-3">
-                                                      <span className="text-white block text-base font-poppins font-semibold">
-                                                        {member.name}
-                                                      </span>
-                                                      <span className="text-gray-400 text-sm font-poppins font-normal">
-                                                        Member{' '}
-                                                        <FontAwesomeIcon
-                                                          icon={faAngleDown}
-                                                        />
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                  <button
-                                                    className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
-                                                    onClick={() =>
-                                                      removeMember(
-                                                        memberIndex,
-                                                        sectionIndex
-                                                      )
-                                                    }
-                                                    style={{
-                                                      width: '29px',
-                                                      height: '29px',
-                                                      background: '#FFFFFF00',
-                                                      border:
-                                                        '2px solid #31B47663',
-                                                    }}
+
+                                              <div
+                                                className="overflow-y-auto"
+                                                style={{ maxHeight: '250px' }}
+                                              >
+                                                {membersBySection[
+                                                  sectionIndex
+                                                ].map((member, memberIndex) => (
+                                                  <div
+                                                    key={memberIndex}
+                                                    className="flex justify-between items-center mb-4"
                                                   >
-                                                    <FontAwesomeIcon
-                                                      icon={faMinus}
-                                                    />
-                                                  </button>
-                                                </div>
-                                              ))}
+                                                    <div className="flex items-center">
+                                                      <div className="flex items-center justify-center text-black bg-gray-700 rounded-full">
+                                                        <img
+                                                          src={userIcon}
+                                                          alt="icons"
+                                                          style={{
+                                                            width: '47px',
+                                                            height: '47px',
+                                                          }}
+                                                        />
+                                                      </div>
+                                                      <div className="flex flex-col ml-3">
+                                                        <span className="text-white block text-base font-poppins font-semibold">
+                                                          {member.name}
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm font-poppins font-normal">
+                                                          Member{' '}
+                                                          <FontAwesomeIcon
+                                                            icon={faAngleDown}
+                                                          />
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                    <button
+                                                      className="flex items-center justify-center text-green-400 bg-gray-700 rounded-full"
+                                                      onClick={() =>
+                                                        removeMember(
+                                                          memberIndex,
+                                                          sectionIndex
+                                                        )
+                                                      }
+                                                      style={{
+                                                        width: '29px',
+                                                        height: '29px',
+                                                        background: '#FFFFFF00',
+                                                        border:
+                                                          '2px solid #31B47663',
+                                                      }}
+                                                    >
+                                                      <FontAwesomeIcon
+                                                        icon={faMinus}
+                                                      />
+                                                    </button>
+                                                  </div>
+                                                ))}
+                                              </div>
 
                                               {/* Add new member input */}
                                               <div className="flex items-center justify-between bg-[#1B1E26] border border-[#31B47633] rounded-[5px] p-3">
@@ -1645,6 +1781,11 @@ const Chart2DatabasePage = () => {
                                                   Cancel
                                                 </button>
                                               </div>
+                                              {errorMessageMember && (
+                                                <p style={{ color: 'red' }}>
+                                                  {errorMessageMember}
+                                                </p>
+                                              )}
                                             </div>
                                           </div>
                                         </div>
