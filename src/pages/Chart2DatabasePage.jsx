@@ -908,7 +908,7 @@ const Chart2DatabasePage = () => {
                                     {sectionIndex === 0 && (
                                       <div>
                                         <div className="flex  flex-col items-start">
-                                          <div className="px-4 flex flex-col">
+                                          <div className=" flex flex-col">
                                             <span className="text-white block text-base font-poppins ">
                                               Alice Evans,
                                             </span>
@@ -1039,7 +1039,7 @@ const Chart2DatabasePage = () => {
                                     {sectionIndex === 1 && (
                                       <div>
                                         <div className="flex  flex-col items-start">
-                                          <div className="px-4 flex flex-col">
+                                          <div className=" flex flex-col">
                                             <span className="text-white block text-base font-poppins">
                                               Aiden Harper,
                                             </span>
@@ -1178,7 +1178,7 @@ const Chart2DatabasePage = () => {
                                     {sectionIndex === 2 && (
                                       <div>
                                         <div className="flex  flex-col items-start">
-                                          <div className="px-4 flex flex-col">
+                                          <div className="flex flex-col">
                                             <span className="text-white block text-base font-poppins">
                                               Ethan Caldwell,
                                             </span>
@@ -1317,7 +1317,7 @@ const Chart2DatabasePage = () => {
                                     {sectionIndex === 3 && (
                                       <div>
                                         <div className="flex  flex-col items-start">
-                                          <div className="px-4 flex flex-col">
+                                          <div className=" flex flex-col">
                                             <span className="text-white block text-base font-poppins">
                                               Lucas Hayes
                                             </span>
