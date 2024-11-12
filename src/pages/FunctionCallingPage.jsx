@@ -2644,6 +2644,9 @@ const FunctionCalling = () => {
 
   const [errorMessages, setErrorMessages] = useState({});
 
+  const [selectedFilteringAttribute, setSelectedFilteringAttribute] =
+    useState('');
+
   useEffect(() => {
     if (policyId) {
       setIsEditMode(true);
@@ -2740,15 +2743,15 @@ const FunctionCalling = () => {
         const isDuplicate = section.members[activeType].some(
           (member) => member._id === user._id
         );
-  
+
         // If the user is a duplicate, set an error message
         if (isDuplicate) {
           setErrorMessages({ message: 'Member already exists' });
           return section; // Return without changes
         }
-  
+
         // If the user is not a duplicate, add them to the members array
-        setErrorMessages({ message: '' }); 
+        setErrorMessages({ message: '' });
         return {
           ...section,
           members: {
@@ -2759,18 +2762,18 @@ const FunctionCalling = () => {
       }
       return section;
     });
-  
+
     setSections(updatedSections);
   };
-  
+
   // Clear error message after a delay, if one is set
   useEffect(() => {
     if (errorMessages.message) {
       const timer = setTimeout(() => setErrorMessages({ message: '' }), 3000);
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [errorMessages.message]);
-  
+
   console.log(errorMessages.message, 'errorMessages');
 
   const removeMember = (member, sectionIndex) => {
@@ -3400,14 +3403,18 @@ const FunctionCalling = () => {
       'De-identification',
     ],
     actionOnAttributeFilteringAttribute: ['Department', 'Location'],
-    actionOnAttributeFilteringValue: [
-      'Asia',
-      'North America',
-      'Sales',
-      'Human Resources',
-      'Finance',
-      'Operations',
-    ],
+    // actionOnAttributeFilteringValue: [
+    //   'Asia',
+    //   'North America',
+    //   'Sales',
+    //   'Human Resources',
+    //   'Finance',
+    //   'Operations',
+    // ],
+    actionOnAttributeFilteringValue: {
+      default: ['Sales', 'Human Resources', 'Finance', 'Operations'],
+      Location: ['Asia', 'North America'],
+    },
     actionOnAttributeFilteringAction: ['Allow', 'Redact'],
     actionOnDataField: ['Opportunity Name', 'Account Name', 'Amount', 'Age'],
     selectApiName: ['Sales Opportunities', 'API2', 'API3', 'API4'],
@@ -3427,6 +3434,18 @@ const FunctionCalling = () => {
     name: 'Sales Opportunities',
     subItems: [{ name: 'App1' }, { name: 'App2' }, { name: 'App3' }],
   };
+
+  // const filteringValues =
+  //   selectedFilteringAttribute === 'Location'
+  //     ? data.actionOnAttributeFilteringValue.Location
+  //     : data.actionOnAttributeFilteringValue.default;
+
+  const filteringValues =
+  selectedFilteringAttribute === 'Location'
+    ? data.actionOnAttributeFilteringValue.Location
+    : selectedFilteringAttribute
+    ? data.actionOnAttributeFilteringValue.default
+    : []; 
 
   // console.log(members);
 
@@ -3822,7 +3841,7 @@ const FunctionCalling = () => {
                                                 </span>
                                               </div>
                                             </div>
-                                        
+
                                             <div className="border-t border-gray-600"></div>
                                             <div className="flex ">
                                               <div
@@ -4307,7 +4326,11 @@ const FunctionCalling = () => {
                                                 Cancel
                                               </button>
                                             </div>
-                                            {errorMessages.message && <p style={{ color: 'red' }}>{errorMessages.message}</p>}
+                                            {errorMessages.message && (
+                                              <p style={{ color: 'red' }}>
+                                                {errorMessages.message}
+                                              </p>
+                                            )}
                                           </div>
                                         </div>
                                       </div>
@@ -4468,7 +4491,6 @@ const FunctionCalling = () => {
                                                   </span>
                                                 </div>
                                               </div>
-                                        
 
                                               <div className="border-t border-gray-600"></div>
                                               <div className="flex ">
@@ -4932,7 +4954,7 @@ const FunctionCalling = () => {
                                 className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
                                 style={{ width: '200px' }}
                               >
-                                <CustomDropdown
+                                {/* <CustomDropdown
                                   options={
                                     data.actionOnAttributeFilteringAttribute ||
                                     []
@@ -4954,16 +4976,41 @@ const FunctionCalling = () => {
                                       value
                                     )
                                   }
+                                /> */}
+
+                                <CustomDropdown
+                                  options={
+                                    data.actionOnAttributeFilteringAttribute ||
+                                    []
+                                  }
+                                  placeholder="Select Option"
+                                  isOpen={openDropdown === `${section.id}-2`}
+                                  onDropdownClick={() =>
+                                    handleDropdownClick1(section.id, 2)
+                                  }
+                                  selectedOption={
+                                    section.values[
+                                      'actionOnAttributeFilteringAttribute'
+                                    ] || ''
+                                  }
+                                  setSelectedOption={(value) => {
+                                    setSelectedFilteringAttribute(value);
+                                    handleDropdownChange(
+                                      section.id,
+                                      'actionOnAttributeFilteringAttribute',
+                                      value
+                                    );
+                                  }}
                                 />
                               </td>
                               <td
                                 className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
                                 style={{ width: '200px' }}
                               >
+                             
+
                                 <CustomDropdown
-                                  options={
-                                    data.actionOnAttributeFilteringValue || []
-                                  }
+                                  options={filteringValues}
                                   placeholder="Select Option"
                                   isOpen={openDropdown === `${section.id}-3`}
                                   onDropdownClick={() =>
@@ -5011,12 +5058,6 @@ const FunctionCalling = () => {
                                 />
                               </td>
                               <td className="pl-4  py-6 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                            </tr>
-                            <tr>
-                              <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
-                              <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>
                             </tr>
                             <tr>
                               <td className="pl-4  py-8 border border-customBorderColor text-customWhite bg-black font-poppins"></td>

@@ -773,6 +773,9 @@ const Chart2DatabasePage = () => {
     });
   };
 
+  const [selectedFilteringAttribute, setSelectedFilteringAttribute] =
+    useState('');
+
   const data = {
     dataStoreOptions: ['DB1', 'DB2', 'DB3'],
     tableOptions: ['TABLE1', 'TABLE2', 'TABLE3'],
@@ -782,17 +785,33 @@ const Chart2DatabasePage = () => {
     privacyValueOption: ['Name', 'DOB', 'SSN', 'None'],
     privacyActionOption: ['Anonymize', 'Tokenize', 'None', 'De-Identification'],
     attributeOption: ['Department', 'Location'],
-    attributeValueOption: [
-      'Asia',
-      'North America',
-      'Sales',
-      'Human Resources',
-      'Finance',
-      'Operations',
-    ],
+    // attributeValueOption: [
+    //   'Asia',
+    //   'North America',
+    //   'Sales',
+    //   'Human Resources',
+    //   'Finance',
+    //   'Operations',
+    // ],
+    attributeValueOption: {
+      default: ['Sales', 'Human Resources', 'Finance', 'Operations'],
+      Location: ['Asia', 'North America'],
+    },
     attributeActionOption: ['Allow', 'Redact'],
     rowLevelFilterinOption: ['XYZ Corp', 'ABC Corp', 'DEF Corp', 'MNO Corp'],
   };
+
+  // const filteringValues =
+  //   selectedFilteringAttribute === 'Location'
+  //     ? data.attributeValueOption.Location
+  //     : data.attributeValueOption.default;
+
+  const filteringValues =
+    selectedFilteringAttribute === 'Location'
+      ? data.attributeValueOption.Location
+      : selectedFilteringAttribute
+      ? data.attributeValueOption.default
+      : [];
 
   const [isGroupMembershipOpen, setGroupMembershipOpen] = useState(false);
   const [isEditPermissionsOpen, setEditPermissionsOpen] = useState(false);
@@ -2017,13 +2036,21 @@ const Chart2DatabasePage = () => {
                                       selectedOption={
                                         section.values['attributeOption'] || ''
                                       }
-                                      setSelectedOption={(value) =>
+                                      // setSelectedOption={(value) =>
+                                      //   handleDropdownChange(
+                                      //     section.id,
+                                      //     'attributeOption',
+                                      //     value
+                                      //   )
+                                      // }
+                                      setSelectedOption={(value) => {
+                                        setSelectedFilteringAttribute(value);
                                         handleDropdownChange(
                                           section.id,
                                           'attributeOption',
                                           value
-                                        )
-                                      }
+                                        );
+                                      }}
                                     />
                                   </td>
                                   <td
@@ -2031,7 +2058,7 @@ const Chart2DatabasePage = () => {
                                     style={{ width: '200px' }}
                                   >
                                     <CustomDropdown
-                                      options={data.attributeValueOption || []}
+                                      options={filteringValues}
                                       placeholder="Select Option"
                                       isOpen={
                                         openDropdown === `${section.id}-3`

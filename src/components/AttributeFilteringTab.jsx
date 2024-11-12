@@ -35,6 +35,8 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [selectedContainsOption, setSelectedContainsOption] = useState('');
+
   const [loading, setLoading] = useState(false);
 
   const topRef = useRef(null);
@@ -392,11 +394,38 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       'Any',
     ],
     containsOptions: ['Document Classification', 'Location', 'Division'],
-    withOptions: ['Confidential', 'Private', 'Public',"Asia","Europe","North America"],
+    withOptions: {
+      default: ['Confidential', 'Private', 'Public'],
+      Location: ['Asia', 'Europe', 'North America'],
+    },
     thenOptions: ['Anonymize', 'Tokenize', 'Encrypt', 'De-identification'],
     roleOptions: ['Role1', 'Role2', 'Role3', 'Role4'],
     atOptions: ['All Times', '1 Day', '1 Week', 'One Month', '1 Year'],
   };
+
+  // Determine which options to show in `withOptions` based on `selectedContainsOption`
+  // const withOptions =
+  //   selectedContainsOption === 'Location'
+  //     ? datas.withOptions.Location
+  //     : selectedContainsOption
+  //     ? datas.withOptions.default
+  //     : [];
+
+  const withOptions =
+    selectedContainsOption === 'Location'
+      ? datas.withOptions.Location
+      : selectedContainsOption === 'Division'
+      ? []
+      : selectedContainsOption === 'Document Classification'
+      ? datas.withOptions.default
+      : [];
+
+  // const filteringValues =
+  // selectedFilteringAttribute === 'Location'
+  //   ? data.actionOnAttributeFilteringValue.Location
+  //   : selectedFilteringAttribute
+  //   ? data.actionOnAttributeFilteringValue.default
+  //   : [];
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -836,7 +865,7 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                     <span className="text-white mr-2 w-[100px] sm:text-right sm:mb-0 text-left mb-4  text-sm custmTextRight">
                       Contains
                     </span>
-                    <CustomDropdown
+                    {/* <CustomDropdown
                       options={datas.containsOptions || []}
                       placeholder="Select Contains"
                       isOpen={openDropdown === `${section.id}-1`}
@@ -851,6 +880,24 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                           value
                         )
                       }
+                    /> */}
+
+                    <CustomDropdown
+                      options={datas.containsOptions || []}
+                      placeholder="Select Contains"
+                      isOpen={openDropdown === `${section.id}-1`}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 1)
+                      }
+                      selectedOption={section.values['containsOptions'] || ''}
+                      setSelectedOption={(value) => {
+                        setSelectedContainsOption(value);
+                        handleDropdownChange(
+                          section.id,
+                          'containsOptions',
+                          value
+                        );
+                      }}
                     />
                   </div>
                 </div>
@@ -867,8 +914,21 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
                     <span className="text-white mr-2 w-[100px] sm:text-right sm:mb-0 text-left mb-4 text-sm custmTextRight">
                       With
                     </span>
-                    <CustomDropdown
+                    {/* <CustomDropdown
                       options={datas.withOptions || []}
+                      placeholder="Select With"
+                      isOpen={openDropdown === `${section.id}-2`}
+                      onDropdownClick={() =>
+                        handleDropdownClick1(section.id, 2)
+                      }
+                      selectedOption={section.values['withOptions'] || ''}
+                      setSelectedOption={(value) =>
+                        handleDropdownChange(section.id, 'withOptions', value)
+                      }
+                    /> */}
+
+                    <CustomDropdown
+                      options={withOptions}
                       placeholder="Select With"
                       isOpen={openDropdown === `${section.id}-2`}
                       onDropdownClick={() =>
