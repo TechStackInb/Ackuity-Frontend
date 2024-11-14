@@ -393,10 +393,11 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
       'Document4',
       'Any',
     ],
-    containsOptions: ['Document Classification', 'Location', 'Division'],
+    containsOptions: ['Document Classification', 'Location', 'Department'],
     withOptions: {
       default: ['Confidential', 'Private', 'Public'],
       Location: ['Asia', 'Europe', 'North America'],
+      Department: ['Sales', 'Human Resources', 'Finance', 'Operations'],
     },
     thenOptions: ['Anonymize', 'Tokenize', 'Encrypt', 'De-identification'],
     roleOptions: ['Role1', 'Role2', 'Role3', 'Role4'],
@@ -414,8 +415,8 @@ const AttributeFilteringTab = ({ handleSavePolicy }) => {
   const withOptions =
     selectedContainsOption === 'Location'
       ? datas.withOptions.Location
-      : selectedContainsOption === 'Division'
-      ? []
+      : selectedContainsOption === 'Department'
+      ? datas.withOptions.Department
       : selectedContainsOption === 'Document Classification'
       ? datas.withOptions.default
       : [];
