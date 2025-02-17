@@ -705,8 +705,14 @@ const PrivacyFilteringTab = ({ handleSavePolicy }) => {
     ],
     containsOptions: ['Name', 'DOB', 'SSN', 'Age', 'Standard'],
     withOptions: ['Confidential', 'Private', 'Public'],
-    thenOptions: ['Anonymize', 'Tokenize', 'Encrypt', 'De-identification'],
-    roleOptions: ['Finance', 'HR', 'Operation'],
+    thenOptions: [
+      'Alert',
+      'Anonymize',
+      'Tokenize',
+      'Encrypt',
+      'De-identification',
+    ],
+    roleOptions: ['All', 'Finance', 'HR', 'Operation'],
     atOptions: ['All Times', '1 Day', '1 Week', 'One Month', '1 Year'],
   };
   return (

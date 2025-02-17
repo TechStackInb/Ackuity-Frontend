@@ -784,7 +784,7 @@ const Chart2DatabasePage = () => {
     locationOption: ['Department', 'Location'],
     privacyValueOption: ['Name', 'DOB', 'SSN', 'None'],
     privacyActionOption: ['Anonymize', 'Tokenize', 'None', 'De-Identification'],
-    attributeOption: ['Department', 'Location'],
+    attributeOption: ['None', 'Department', 'Location'],
     // attributeValueOption: [
     //   'Asia',
     //   'North America',
@@ -806,12 +806,20 @@ const Chart2DatabasePage = () => {
   //     ? data.attributeValueOption.Location
   //     : data.attributeValueOption.default;
 
-  const filteringValues =
-    selectedFilteringAttribute === 'Location'
-      ? data.attributeValueOption.Location
-      : selectedFilteringAttribute
-      ? data.attributeValueOption.default
-      : [];
+  // const filteringValues =
+  //   selectedFilteringAttribute === 'Location'
+  //     ? data.attributeValueOption.Location
+  //     : selectedFilteringAttribute
+  //     ? data.attributeValueOption.default
+  //     : [];
+
+
+      const filteringValues =
+      selectedFilteringAttribute === 'Location'
+        ? ['None', ...data.attributeValueOption.Location]
+        : selectedFilteringAttribute === 'Department'
+        ? data.attributeValueOption.default
+        : [];
 
   const [isGroupMembershipOpen, setGroupMembershipOpen] = useState(false);
   const [isEditPermissionsOpen, setEditPermissionsOpen] = useState(false);
@@ -2022,7 +2030,7 @@ const Chart2DatabasePage = () => {
                                 <tr>
                                   <td
                                     className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
-                                    style={{ width: '200px' }}
+                                    style={{ width: '186px' }}
                                   >
                                     <CustomDropdown
                                       options={data.attributeOption || []}
@@ -2055,7 +2063,7 @@ const Chart2DatabasePage = () => {
                                   </td>
                                   <td
                                     className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
-                                    style={{ width: '200px' }}
+                                    style={{ width: '216px' }}
                                   >
                                     <CustomDropdown
                                       options={filteringValues}
@@ -2082,7 +2090,7 @@ const Chart2DatabasePage = () => {
                                   </td>
                                   <td
                                     className="pl-4  py-2 border border-customBorderColor text-customWhite bg-black"
-                                    style={{ width: '200px' }}
+                                    style={{ width: '190px' }}
                                   >
                                     <CustomDropdown
                                       options={data.attributeActionOption || []}

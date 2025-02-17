@@ -2922,12 +2922,12 @@ const FunctionCalling = () => {
         return;
       }
 
-      if (!section.values['actionOnAttributeFilteringValue']) {
-        setErrorMessage(
-          `Attribute Filtering Value is required for section ${i + 1}.`
-        );
-        return;
-      }
+      // if (!section.values['actionOnAttributeFilteringValue']) {
+      //   setErrorMessage(
+      //     `Attribute Filtering Value is required for section ${i + 1}.`
+      //   );
+      //   return;
+      // }
 
       if (!section.values['actionOnAttributeFilteringAction']) {
         setErrorMessage(
@@ -2959,7 +2959,7 @@ const FunctionCalling = () => {
         actionOnAttributeFilteringAttribute:
           section.values['actionOnAttributeFilteringAttribute'] || '',
         actionOnAttributeFilteringValue:
-          section.values['actionOnAttributeFilteringValue'] || '',
+          section.values['actionOnAttributeFilteringValue'] || 'Sales',
         actionOnAttributeFilteringAction:
           section.values['actionOnAttributeFilteringAction'] || '',
         actionOnAttributeFilteringTransformValue:
@@ -3402,7 +3402,7 @@ const FunctionCalling = () => {
       'None',
       'De-identification',
     ],
-    actionOnAttributeFilteringAttribute: ['Department', 'Location'],
+    actionOnAttributeFilteringAttribute: ['None', 'Department', 'Location'],
     // actionOnAttributeFilteringValue: [
     //   'Asia',
     //   'North America',
@@ -3440,12 +3440,19 @@ const FunctionCalling = () => {
   //     ? data.actionOnAttributeFilteringValue.Location
   //     : data.actionOnAttributeFilteringValue.default;
 
+  // const filteringValues =
+  //   selectedFilteringAttribute === 'Location'
+  //     ? data.actionOnAttributeFilteringValue.Location
+  //     : selectedFilteringAttribute
+  //     ? data.actionOnAttributeFilteringValue.default
+  //     : [];
+
   const filteringValues =
-  selectedFilteringAttribute === 'Location'
-    ? data.actionOnAttributeFilteringValue.Location
-    : selectedFilteringAttribute
-    ? data.actionOnAttributeFilteringValue.default
-    : []; 
+    selectedFilteringAttribute === 'Location'
+      ? ['None', ...data.actionOnAttributeFilteringValue.Location]
+      : selectedFilteringAttribute === 'Department'
+      ? data.actionOnAttributeFilteringValue.default
+      : [];
 
   // console.log(members);
 
@@ -5007,8 +5014,6 @@ const FunctionCalling = () => {
                                 className="pl-4 py-2 border border-customBorderColor text-customWhite bg-black"
                                 style={{ width: '200px' }}
                               >
-                             
-
                                 <CustomDropdown
                                   options={filteringValues}
                                   placeholder="Select Option"
