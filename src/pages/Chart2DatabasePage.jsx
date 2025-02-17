@@ -813,13 +813,12 @@ const Chart2DatabasePage = () => {
   //     ? data.attributeValueOption.default
   //     : [];
 
-
-      const filteringValues =
-      selectedFilteringAttribute === 'Location'
-        ? ['None', ...data.attributeValueOption.Location]
-        : selectedFilteringAttribute === 'Department'
-        ? data.attributeValueOption.default
-        : [];
+  const filteringValues =
+    selectedFilteringAttribute === 'Location'
+      ? [...data.attributeValueOption.Location]
+      : selectedFilteringAttribute === 'Department'
+      ? data.attributeValueOption.default
+      : [];
 
   const [isGroupMembershipOpen, setGroupMembershipOpen] = useState(false);
   const [isEditPermissionsOpen, setEditPermissionsOpen] = useState(false);

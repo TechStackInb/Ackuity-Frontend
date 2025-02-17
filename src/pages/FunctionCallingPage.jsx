@@ -3449,7 +3449,7 @@ const FunctionCalling = () => {
 
   const filteringValues =
     selectedFilteringAttribute === 'Location'
-      ? ['None', ...data.actionOnAttributeFilteringValue.Location]
+      ? [ ...data.actionOnAttributeFilteringValue.Location]
       : selectedFilteringAttribute === 'Department'
       ? data.actionOnAttributeFilteringValue.default
       : [];
