@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   faChevronDown,
   faChevronUp,
@@ -8,15 +8,15 @@ import {
   faSave,
   faSyncAlt,
   faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PrivacyCustomDropdown from "../components/PrivacyCustomDropdown";
-import { BASE_URL } from "../services/api";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PrivacyCustomDropdown from '../components/PrivacyCustomDropdown';
+import { BASE_URL } from '../services/api';
 
 const ThreatManagement = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
-  const [selectedOption, setSelectedOption] = useState("Last 24 hours");
+  const [selectedOption, setSelectedOption] = useState('Last 24 hours');
   const [isOpen, setIsOpen] = useState(false);
 
   const [threatData, setThreatData] = useState([]);
@@ -39,30 +39,30 @@ const ThreatManagement = () => {
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     const selectedData = averages[optionMapping[option]];
-    updateThreatData(selectedData); 
+    updateThreatData(selectedData);
     setIsOpen(false);
   };
 
   const handleRefreshClick = () => {
-    setSelectedOption("Last 24 hours");
+    setSelectedOption('Last 24 hours');
     const last24HoursData = averages.last24Hours;
-    updateThreatData(last24HoursData); 
+    updateThreatData(last24HoursData);
   };
 
   const optionMapping = {
-    "Last 24 hours": "last24Hours",
-    "Last 7 days": "last7Days",
-    "Last 30 days": "last30Days",
+    'Last 24 hours': 'last24Hours',
+    'Last 7 days': 'last7Days',
+    'Last 30 days': 'last30Days',
   };
 
   const updateThreatData = (data) => {
     if (data) {
       const threatData = [
-        { type: "Total Threats", count: data.totalThreats },
-        { type: "Injection Attacks", count: data.injectionAttacks },
-        { type: "API Attacks", count: data.apiAttacks },
-        { type: "Agent Anomalies", count: data.agentAnamalies },
-        { type: "User Anomalies", count: data.userAnamalies },
+        { type: 'Total Threats', count: data.totalThreats },
+        { type: 'Injection Attacks', count: data.injectionAttacks },
+        { type: 'API Attacks', count: data.apiAttacks },
+        { type: 'Agent Anomalies', count: data.agentAnamalies },
+        { type: 'User Anomalies', count: data.userAnamalies },
       ];
       setThreatDataDashboard(threatData);
     }
@@ -74,19 +74,19 @@ const ThreatManagement = () => {
         const response = await fetch(
           `${BASE_URL}/api/data/threatManagementacdata`,
           {
-            method: "GET",
-            credentials: "include",
+            method: 'GET',
+            credentials: 'include',
           }
         );
         if (response.ok) {
           const data = await response.json();
           setAverages(data.averages);
-          updateThreatData(data.averages.last24Hours); 
+          updateThreatData(data.averages.last24Hours);
         } else {
-          console.error("Failed to fetch threat data");
+          console.error('Failed to fetch threat data');
         }
       } catch (error) {
-        console.error("Error fetching threat data:", error);
+        console.error('Error fetching threat data:', error);
       } finally {
         setLoading(false);
       }
@@ -100,11 +100,8 @@ const ThreatManagement = () => {
   };
 
   const handleDropdownClick = (dropdownKey) => {
-    if (openDropdown === dropdownKey) {
-      setOpenDropdown(null); 
-    } else {
-      setOpenDropdown(dropdownKey); 
-    }
+    // If already open, close it; otherwise, open it
+    setOpenDropdown(openDropdown === dropdownKey ? null : dropdownKey);
   };
 
   const handleOptionClickDrop = (dropdownKey, option) => {
@@ -112,7 +109,7 @@ const ThreatManagement = () => {
       ...selectedOptions,
       [dropdownKey]: option,
     });
-
+    setOpenDropdown(null); // Close dropdown after selection
   };
 
   const handleOptionClicks = (option) => {
@@ -126,38 +123,45 @@ const ThreatManagement = () => {
   };
 
   const data = {
-    userOption: ["Open", "In Progress", "Closed"],
-    statusOption: ["Analyst 1", "Analyst 2", "Analyst 3"],
+    userOption: ['Open', 'In Progress', 'Closed'],
+    statusOption: [
+      'Analyst 1',
+      'Analyst 2',
+      'Analyst 3',
+      'Analyst 4',
+      'Analyst 5',
+    ],
   };
+
   const threatDatas = [
-    { type: "Total threats", count: 15 },
-    { type: "Injection Attacks", count: 10 },
-    { type: "API Attacks", count: 6 },
-    { type: "Agent Anomalies", count: 4 },
-    { type: "User Anomalies", count: 3 },
+    { type: 'Total threats', count: 15 },
+    { type: 'Injection Attacks', count: 10 },
+    { type: 'API Attacks', count: 6 },
+    { type: 'Agent Anomalies', count: 4 },
+    { type: 'User Anomalies', count: 3 },
   ];
 
-  console.log(threatDataDashboard, "threatDataDashboard");
+  console.log(threatDataDashboard, 'threatDataDashboard');
 
   useEffect(() => {
     const fetchThreatData = async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/data/threatManagement`, {
-          method: "GET",
-          credentials: "include", 
+          method: 'GET',
+          credentials: 'include',
         });
 
         if (response.ok) {
           const data = await response.json();
           // console.log(data, "threat");
-          setThreatData(data.data); 
+          setThreatData(data.data);
         } else {
-          console.error("Failed to fetch threat data");
+          console.error('Failed to fetch threat data');
         }
       } catch (error) {
-        console.error("Error fetching threat data:", error);
+        console.error('Error fetching threat data:', error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -166,25 +170,25 @@ const ThreatManagement = () => {
 
   const confirmSave = async () => {
     const data = {
-      threatName: "Test Name 1",
-      severity: "Medium",
-      threatCatagory: "Risky",
-      source: "GenAPI",
-      destination: "Services/data/V37.0/ analytics/reports/query",
-      impactedAssests: "Salesforce Opp-App1",
+      threatName: 'Test Name 1',
+      severity: 'Medium',
+      threatCatagory: 'Risky',
+      source: 'GenAPI',
+      destination: 'Services/data/V37.0/ analytics/reports/query',
+      impactedAssests: 'Salesforce Opp-App1',
       eventTime: new Date().toISOString(),
-      affectedUser: "Sales1",
-      status: selectedOptions["userOption"] || "",
-      assignedTo: selectedOptions["statusOption"] || "",
+      affectedUser: 'Sales1',
+      status: selectedOptions['userOption'] || '',
+      assignedTo: selectedOptions['statusOption'] || '',
     };
 
-    setIsLoading(true); 
+    setIsLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/api/data/threatManagement`, {
-        method: "POST",
-        credentials: "include", 
+        method: 'POST',
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
@@ -192,13 +196,13 @@ const ThreatManagement = () => {
       if (response.ok) {
         setIsSaveSuccessful(true);
       } else {
-        alert("Failed to save data");
+        alert('Failed to save data');
       }
     } catch (error) {
-      console.error("Error saving data:", error);
-      alert("An error occurred while saving data.");
+      console.error('Error saving data:', error);
+      alert('An error occurred while saving data.');
     }
-    setIsLoading(false); 
+    setIsLoading(false);
   };
 
   return (
@@ -226,7 +230,7 @@ const ThreatManagement = () => {
             <div className="flex basis-[80%] justify-end gap-[10px]">
               <button
                 className="group flex items-center text-black px-4 py-2 bg-[#1B1E26] rounded-t-lg hover:bg-[#31B476]"
-                onClick={handleRefreshClick} 
+                onClick={handleRefreshClick}
               >
                 <FontAwesomeIcon
                   icon={faSyncAlt}
@@ -236,7 +240,7 @@ const ThreatManagement = () => {
               </button>
 
               <div className="relative inline-block text-left w-48">
-                {" "}
+                {' '}
                 {/* Set a fixed width for the dropdown */}
                 <button
                   className="group flex items-center justify-between px-4 py-2 border border-[#1b1e26] rounded-t-lg bg-[#1b1e26] shadow-sm w-full" // Make the button take full width
@@ -248,7 +252,7 @@ const ThreatManagement = () => {
                   />
                   <span className="text-[#31B476] truncate">
                     {selectedOption}
-                  </span>{" "}
+                  </span>{' '}
                   <FontAwesomeIcon
                     icon={isOpen ? faChevronUp : faChevronDown}
                     className="ml-2 text-[#31B476]"
@@ -256,24 +260,23 @@ const ThreatManagement = () => {
                 </button>
                 {isOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-[#1b1e26] border border-[#1b1e26] rounded-lg shadow-lg z-10">
-                    {" "}
-  
+                    {' '}
                     <ul className="py-2">
                       <li
                         className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
-                        onClick={() => handleOptionClick("Last 24 hours")}
+                        onClick={() => handleOptionClick('Last 24 hours')}
                       >
                         Last 24 hours
                       </li>
                       <li
                         className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
-                        onClick={() => handleOptionClick("Last 7 days")}
+                        onClick={() => handleOptionClick('Last 7 days')}
                       >
                         Last 7 days
                       </li>
                       <li
                         className="px-4 py-2 hover:bg-[#31B476] hover:text-white text-white cursor-pointer"
-                        onClick={() => handleOptionClick("Last 30 days")}
+                        onClick={() => handleOptionClick('Last 30 days')}
                       >
                         Last 30 days
                       </li>
@@ -412,31 +415,337 @@ const ThreatManagement = () => {
                     <PrivacyCustomDropdown
                       options={data.userOption || []}
                       placeholder="In Progress"
-                      isOpen={openDropdown === "userOption"}
-                      width={"144px"}
-                      onDropdownClick={() => handleDropdownClick("userOption")}
-                      selectedOption={selectedOptions["userOption"]}
-                      onOptionClick={(option) => {
-                        handleOptionClickDrop("userOption", option);
-
-                        setOpenDropdown(null);
-                      }}
+                      isOpen={openDropdown === 'userOption1'}
+                      width="144px"
+                      onDropdownClick={() => handleDropdownClick('userOption1')}
+                      selectedOption={selectedOptions['userOption1']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('userOption1', option)
+                      }
                     />
                   </td>
                   <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black">
                     <PrivacyCustomDropdown
                       options={data.statusOption || []}
                       placeholder="Analyst"
-                      isOpen={openDropdown === "statusOption"}
-                      width={"144px"}
+                      isOpen={openDropdown === 'statusOption1'}
+                      width="144px"
                       onDropdownClick={() =>
-                        handleDropdownClick("statusOption")
+                        handleDropdownClick('statusOption1')
                       }
-                      selectedOption={selectedOptions["statusOption"]}
-                      onOptionClick={(option) => {
-                        handleOptionClickDrop("statusOption", option);
-                        setOpenDropdown(null); 
-                      }}
+                      selectedOption={selectedOptions['statusOption1']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('statusOption1', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                    <div className="flex items-center justify-between gap-2 spaceGaps">
+                      <button
+                        className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                        onClick={handleSaveClick}
+                      >
+                        <FontAwesomeIcon
+                          icon={faSave}
+                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                        />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatName} */}
+                    Excessive Agency
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.severity} */}
+                    High
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatCatagory} */}
+                    Risky Tool Chaining
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.source} */}
+                    Agent1, Agent 6
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.destination} */}
+                    hacker@test.com
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.impactedAssests} */}
+                    Creditcard Data
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.eventTime} */}
+                    3/3/25
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.affectedUser} */}
+                  </td>
+
+                  {/* Add more cells based on the threatData structure */}
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black text-sm">
+                    <PrivacyCustomDropdown
+                      options={data.userOption || []}
+                      placeholder="In Progress"
+                      isOpen={openDropdown === 'userOption2'}
+                      width="144px"
+                      onDropdownClick={() => handleDropdownClick('userOption2')}
+                      selectedOption={selectedOptions['userOption2']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('userOption2', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black">
+                    <PrivacyCustomDropdown
+                      options={data.statusOption || []}
+                      placeholder="Analyst 1"
+                      isOpen={openDropdown === 'statusOption2'}
+                      width="144px"
+                      onDropdownClick={() =>
+                        handleDropdownClick('statusOption2')
+                      }
+                      selectedOption={selectedOptions['statusOption2']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('statusOption2', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                    <div className="flex items-center justify-between gap-2 spaceGaps">
+                      <button
+                        className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                        onClick={handleSaveClick}
+                      >
+                        <FontAwesomeIcon
+                          icon={faSave}
+                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                        />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatName} */}
+                    Identity & Permission Threats
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.severity} */}
+                    High
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatCatagory} */}
+                    User Permission Bypass
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.source} */}
+                    GenAI App7
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.destination} */}
+                    https://g2412-test-87twxst.svc.apw5-4e34-81fa.pinecone.io/query
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.impactedAssests} */}
+                    https://g2412. sharepoint.com /sites/Finance_2025
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.eventTime} */}
+                    1/2/25
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.affectedUser} */}
+                    Finance1
+                  </td>
+
+                  {/* Add more cells based on the threatData structure */}
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black text-sm">
+                    <PrivacyCustomDropdown
+                      options={data.userOption || []}
+                      placeholder="In Progress"
+                      isOpen={openDropdown === 'userOption3'}
+                      width="144px"
+                      onDropdownClick={() => handleDropdownClick('userOption3')}
+                      selectedOption={selectedOptions['userOption3']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('userOption3', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black">
+                    <PrivacyCustomDropdown
+                      options={data.statusOption || []}
+                      placeholder="Analyst 5"
+                      isOpen={openDropdown === 'statusOption3'}
+                      width="144px"
+                      onDropdownClick={() =>
+                        handleDropdownClick('statusOption3')
+                      }
+                      selectedOption={selectedOptions['statusOption3']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('statusOption3', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                    <div className="flex items-center justify-between gap-2 spaceGaps">
+                      <button
+                        className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                        onClick={handleSaveClick}
+                      >
+                        <FontAwesomeIcon
+                          icon={faSave}
+                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                        />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatName} */}
+                    Agent Attack
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.severity} */}
+                    High
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatCatagory} */}
+                    Manipulation of Agent Prompts
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.source} */}
+                    Agent1
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.destination} */}
+                    Backup server1
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.impactedAssests} */}
+                    Backup server1
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.eventTime} */}
+                    1/20/25
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.affectedUser} */}
+                   
+                  </td>
+
+                  {/* Add more cells based on the threatData structure */}
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black text-sm">
+                    <PrivacyCustomDropdown
+                      options={data.userOption || []}
+                      placeholder="In Progress"
+                      isOpen={openDropdown === 'userOption4'}
+                      width="144px"
+                      onDropdownClick={() => handleDropdownClick('userOption4')}
+                      selectedOption={selectedOptions['userOption4']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('userOption4', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black">
+                    <PrivacyCustomDropdown
+                      options={data.statusOption || []}
+                      placeholder="Analyst"
+                      isOpen={openDropdown === 'statusOption4'}
+                      width="144px"
+                      onDropdownClick={() =>
+                        handleDropdownClick('statusOption4')
+                      }
+                      selectedOption={selectedOptions['statusOption4']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('statusOption4', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
+                    <div className="flex items-center justify-between gap-2 spaceGaps">
+                      <button
+                        className="bg-customBlack text-[#6A7581] px-2 py-2 rounded hover:text-customGreen"
+                        onClick={handleSaveClick}
+                      >
+                        <FontAwesomeIcon
+                          icon={faSave}
+                          className="transition ease-out duration-300 hover:transform hover:scale-110 w-6 h-6"
+                        />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatName} */}
+                    Agent Attack
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.severity} */}
+                    High
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.threatCatagory} */}
+                    Manipulation of Agent memory
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.source} */}
+                    Agent Alpha
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.destination} */}
+                    https://g2412-test-87twxst.svc.apw5-4e34-81fa.pinecone.io/query
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.impactedAssests} */}
+                    Agent Alpha
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.eventTime} */}
+                    1/10/25
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
+                    {/* {threat.affectedUser} */}
+                  </td>
+
+                  {/* Add more cells based on the threatData structure */}
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black text-sm">
+                    <PrivacyCustomDropdown
+                      options={data.userOption || []}
+                      placeholder="In Progress"
+                      isOpen={openDropdown === 'userOption5'}
+                      width="144px"
+                      onDropdownClick={() => handleDropdownClick('userOption5')}
+                      selectedOption={selectedOptions['userOption5']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('userOption5', option)
+                      }
+                    />
+                  </td>
+                  <td className="px-2 py-2 border border-customBorderColor text-customWhite bg-black">
+                    <PrivacyCustomDropdown
+                      options={data.statusOption || []}
+                      placeholder="Analyst 5"
+                      isOpen={openDropdown === 'statusOption5'}
+                      width="144px"
+                      onDropdownClick={() =>
+                        handleDropdownClick('statusOption5')
+                      }
+                      selectedOption={selectedOptions['statusOption5']}
+                      onOptionClick={(option) =>
+                        handleOptionClickDrop('statusOption5', option)
+                      }
                     />
                   </td>
                   <td className="px-4 py-2 border border-customBorderColor text-customWhite font-poppins">
@@ -497,7 +806,7 @@ const ThreatManagement = () => {
                     onClick={confirmSave}
                     disabled={isLoading}
                   >
-                    {isLoading ? "Saving..." : "Confirm"}
+                    {isLoading ? 'Saving...' : 'Confirm'}
                   </button>
                   <button
                     className="bg-gray-500 text-white px-4 py-2 rounded"
