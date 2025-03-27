@@ -141,7 +141,7 @@ const ThreatManagement = () => {
     { type: 'User Anomalies', count: 3 },
   ];
 
-  console.log(threatDataDashboard, 'threatDataDashboard');
+  // console.log(threatDataDashboard, 'threatDataDashboard');
 
   useEffect(() => {
     const fetchThreatData = async () => {
@@ -346,7 +346,7 @@ const ThreatManagement = () => {
                     Severity
                   </th>
                   <th className="px-2 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold text-sm">
-                    Threat Caregory
+                    Threat Category
                   </th>
                   <th className="px-2 py-2 border border-customBorderColor bg-customTableGreen text-customWhite font-poppins font-semibold text-sm">
                     Source
@@ -639,7 +639,6 @@ const ThreatManagement = () => {
                   </td>
                   <td className="px-2 py-2 border border-customBorderColor text-customWhite font-poppins text-sm">
                     {/* {threat.affectedUser} */}
-                   
                   </td>
 
                   {/* Add more cells based on the threatData structure */}
