@@ -14,11 +14,11 @@
 }
 
 .custom-checkbox::before {
-  content: "";
+  content: '';
   display: block;
   width: 100%;
   height: 100%;
-  background: url("/src/assets/square-check-solid.png") no-repeat center;
+  background: url('/src/assets/square-check-solid.png') no-repeat center;
   background-size: contain;
   position: absolute;
   top: 0;
@@ -37,7 +37,7 @@
 
 /* Custom span styling when checkbox is checked */
 .custom-checkbox:checked + span {
-  color: #31b476; 
+  color: #31b476;
 }
 
 .custom-arrow {
@@ -76,7 +76,7 @@
 }
 
 .dropdown-item {
-  background-color: black; 
+  background-color: black;
 }
 
 .dropdown-item-text {
@@ -88,5 +88,14 @@
 }
 
 .dropdown-item:hover .dropdown-item-text {
-  color: white; 
+  color: white;
+}
+.recharts-wrapper {
+  max-height: 436px !important;
+}
+.recharts-responsive-container {
+  height: 436px !important;
+}
+tspan {
+  font-size: 14px;
 }
