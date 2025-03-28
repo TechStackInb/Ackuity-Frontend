@@ -3449,7 +3449,7 @@ const FunctionCalling = () => {
 
   const filteringValues =
     selectedFilteringAttribute === 'Location'
-      ? [ ...data.actionOnAttributeFilteringValue.Location]
+      ? [...data.actionOnAttributeFilteringValue.Location]
       : selectedFilteringAttribute === 'Department'
       ? data.actionOnAttributeFilteringValue.default
       : [];
@@ -5145,17 +5145,14 @@ const FunctionCalling = () => {
         onClick={isEditMode ? handleUpdatePolicy : handleSavePolicy}
       >
         <span
-          className="transition-transform duration-300 ease-out"
+          className="transition-transform duration-300 ease-out inline-block"
           style={{
-            display: 'inline-block',
             letterSpacing: '0.2em',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.letterSpacing = 'normal';
             e.currentTarget.style.transform = 'scale(0.95)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.letterSpacing = '0.2em';
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
