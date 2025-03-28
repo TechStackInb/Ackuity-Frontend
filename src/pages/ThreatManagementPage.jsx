@@ -61,8 +61,8 @@ const ThreatManagement = () => {
         { type: 'Total Threats', count: data.totalThreats },
         { type: 'Injection Attacks', count: data.injectionAttacks },
         { type: 'API Attacks', count: data.apiAttacks },
-        { type: 'Agent Anomalies', count: data.agentAnamalies },
-        { type: 'User Anomalies', count: data.userAnamalies },
+        { type: 'Agent Anomalies', count: data.agentAnomalies },
+        { type: 'User Anomalies', count: data.userAnomalies },
       ];
       setThreatDataDashboard(threatData);
     }
@@ -80,8 +80,17 @@ const ThreatManagement = () => {
         );
         if (response.ok) {
           const data = await response.json();
-          setAverages(data.averages);
-          updateThreatData(data.averages.last24Hours);
+          console.log(data, 'data');
+
+          // Directly use the correct keys
+          setAverages({
+            last24Hours: data.last24Hours,
+            last7Days: data.last7Days,
+            last30Days: data.last30Days,
+          });
+
+          // Initialize with last24Hours data
+          updateThreatData(data.last24Hours);
         } else {
           console.error('Failed to fetch threat data');
         }
