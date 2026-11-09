@@ -16,7 +16,6 @@ import PrivateRoute from "./PrivateRoute";
 
 const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   return (
     <ChartProvider>
         <Routes>
